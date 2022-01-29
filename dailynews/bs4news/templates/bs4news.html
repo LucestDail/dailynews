@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+<table class="table">
+    <thead>
+        <tr>
+          <th scope="col">News_id</th>
+          <th scope="col">News_from</th>
+          <th scope="col">News_title</th>
+          <th scope="col">News_CreateDt</th>
+        </tr>
+      </thead>
+    <tbody>
+    {% for news in news_list.all %}
+    <tr>
+        <th scope="row">{{news.id}}</th>
+        <td>{{news.News_from}}</td>
+        <td>{{news.News_title}}</td>
+        <td>{{news.News_CreateDT}}</td>
+    </tr>
+    <tr>
+        <td colspan="4">{{news.News_contents}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
