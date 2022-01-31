@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>bs4news</title>
     <!-- 합쳐지고 최소화된 최신 CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <!-- 부가적인 테마 -->
@@ -21,7 +21,7 @@
         </tr>
       </thead>
     <tbody>
-    {% for news in news_list.all %}
+    {% for news in news_list %}
     <tr>
         <th scope="row">{{news.id}}</th>
         <td>{{news.News_from}}</td>
@@ -34,5 +34,20 @@
     {% endfor %}
     </tbody>
 </table>
+<div class="pagination">
+    <span class="step-links">
+        {% if news_list.has_previous %}
+            <a href="?page={{ news_list.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ news_list.number }} of {{ news_list.paginator.num_pages }}.
+        </span>
+
+        {% if news_list.has_next %}
+            <a href="?page={{ news_list.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
 </body>
 </html>

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from django.template import loader
 from django.http import HttpResponse
@@ -11,16 +11,22 @@ from bs4 import BeautifulSoup
 # Create your views here.
 
 def index(request):
-    news_list = News.objects.order_by('-News_CreateDT')[:100]
-    template = loader.get_template('bs4news.html')
-    context = {
-        'news_list': news_list,
-    }
-    return HttpResponse(template.render(context, request))
+    paginator = Paginator(News.objects.all().order_by('-News_CreateDT'), 10)
+    page = request.GET.get('page')
+    print(paginator.get_page(1))
+    try:
+        news_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        news_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        news_list = paginator.page(paginator.num_pages)
+    return render(request, 'bs4news.html', {'news_list': news_list})
 
 
 def scrap(request):
-    url = 'https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=032&listType=title&date=20220130'
+    url = 'https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=032&listType=title'
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"}
     response = requests.get(url, headers=headers)
@@ -63,20 +69,20 @@ def scrap(request):
                     # News_title
                     # News_contents
                     # News_CreateDT
-                #     if(News.objects.filter(
-                #         News_from=articleBy,
-                #         News_title=articleTitle
-                #     )):
-                #         print('duplicated, next article')
-                #     else:
-                #         news_instance = News(
-                #             News_from=articleBy,
-                #             News_title=articleTitle,
-                #             News_contents=articleBody,
-                #             News_CreateDT=inputarticleTime
-                #         )
-                #         news_instance.save()
-                # else:
-                #     print(visitResponse.status_code)
+                    if(News.objects.filter(
+                        News_from=articleBy,
+                        News_title=articleTitle
+                    )):
+                        print('duplicated, next article')
+                    else:
+                        news_instance = News(
+                            News_from=articleBy,
+                            News_title=articleTitle,
+                            News_contents=articleBody,
+                            News_CreateDT=inputarticleTime
+                        )
+                        news_instance.save()
+                else:
+                    print(visitResponse.status_code)
     else:
         print(response.status_code)
