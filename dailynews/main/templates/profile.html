@@ -1,0 +1,223 @@
+{% load static %}
+<html>
+  {% include 'header.html' %}
+  {% include 'topscript.html' %}
+  {% include 'script.html' %}
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        {% include 'sidebar.html' %}
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                {% include 'topbar.html' %}
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Content Row -->
+                    <div class="container rounded bg-white mt-5 mb-5">
+                        <div class="row">
+                            <div class="col-md-3 border-right">
+                                <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+                                    <span class="font-weight-bold">{{user_data.User_Id}}</span>
+                                    <span class="text-black-50">{{user_data.User_Name}}</span>
+                                    <span class="text-black-50" style="font-size: smaller;">최초 접속 : {{user_data.User_CreateDT}}</span>
+                                    <span class="text-black-50" style="font-size: smaller;">최근 접속 : {{user_data.User_RecentDT}}</span>
+                                    <span> </span>
+                                </div>
+                            </div>
+                            <div class="col-md-5 border-right">
+                                <div class="p-3 py-5">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h4 class="text-right">Profile Settings</h4>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-12"><label class="labels">Name</label><input type="text" id="userName" class="form-control" placeholder="name" value="{{user_data.User_Name}}"></div>
+                                        <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" id="userMobileNumber" class="form-control" placeholder="phone number" value="{{user_data.User_MobileNumber}}"></div>
+                                        <div class="col-md-12"><label class="labels">Email ID</label><input type="text" id="userEmail" class="form-control" placeholder="email" value="{{user_data.User_Email}}"></div>
+                                        <div class="col-md-12"><label class="labels">Focus Word</label><input type="text" id="userFocusWord" class="form-control" placeholder="focus word" value="{{user_data.User_Focus_word}}"></div>
+                                        <div class="col-md-12"><label class="labels">Focus Company</label><input type="text" id="userFocusCompany" class="form-control" placeholder="focus company" value="{{user_data.User_Focus_Company}}"></div>
+                                    </div>
+                                    <div class="mt-5 text-center"><button id="btnUpdate" class="btn btn-primary profile-button" type="button">Save Profile</button></div>
+                                    <script>
+                                        $('#btnUpdate').on('click', function(e) {
+                                            if($('#userName').val() == "" ){
+                                                alert('이름을 입력하세요');
+                                                $('#userName').focus();
+                                                return;
+                                            }else if($('#userName').val().length > 50 ){
+                                                alert('이름이 너무 깁니다.')
+                                                $('#userName').focus();
+                                                return;
+                                            }else if($('#userMobileNumber').val().length > 50 ){
+                                                alert('핸드폰 번호가 너무 깁니다.')
+                                                $('#userMobileNumber').focus();
+                                                return;
+                                            }else if($('#userEmail').val().length > 50 ){
+                                                alert('이메일이 너무 깁니다.')
+                                                $('#userEmail').focus();
+                                                return;
+                                            }else if($('#userFocusWord').val().length > 50 ){
+                                                alert('관심 키워드 명이 너무 깁니다.')
+                                                $('#userFocusWord').focus();
+                                                return;
+                                            }else if($('#userFocusCompany').val().length > 50 ){
+                                                alert('관심 뉴스회사 길이가 너무 깁니다.')
+                                                $('#userFocusCompany').focus();
+                                                return;
+                                            }else if($('#currentPassword').val() !== $('#currentPasswordRepeat').val() ){
+                                                alert('비밀번호 재입력이 서로 다릅니다')
+                                                $('#registerPassword').focus();
+                                                return;
+                                            }else{
+                                                var data={
+                                                    userName:$('#userName').val(),
+                                                    userMobileNumber:$('#userMobileNumber').val(),
+                                                    userEmail:$('#userEmail').val(),
+                                                    userFocusWord:$('#userFocusWord').val(),
+                                                    userFocusCompany:$('#userFocusCompany').val(),
+                                                    currentPassword:$('#currentPassword').val(),
+                                            }
+                                            $.ajax({
+                                                type:'POST',
+                                                url:"/requestProfile",
+                                                dataType: "text",
+                                                contentType:'application/json; charset=utf-8',
+                                                data:JSON.stringify(data),
+                                                success : function(data){
+                                                    console.log(data);
+                                                    if(data === "FALSE"){
+                                                        alert("비밀번호를 확인하세요");
+                                                    }else{
+                                                        alert("개인정보가 변경되었습니다.");
+                                                        location.reload();
+                                                    }
+                                                },
+                                                error : function(error){
+                                                    alert("변경 오류");
+                                                    console.log(JSON.stringify(error));
+                                                }
+                                            })
+                                            }
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 py-5">
+                                    <div class="d-flex justify-content-between align-items-center experience"><span>Security Check</span></div><br>
+                                    <div class="col-md-12"><label class="labels">Current Password</label><input type="text" id="currentPassword" class="form-control" placeholder="Current Password" value=""></div> <br>
+                                    <div class="col-md-12"><label class="labels">Current Password Repeat</label><input type="text" id="currentPasswordRepeat" class="form-control" placeholder="Current Password Repeat" value=""></div>
+                                    <div class="mt-5 text-center"><button id="btnDelete" data-toggle="modal" data-target="#changePasswordModal" class="btn btn-primary profile-button" type="button">Change Password</button></div>
+                                    <div class="mt-1 text-center"><button id="btnDelete" data-toggle="modal" data-target="#deleteModal" class="btn btn-Danger profile-button" type="button">Delete Profile</button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- delete Modal-->
+            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Want to Delete Profile?</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">Select "Delete" below if you are "really" want to delete your profile.</div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                        <button class="btn btn-Danger" type="button" id="btnConfirmDelete">Delete</button>
+                        <script>
+                            $('#btnConfirmDelete').on('click', function(e) {
+                             $.ajax({
+                                 type:'POST',
+                                 url:"/deleteProfile",
+                                 dataType: "text",
+                                 contentType:'application/json; charset=utf-8',
+                                 success : function(data){
+                                    alert("삭제 완료");
+                                    location.href = '/';
+                                 },
+                                 error : function(error){
+                                    alert("삭제 오류");
+                                    console.log(JSON.stringify(error));
+                                 }
+                             })
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <!-- password change Modal-->
+            <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Want to Change Password?</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">Select "Change" below if you want to change your password.<br>
+                            <div class="col-md-12"><label class="labels">Current Password</label><input type="text" id="updateCurrentPassword" class="form-control" placeholder="Current Password" value=""></div> <br>
+                            <div class="col-md-12"><label class="labels">Current Password Repeat</label><input type="text" id="updateCurrentPasswordRepeat" class="form-control" placeholder="Current Password Repeat" value=""></div><br>
+                            <div class="col-md-12"><label class="labels">New Password</label><input type="text" id="updateNewPassword" class="form-control" placeholder="New Password" value=""></div>
+                        <div class="mt-1 text-center"><button id="btnDelete" data-toggle="modal" data-target="#deleteModal" class="btn btn-Danger profile-button" type="button">Delete Profile</button></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                            <button class="btn btn-Danger" type="button" id="btnConfirmPasswordChange">Change</button>
+                            <script>
+                                $('#btnConfirmPasswordChange').on('click', function(e) {
+                                    if($('#updateCurrentPassword').val() !== $('#updateCurrentPasswordRepeat').val()){
+                                        alert('비밀번호 재입력이 서로 다릅니다.')
+                                        $('#registerPassword').focus();
+                                        return;
+                                    }else if($('#updateCurrentPassword').val().length > 50 ){
+                                        alert('비밀번호 변경 패스워드의 길이가 너무 깁니다.')
+                                        $('#registerPassword').focus();
+                                        return;
+                                    }else{
+                                        var data={
+                                            currentPassword:$('#updateCurrentPassword').val(),
+                                            updatePassword:$('#updateNewPassword').val(),
+                                        }
+                                        $.ajax({
+                                            type:'POST',
+                                            url:"/requestPasswordChange",
+                                            dataType: "text",
+                                            contentType:'application/json; charset=utf-8',
+                                            data:JSON.stringify(data),
+                                            success : function(data){
+                                                console.log(data);
+                                                if(data === "FALSE"){
+                                                    alert("비밀번호를 확인하세요");
+                                                }else{
+                                                    alert("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
+                                                    location.href = "/";
+                                                }
+                                            },
+                                            error : function(error){
+                                                alert("변경 오류");
+                                                console.log(JSON.stringify(error));
+                                            }
+                                        })
+                                    }
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            {% include 'logout.html' %}
+            {% include 'footer.html' %}
+        </div>
+    </div>
+    
+
+</body>
+</html>

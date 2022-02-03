@@ -5,5 +5,6 @@ from django.db import models
 class News(models.Model):
     News_from = models.CharField(max_length=200)
     News_title = models.CharField(max_length=200)
+    News_company = models.CharField(max_length=200)
     News_contents = models.TextField()
     News_CreateDT = models.DateTimeField('date created')

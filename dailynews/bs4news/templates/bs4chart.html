@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bs4news</title>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/plugins/wordCloud.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+   
+</head>
+<body>
+    <div id="chartdiv"></div>
+    <script>
+        const hexValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+        let hex1 = "#";
+        let hex2 = "#";
+        for (let i = 0; i < 6; i++) { 
+        const index = Math.floor(Math.random() * hexValues.length); 
+        hex1 += hexValues[index];
+        hex2 += hexValues[index];
+        }
+        am4core.useTheme(am4themes_animated);
+        var chart = am4core.create("chartdiv", am4plugins_wordCloud.WordCloud);
+        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+        series.maxCount = 50;
+        series.minWordLength = 2;
+        series.excludeWords = ["경향신문"];
+        series.randomness = 0;
+        series.heatRules.push({
+        "target": series.labels.template,
+        "property": "fill",
+        "min": am4core.color(hex1),
+        "max": am4core.color(hex2),
+        "dataField": "value"
+        });
+        series.events.on("arrangestarted", function(ev) {
+        ev.target.baseSprite.preloader.show(0);
+        });
+
+        series.events.on("arrangeprogress", function(ev) {
+        ev.target.baseSprite.preloader.progress = ev.progress;
+        });
+        series.text = "{{news_data}}";
+    </script>
+</body>
+</html>

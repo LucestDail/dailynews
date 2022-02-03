@@ -1,39 +1,23 @@
-{%load static%}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Daily News</title>
-    {% include 'header.html' %}
-    {% include 'topscript.html' %}
-</head>
+{% load static %}
+<html>
+  {% include 'header.html' %}
 <body id="page-top">
+
     <!-- Page Wrapper -->
     <div id="wrapper">
-        <!-- Sidebar -->
         {% include 'sidebar.html' %}
-        <!-- End of Sidebar -->
-        <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-
             <!-- Main Content -->
             <div id="content">
-
-                <!-- Topbar -->
                 {% include 'topbar.html' %}
-                <!-- End of Topbar -->
-
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Daily News, Where Your Information Starts</h1>
                     </div>
-
                     <!-- Content Row -->
                     <div class="row">
-
                         <!-- Earnings (Monthly) Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-primary shadow h-100 py-2">
@@ -42,7 +26,7 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Total News Collection</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{news_count}}</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">400</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -149,103 +133,6 @@
                                     <div class="chart-area" style="height: 22rem;">
                                         <div id="timegraphdiv" style="height: 100%">
                                         </div>
-                                        <script>
-                                            var dateList = {{ news_data_analysis_date | safe}}
-                                            var countList = {{ news_data_analysis_count | safe}}
-                                            var chartData = [];
-                                            for(var i in dateList.sort()){
-                                                var inputObject = {}
-                                                inputObject.date = new Date(dateList[i]).getTime();
-                                                inputObject.value = countList[i];
-                                                if(i == dateList.length - 1){
-                                                    inputObject.bullet = true;
-                                                }
-                                                chartData.push(inputObject);
-                                            }
-                                            am5.ready(function() {
-                                            var root = am5.Root.new("timegraphdiv");
-                                            root.setThemes([
-                                            am5themes_Animated.new(root)
-                                            ]);
-
-                                            var chart = root.container.children.push(am5xy.XYChart.new(root, {
-                                            panX: true,
-                                            panY: true,
-                                            wheelX: "panX",
-                                            wheelY: "zoomX"
-                                            }));
-                                            chart.get("colors").set("step", 3);
-                                            var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
-                                            cursor.lineY.set("visible", false);
-
-                                            var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-                                            maxDeviation: 0.3,
-                                            baseInterval: {
-                                                timeUnit: "day",
-                                                count: 1
-                                            },
-                                            renderer: am5xy.AxisRendererX.new(root, {}),
-                                            tooltip: am5.Tooltip.new(root, {})
-                                            }));
-
-                                            var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-                                            maxDeviation: 0.3,
-                                            renderer: am5xy.AxisRendererY.new(root, {})
-                                            }));
-
-                                            var series = chart.series.push(am5xy.LineSeries.new(root, {
-                                            name: "Series 1",
-                                            xAxis: xAxis,
-                                            yAxis: yAxis,
-                                            valueYField: "value",
-                                            valueXField: "date",
-                                            tooltip: am5.Tooltip.new(root, {
-                                                labelText: "{valueY}"
-                                            })
-                                            }));
-                                            series.strokes.template.setAll({
-                                            strokeWidth: 2,
-                                            strokeDasharray: [3, 3]
-                                            });
-
-                                            series.bullets.push(function(root, series, dataItem) {
-                                            if (dataItem.dataContext.bullet) {
-                                                var container = am5.Container.new(root, {});
-                                                var circle0 = container.children.push(am5.Circle.new(root, {
-                                                radius: 5,
-                                                fill: am5.color(0xff0000)
-                                                }));
-                                                var circle1 = container.children.push(am5.Circle.new(root, {
-                                                radius: 5,
-                                                fill: am5.color(0xff0000)
-                                                }));
-
-                                                circle1.animate({
-                                                key: "radius",
-                                                to: 20,
-                                                duration: 1000,
-                                                easing: am5.ease.out(am5.ease.cubic),
-                                                loops: Infinity
-                                                });
-                                                circle1.animate({
-                                                key: "opacity",
-                                                to: 0,
-                                                from: 1,
-                                                duration: 1000,
-                                                easing: am5.ease.out(am5.ease.cubic),
-                                                loops: Infinity
-                                                });
-
-                                                return am5.Bullet.new(root, {
-                                                sprite: container
-                                                })
-                                            }
-                                            })
-                                            series.data.setAll(chartData);
-                                            series.appear(1000);
-                                            chart.appear(1000, 100);
-                                            }); 
-                                        </script>
                                     </div>
                                 </div>
                             </div>
@@ -276,63 +163,16 @@
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div id="chartdiv" style="height: 22rem;"></div>
-                                    <script>
-                                        const hexValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
-                                        let hex1 = "#";
-                                        let hex2 = "#";
-                                        for (let i = 0; i < 6; i++) { 
-                                        const index = Math.floor(Math.random() * hexValues.length); 
-                                        hex1 += hexValues[index];
-                                        hex2 += hexValues[index];
-                                        }
-                                        am4core.useTheme(am4themes_animated);
-                                        var chart = am4core.create("chartdiv", am4plugins_wordCloud.WordCloud);
-                                        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
-                                        series.maxCount = 50;
-                                        series.minWordLength = 2;
-                                        series.excludeWords = ["경향신문"];
-                                        series.randomness = 0;
-                                        series.heatRules.push({
-                                        "target": series.labels.template,
-                                        "property": "fill",
-                                        "min": am4core.color(hex1),
-                                        "max": am4core.color(hex2),
-                                        "dataField": "value"
-                                        });
-                                        series.events.on("arrangestarted", function(ev) {
-                                        ev.target.baseSprite.preloader.show(0);
-                                        });
-
-                                        series.events.on("arrangeprogress", function(ev) {
-                                        ev.target.baseSprite.preloader.progress = ev.progress;
-                                        });
-                                        series.text = "{{news_data}}";
-                                    </script>
                                 </div>
                             </div>
                         </div>
                     </div>
                 <!-- /.container-fluid -->
-
             </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            {% include 'footer.html' %}
-            <!-- End of Footer -->
-
+                {% include 'footer.html' %}
         </div>
-        <!-- End of Content Wrapper -->
-
     </div>
-    <!-- End of Page Wrapper -->
 
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-    {% include 'logout.html' %}
-    {% include 'script.html' %}
+
 </body>
-
 </html>

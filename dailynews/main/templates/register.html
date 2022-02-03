@@ -10,7 +10,15 @@
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
+    <!-- Bootstrap core JavaScript-->
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
+    <!-- Core plugin JavaScript-->
+    <script src="{% static 'jquery-easing/jquery.easing.min.js'}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
     <!-- Custom styles for this template-->
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
@@ -50,9 +58,69 @@
                                             id="registerPasswordRepeat" placeholder="Repeat Password">
                                     </div>
                                 </div>
-                                <a href="login" class="btn btn-primary btn-user btn-block">
-                                    Register Account
-                                </a>
+                                <input id="btnRegisterAccount" type="button" class="btn btn-primary btn-user btn-block" value="Register Account">
+                                        <script>
+                                            $('#btnRegisterAccount').on('click', function(e) {
+                                                if($('#registerId').val() == "" ){
+                                                    alert('아이디를 입력하세요');
+                                                    $('#registerId').focus();
+                                                    return;
+                                                }else if($('#registerId').val().length > 50 ){
+                                                    alert('아이디가 너무 깁니다.')
+                                                    $('#registerId').focus();
+                                                    return;
+                                                }else if($('#registerPassword').val() == "" ){
+                                                    alert('비밀번호를 입력하세요')
+                                                    $('#registerPassword').focus();
+                                                    return;
+                                                }else if($('#registerPassword').val().length > 50 ){
+                                                    alert('비밀번호가 너무 깁니다.')
+                                                    $('#registerPassword').focus();
+                                                    return;
+                                                }else if($('#registerPassword').val() !== $('#registerPasswordRepeat').val() ){
+                                                    alert('비밀번호 재입력이 서로 다릅니다')
+                                                    $('#registerPassword').focus();
+                                                    return;
+                                                }else if($('#registerName').val() == "" ){
+                                                    alert('이름을 입력하세요')
+                                                    $('#registerName').focus();
+                                                    return;
+                                                }else if($('#registerName').val().length > 50 ){
+                                                    alert('이름이 너무 깁니다.')
+                                                    $('#registerName').focus();
+                                                    return;
+                                                }else{
+                                                    var data={
+                                                    registerId:$('#registerId').val(),
+                                                    registerName:$('#registerName').val(),
+                                                    registerPassword:$('#registerPassword').val(),
+                                                    registerPasswordRepeat:$('#registerPasswordRepeat').val()
+                                                }
+                                                $.ajax({
+                                                    type:'POST',
+                                                    url:"/requestRegister",
+                                                    dataType: "text",
+                                                    contentType:'application/json; charset=utf-8',
+                                                    data:JSON.stringify(data),
+                                                    success : function(data){
+                                                        console.log(data);
+                                                        if(data === "TRUE"){
+                                                            alert("가입 성공!");
+                                                            location.href="/";
+                                                        }else{
+                                                            alert("가입 실패");
+                                                            // location.href="/";
+                                                        }
+                                                    },
+                                                    error : function(error){
+                                                        alert("가입 오류");
+                                                        // location.href="/";
+                                                        console.log(JSON.stringify(error));
+                                                    }
+                                                })
+                                                }
+                                            });
+                                        </script>
                             </form>
                             <hr>
                             <div class="text-center">
@@ -68,17 +136,6 @@
         </div>
 
     </div>
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="{% static 'jquery-easing/jquery.easing.min.js'}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
-
 </body>
 
 </html>
