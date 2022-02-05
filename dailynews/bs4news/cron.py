@@ -1,6 +1,7 @@
 import traceback
 from datetime import datetime, timedelta
-from .models import News
+from .models import News, News_Analysis_Raw
+from konlpy.tag import Okt
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -67,7 +68,8 @@ def scrap_every_minute():
                                 # News_CreateDT
                                 if (News.objects.filter(
                                         News_from=articleBy,
-                                        News_title=articleTitle
+                                        News_title=articleTitle,
+                                        News_company=articleCompany
                                 )):
                                     print('duplicated, next article')
                                 else:
@@ -102,3 +104,45 @@ def scrap_every_minute():
         print('exception from outer loop')
         pass
     print('django bs4news crontab ended -------------------')
+
+
+def news_analysis_create_morphs():
+    print('django bs4news news_analysis_create_morphs crontab started -------------------')
+    current_datetime = datetime.now()
+    current_minute = current_datetime.minute
+    convert_minute_company = str(current_minute).zfill(3)
+    target_company = convert_minute_company
+    okt = Okt()
+    from_date = current_datetime - timedelta(days=1)
+    to_date = current_datetime
+    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date), News_Company=target_company)
+    for target_news_element in target_news_data:
+        target_news_morphs = okt.nouns(target_news_element.News_contents)
+        target_news_morphs = [n for n in target_news_morphs if len(n) > 1]
+        save_morphs = ''
+        count = 0
+        success = 0
+        fail = 0
+        for morphs_element in target_news_morphs:
+            save_morphs += morphs_element
+            count += 1
+            if count < len(target_news_morphs):
+                save_morphs += ","
+        if (News_Analysis_Raw.objects.filter(
+                News_Analysis_From=target_news_element.News_from,
+                News_Analysis_Title=target_news_element.News_title,
+                News_Analysis_Company=target_news_element.News_company
+        )):
+            fail += 1
+        else:
+            news_analysis_morphs = News_Analysis_Raw(
+                News_Analysis_Company=target_news_element.News_company,
+                News_Analysis_Title=target_news_element.News_title,
+                News_Analysis_From=target_news_element.News_from,
+                News_Morphs=save_morphs,
+                News_Analysis_CreateDT=target_news_element.News_CreateDT,
+            )
+            news_analysis_morphs.save()
+            success += 1
+        print(count + " / " + success + " / " + fail)
+    print('django bs4news news_analysis_create_morphs crontab ended -------------------')

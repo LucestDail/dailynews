@@ -3,6 +3,7 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
+from konlpy.tag import Okt
 
 
 url = 'https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=032&listType=title&date=20220130'
@@ -36,8 +37,13 @@ if response.status_code == 200:
                 textTimeHour = datetime.strptime(textTime.split()[2], '%H:%M')
                 print(timedelta(hours=12) + textTimeHour)
                 print(textTimeHour)
+                okt = Okt()
+                news_content = okt.nouns(articleBody.text.strip())
+                news_content = [n for n in news_content if len(n) > 1]
                 time.sleep(5)
             else :
                 print(visitResponse.status_code)
 else :
     print(response.status_code)
+
+

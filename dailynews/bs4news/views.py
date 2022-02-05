@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from konlpy.tag import Okt
-from .models import News
+from .models import News, News_Company, News_Analysis_Raw
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -30,7 +30,6 @@ def chart(request):
 
 def graph(request):
     focus_word = '코로나'
-    okt = Okt()
     news_data_analysis_date = []
     news_data_analysis_count = []
     for i in range(0, 7):
@@ -39,14 +38,11 @@ def graph(request):
         from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
         from_date = datetime.combine(from_date, datetime.min.time())
         to_date = datetime.combine(from_date, datetime.max.time())
-        news_data_date = News.objects.filter(News_CreateDT__range=(from_date, to_date))
+        news_data_date = News_Analysis_Raw.objects.filter(News_CreateDT__range=(from_date, to_date))
         for news_element in news_data_date:
-            news_content = okt.nouns(news_element.News_contents)
             news_content = [n for n in news_content if n == focus_word]
         news_data_analysis_date.append(input_date)
         news_data_analysis_count.append(len(news_content))
-        news_content = {}
-
     return render(request, 'bs4graph.html', {'focus_word': focus_word,
                                              'news_data_analysis_date': news_data_analysis_date,
                                              'news_data_analysis_count': news_data_analysis_count
@@ -146,3 +142,99 @@ def scrap(request):
             print("end work")
     except Exception:
         pass
+
+
+def company(request):
+    News_Company_Data = News_Company.objects.all()
+    paginator = Paginator(News_Company_Data, 10)
+    page = request.GET.get('page')
+    try:
+        news_company_page_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        news_company_page_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        news_company_page_list = paginator.page(paginator.num_pages)
+    return render(request, 'bs4company.html', {'news_company_list': news_company_page_list})
+
+
+def create_morphs(request):
+    if request.method == 'GET' and 'company' in request.GET and 'date' in request.GET:
+        target_company = request.GET['company']
+        current_datetime = request.GET['date']
+    elif request.method == 'GET' and 'company' in request.GET:
+        target_company = request.GET['company']
+        current_datetime = datetime.now()
+    else:
+        current_datetime = datetime.now()
+        current_minute = current_datetime.minute
+        convert_minute_company = str(current_minute).zfill(3)
+        target_company = convert_minute_company
+    print('django bs4news news_analysis_every_hour crontab started -------------------')
+    okt = Okt()
+    format = '%Y%m%d'
+    target_date = datetime.strftime(current_datetime, format)
+    from_date = current_datetime - timedelta(days=1)
+    to_date = current_datetime
+    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date))
+    print(len(target_news_data))
+    for target_news_element in target_news_data:
+        target_news_morphs = okt.nouns(target_news_element.News_contents)
+        target_news_morphs = [n for n in target_news_morphs if len(n) > 1]
+        save_morphs = ''
+        count = 0
+        for morphs_element in target_news_morphs:
+            save_morphs += morphs_element
+            count += 1
+            if count < len(target_news_morphs):
+                save_morphs += ","
+        if (News_Analysis_Raw.objects.filter(
+                News_Analysis_From=target_news_element.News_from,
+                News_Analysis_Title=target_news_element.News_title,
+                News_Analysis_Company=target_news_element.News_company
+        )):
+            print('duplicated, next article')
+        else:
+            news_analysis_morphs = News_Analysis_Raw(
+                News_Analysis_Company=target_news_element.News_company,
+                News_Analysis_Title=target_news_element.News_title,
+                News_Analysis_From=target_news_element.News_from,
+                News_Morphs=save_morphs,
+                News_Analysis_CreateDT=target_news_element.News_CreateDT,
+            )
+            news_analysis_morphs.save()
+            print('save success')
+    print('django bs4news news_analysis_every_hour crontab ended -------------------')
+
+
+def index_morphs(request):
+    if request.method == 'GET' and 'company' in request.GET and 'date' in request.GET:
+        target_company = request.GET['company']
+        current_datetime = request.GET['date']
+    elif request.method == 'GET' and 'company' in request.GET:
+        target_company = request.GET['company']
+        current_datetime = datetime.now()
+    else:
+        current_datetime = datetime.now()
+        # current_minute = current_datetime.minute
+        # convert_minute_company = str(current_minute).zfill(3)
+        # target_company = convert_minute_company
+        target_company = '032'
+    print('django bs4news news_analysis_every_hour crontab started -------------------')
+    format = '%Y%m%d'
+    target_date = datetime.strftime(current_datetime, format)
+    # check_date = current_datetime - timedelta(hours=12)
+    # input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
+    from_date = current_datetime - timedelta(hours=1)
+    to_date = current_datetime
+    print(target_company)
+    print(target_date)
+    print(from_date)
+    print(to_date)
+    target_news_data = News_Analysis_Raw.objects.filter(News_Analysis_Company=target_company)
+    for target_news_element in target_news_data:
+        target_contents = target_news_element.News_Morphs.split(',')
+        print(target_contents)
+
+

@@ -144,7 +144,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CronTabs Job Field
 
 CRONJOBS = [
+
     ('* * * * *', 'dailynews.cron.scrap_every_minute', '>> cron.log'),
     ('* * * * *', 'bs4news.cron.scrap_every_minute', '>> bs4cron.log'),
+    ('* * * * *', 'bs4news.cron.news_analysis_create_morphs', '>> bs4cron.log'),
     ('* * * * *', 'main.cron.scrap_every_minute', '>> main4cron.log'),
 ]
