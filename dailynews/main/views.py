@@ -114,6 +114,8 @@ def requestRegister(request):
             User_Name=registerName,
             User_Password=registerPassword,
             User_Info='안녕하세요',
+            User_Focus_Copmpany='연합뉴스',
+            User_Focus_word='코로나',
             User_CreateDT=datetime.now(),
             User_RecentDT=datetime.now()
         )
