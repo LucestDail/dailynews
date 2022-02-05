@@ -178,9 +178,9 @@ def create_morphs(request):
     # convert_minute_company = str(current_minute).zfill(3)
     # target_company = convert_minute_company
     okt = Okt()
-    from_date = current_datetime - timedelta(days=1)
+    from_date = current_datetime - timedelta(days=15)
     to_date = current_datetime
-    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date), News_company=target_company)
+    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date))
     print('target data count===')
     print(len(target_news_data))
     target = 0

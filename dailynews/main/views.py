@@ -74,14 +74,17 @@ def index(request):
 
         news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
                                                           News_Analysis_Company=focus_company)
+        news_data_analysis_count_num = 0
         for news_element in news_data_date:
             news_content = news_element.News_Morphs.split(',')
-            news_content = [n for n in news_content if focus_word in n]
+            for n in news_content:
+                if focus_word in n:
+                    news_data_analysis_count_num += 1
+
         news_data_analysis_date.append(input_date)
-        news_data_analysis_count.append(len(news_content))
+        news_data_analysis_count.append(news_data_analysis_count_num)
         print(news_data_analysis_date)
         print(news_data_analysis_count)
-        news_content = {}
 
     return render(request, 'index.html', {'news_count': obj.Dashboard_Total_News_Count,
                                           'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
