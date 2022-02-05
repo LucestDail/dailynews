@@ -171,19 +171,22 @@ def create_morphs(request):
         current_minute = current_datetime.minute
         convert_minute_company = str(current_minute).zfill(3)
         target_company = convert_minute_company
-    print('django bs4news news_analysis_every_hour crontab started -------------------')
+    print('django bs4news news_analysis_create_morphs crontab started -------------------')
+    current_datetime = datetime.now()
+    current_minute = current_datetime.minute
+    convert_minute_company = str(current_minute).zfill(3)
+    target_company = convert_minute_company
     okt = Okt()
-    format = '%Y%m%d'
-    target_date = datetime.strftime(current_datetime, format)
     from_date = current_datetime - timedelta(days=1)
     to_date = current_datetime
-    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date))
-    print(len(target_news_data))
+    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date), News_company=target_company)
     for target_news_element in target_news_data:
         target_news_morphs = okt.nouns(target_news_element.News_contents)
         target_news_morphs = [n for n in target_news_morphs if len(n) > 1]
         save_morphs = ''
         count = 0
+        success = 0
+        fail = 0
         for morphs_element in target_news_morphs:
             save_morphs += morphs_element
             count += 1
@@ -194,7 +197,7 @@ def create_morphs(request):
                 News_Analysis_Title=target_news_element.News_title,
                 News_Analysis_Company=target_news_element.News_company
         )):
-            print('duplicated, next article')
+            fail += 1
         else:
             news_analysis_morphs = News_Analysis_Raw(
                 News_Analysis_Company=target_news_element.News_company,
@@ -204,8 +207,9 @@ def create_morphs(request):
                 News_Analysis_CreateDT=target_news_element.News_CreateDT,
             )
             news_analysis_morphs.save()
-            print('save success')
-    print('django bs4news news_analysis_every_hour crontab ended -------------------')
+            success += 1
+        print(count + " / " + success + " / " + fail)
+    print('django bs4news news_analysis_create_morphs crontab ended -------------------')
 
 
 def index_morphs(request):

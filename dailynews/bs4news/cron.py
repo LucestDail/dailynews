@@ -115,7 +115,7 @@ def news_analysis_create_morphs():
     okt = Okt()
     from_date = current_datetime - timedelta(days=1)
     to_date = current_datetime
-    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date), News_Company=target_company)
+    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date), News_company=target_company)
     for target_news_element in target_news_data:
         target_news_morphs = okt.nouns(target_news_element.News_contents)
         target_news_morphs = [n for n in target_news_morphs if len(n) > 1]
