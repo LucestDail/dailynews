@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from bs4news.models import News
-from main.models import User
+from bs4news.models import News, News_Analysis_Raw, News_Company
+from main.models import User, Dashboard
 from datetime import datetime, timedelta
 from konlpy.tag import Okt
 from django.views.decorators.csrf import csrf_exempt
@@ -43,23 +43,26 @@ def index(request):
         return render(request, 'login.html')
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
-    focus_company_name = '경향신문'
-    focus_company = '032'
-    news_data_all = News.objects.filter(News_company=focus_company)
-    news_count = len(news_data_all)
-    okt = Okt()
-    news_data_morphs = []
-    for news_element in news_data_all:
-        news_content = okt.nouns(news_element.News_contents)
-        news_content = [n for n in news_content if len(n) > 1]
-        news_data_morphs = news_data_morphs + news_content
-
+    obj = Dashboard.objects.last()
+    focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
+    focus_company_name = focus_object.News_Company_Name
+    focus_company = focus_object.News_Company_Code
+    wc_check_date = datetime.today() - timedelta(days=1)
+    wc_input_date = str(wc_check_date.year) + '-' + str(wc_check_date.month) + '-' + str(wc_check_date.day)
+    wc_from_date = datetime.strptime(wc_input_date, '%Y-%m-%d').date()
+    wc_from_date = datetime.combine(wc_from_date, datetime.min.time())
+    wc_to_date = datetime.combine(wc_from_date, datetime.max.time())
+    news_data_all = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(wc_from_date, wc_to_date),
+                                                     News_Analysis_Company=focus_company)
     news_data_string = ''
-    for news_data_morphs_element in news_data_morphs:
-        news_data_string += ' '
-        news_data_string += news_data_morphs_element
+    for news_element in news_data_all:
+        news_content = news_element.News_Morphs.split(',')
+        for news_data_morphs_element in news_content:
+            if len(news_data_morphs_element) > 1:
+                news_data_string += ' '
+                news_data_string += news_data_morphs_element
 
-    focus_word = '것'
+    focus_word = userData.User_Focus_word
     news_data_analysis_date = []
     news_data_analysis_count = []
     for i in range(0, 7):
@@ -68,18 +71,23 @@ def index(request):
         from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
         from_date = datetime.combine(from_date, datetime.min.time())
         to_date = datetime.combine(from_date, datetime.max.time())
-        news_data_date = News.objects.filter(News_CreateDT__range=(from_date, to_date))
+
+        news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                          News_Analysis_Company=focus_company)
         for news_element in news_data_date:
-            news_content = okt.nouns(news_element.News_contents)
-            news_content = [n for n in news_content if n in focus_word]
+            news_content = news_element.News_Morphs.split(',')
+            news_content = [n for n in news_content if focus_word in n]
         news_data_analysis_date.append(input_date)
         news_data_analysis_count.append(len(news_content))
         print(news_data_analysis_date)
         print(news_data_analysis_count)
         news_content = {}
 
-    return render(request, 'index.html', {'news_count': news_count,
+    return render(request, 'index.html', {'news_count': obj.Dashboard_Total_News_Count,
+                                          'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
+                                          'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
                                           'news_data': news_data_string,
+                                          'today_news_count': obj.Dashboard_Today_count,
                                           'focus_company_name': focus_company_name,
                                           'focus_word': focus_word,
                                           'news_data_analysis_date': news_data_analysis_date,
@@ -196,3 +204,33 @@ def requestPasswordChange(request):
         print("password not equal")
         result = "FALSE"
     return HttpResponse(result, content_type='text')
+
+
+def dashboard(request):
+    print('django main dashboard_every_minute crontab started -------------------')
+    news_data_count = News.objects.all()
+    news_data_count_input = len(news_data_count)
+    print(news_data_count_input)
+    news_analysis_count_data = News_Analysis_Raw.objects.all()
+    news_analysis_count = len(news_analysis_count_data)
+    print(news_analysis_count)
+    news_analysis_rate = round((news_analysis_count / news_data_count_input) * 100)
+    print(news_analysis_rate)
+    today_check_date = datetime.today() - timedelta(days=1)
+    today_input_date = str(today_check_date.year) + '-' + str(today_check_date.month) + '-' + str(today_check_date.day)
+    today_from_date = datetime.strptime(today_input_date, '%Y-%m-%d').date()
+    today_from_date = datetime.combine(today_from_date, datetime.min.time())
+    today_to_date = datetime.combine(today_from_date, datetime.max.time())
+    today_news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(today_from_date,
+                                                                                           today_to_date))
+    today_news_date_count = len(today_news_data_date)
+    print(today_news_date_count)
+    Dashboard_instance = Dashboard(
+        Dashboard_Total_News_Count=news_data_count_input,
+        Dashboard_Total_Analysis_Count=news_analysis_count,
+        Dashboard_Total_Analysis_Rate=news_analysis_rate,
+        Dashboard_Today_count=today_news_date_count,
+        Dashboard_CreateDT=datetime.now(),
+    )
+    Dashboard_instance.save()
+    print('django main dashboard_every_minute crontab started -------------------')

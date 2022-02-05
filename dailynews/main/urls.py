@@ -15,4 +15,5 @@ urlpatterns = [
     path('requestProfile', views.requestProfile),
     path('deleteProfile', views.deleteProfile),
     path('requestPasswordChange', views.requestPasswordChange),
+    path('dashboard', views.dashboard),
 ]
