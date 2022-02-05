@@ -86,6 +86,7 @@ def index(request):
         print(news_data_analysis_date)
         print(news_data_analysis_count)
 
+    news_data_analysis_count.reverse()
     return render(request, 'index.html', {'news_count': obj.Dashboard_Total_News_Count,
                                           'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
                                           'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
