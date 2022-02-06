@@ -16,4 +16,5 @@ urlpatterns = [
     path('deleteProfile', views.deleteProfile),
     path('requestPasswordChange', views.requestPasswordChange),
     path('dashboard', views.dashboard),
+    path('requestFocusData', views.requestFocusData, name='requestFocusData'),
 ]

@@ -1,8 +1,13 @@
 {% load static %}
-<html>
-  {% include 'header.html' %}
-  {% include 'topscript.html' %}
-  {% include 'script.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Daily News</title>
+    {% include 'header.html' %}
+    {% include 'topscript.html' %}
+    {% include 'script.html' %}
+</head>
 <body id="page-top">
 
     <!-- Page Wrapper -->
@@ -36,7 +41,19 @@
                                         <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" id="userMobileNumber" class="form-control" placeholder="phone number" value="{{user_data.User_MobileNumber}}"></div>
                                         <div class="col-md-12"><label class="labels">Email ID</label><input type="text" id="userEmail" class="form-control" placeholder="email" value="{{user_data.User_Email}}"></div>
                                         <div class="col-md-12"><label class="labels">Focus Word</label><input type="text" id="userFocusWord" class="form-control" placeholder="focus word" value="{{user_data.User_Focus_word}}"></div>
-                                        <div class="col-md-12"><label class="labels">Focus Company</label><input type="text" id="userFocusCompany" class="form-control" placeholder="focus company" value="{{user_data.User_Focus_Company}}"></div>
+                                        <!-- <div class="col-md-12"><label class="labels">Focus Company</label><input type="text" id="userFocusCompany" class="form-control" placeholder="focus company" value="{{user_data.User_Focus_Company}}"></div> -->
+                                        <div class="col-md-12">
+                                            <label class="labels">Focus Company</label>
+                                            <select class="form-control" aria-label="Default select example" id="userFocusCompany">
+                                                {% for company in company_data %}
+                                                {% if company.News_Company_Name == user_data.User_Focus_Company%}
+                                                <option selected value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% else %}
+                                                <option value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="mt-5 text-center"><button id="btnUpdate" class="btn btn-primary profile-button" type="button">Save Profile</button></div>
                                     <script>
@@ -61,10 +78,6 @@
                                                 alert('관심 키워드 명이 너무 깁니다.')
                                                 $('#userFocusWord').focus();
                                                 return;
-                                            }else if($('#userFocusCompany').val().length > 50 ){
-                                                alert('관심 뉴스회사 길이가 너무 깁니다.')
-                                                $('#userFocusCompany').focus();
-                                                return;
                                             }else if($('#currentPassword').val() !== $('#currentPasswordRepeat').val() ){
                                                 alert('비밀번호 재입력이 서로 다릅니다')
                                                 $('#registerPassword').focus();
@@ -75,7 +88,7 @@
                                                     userMobileNumber:$('#userMobileNumber').val(),
                                                     userEmail:$('#userEmail').val(),
                                                     userFocusWord:$('#userFocusWord').val(),
-                                                    userFocusCompany:$('#userFocusCompany').val(),
+                                                    userFocusCompany:$('#userFocusCompany option:selected').val(),
                                                     currentPassword:$('#currentPassword').val(),
                                             }
                                             $.ajax({
@@ -213,11 +226,10 @@
                     </div>
                 </div>
                 </div>
-            {% include 'logout.html' %}
             {% include 'footer.html' %}
         </div>
     </div>
-    
-
+    {% include 'logout.html' %}
+    {% include 'script.html' %}
 </body>
 </html>

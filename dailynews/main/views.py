@@ -153,7 +153,9 @@ def initPassword(request):
 def profile(request):
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
-    return render(request, 'profile.html', {'user_data': userData})
+    company_data = News_Company.objects.all()
+    return render(request, 'profile.html', {'user_data': userData,
+                                            'company_data': company_data})
 
 
 @csrf_exempt
@@ -240,3 +242,7 @@ def dashboard(request):
     )
     Dashboard_instance.save()
     print('django main dashboard_every_minute crontab started -------------------')
+
+
+def requestFocusData(request):
+    return render(request, 'requestFocusData.html')
