@@ -255,8 +255,7 @@
                         <div class="col-xl-4 col-lg-5">
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">관심 뉴스 워드 클라우드 ( {{ focus_company_name }} )</h6>
                                     <div class="dropdown no-arrow">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
@@ -308,10 +307,52 @@
                                         });
                                         series.data = [{{news_data | safe}}];
                                         series.dataFields.word = "tag";
-                                        series.dataFields.value = "weight"; 
+                                        series.dataFields.value = "weight";
+                                        console.log({{ news_data_analysis_counter_list | safe}});
+                                        console.log({{ news_data_analysis_counter_word | safe}});
+                                        console.log({{ news_data_analysis_counter_value | safe}});
                                     </script>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="card shadow mb-4 d-flex flex-row" style="width:100%">
+                        {% for a, b in news_data_analysis_counter_list %}{% for date in news_data_analysis_date reversed %}
+                        {% if forloop.counter == forloop.parentloop.counter %}
+                        {% if forloop.first %}
+                        {% else %}
+                            <div class="col-xl-2">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" colspan="2">{{date}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center" scope="col">키워드</th>
+                                            <th class="text-center" scope="col">비율</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for aa in a %}{% for bb in b %}
+                                    {% if forloop.counter == forloop.parentloop.counter %}
+                                        <tr>
+                                        {% if aa == focus_word %}
+                                            <td class="table-primary text-center">{{aa}}</td>
+                                            <td class="table-primary text-center">{{bb}}</td>
+                                        {% else%}
+                                            <td class="text-center">{{aa}}</td>
+                                            <td class="text-center">{{bb}}</td>
+                                        {% endif %}
+                                        </tr>
+                                    {% endif %}
+                                    {% endfor %} {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}{% endfor %}
                         </div>
                     </div>
                 <!-- /.container-fluid -->

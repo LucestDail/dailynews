@@ -10,6 +10,7 @@ import json
 from django.http import HttpResponse
 from collections import Counter
 import json
+import math
 
 
 def basicTemplates(request):
@@ -47,36 +48,13 @@ def index(request):
     focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
     focus_company_name = focus_object.News_Company_Name
     focus_company = focus_object.News_Company_Code
-
-    wc_check_date = datetime.today() - timedelta(days=1)
-    wc_input_date = str(wc_check_date.year) + '-' + str(wc_check_date.month) + '-' + str(wc_check_date.day)
-    wc_from_date = datetime.strptime(wc_input_date, '%Y-%m-%d').date()
-    wc_from_date = datetime.combine(wc_from_date, datetime.min.time())
-    wc_to_date = datetime.combine(wc_from_date, datetime.max.time())
-    news_data_all = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(wc_from_date, wc_to_date),
-                                                     News_Analysis_Company=focus_company)
-    wc_news_data_list = []
-    for news_element in news_data_all:
-        news_content = news_element.News_Morphs.split(',')
-        for news_data_morphs_element in news_content:
-            if len(news_data_morphs_element) > 1:
-                wc_news_data_list.append(news_data_morphs_element)
-
-    wc_result = Counter(wc_news_data_list)
-    wc_most_word_50 = wc_result.most_common(50)
-    wc_most_word_50_jsonStr = ''
-    for wc_most_word_50_element in wc_most_word_50:
-        wc_most_word_50_jsonStr += '{"tag":"'
-        wc_most_word_50_jsonStr += str(wc_most_word_50_element[0])
-        wc_most_word_50_jsonStr += '",'
-        wc_most_word_50_jsonStr += '"weight":'
-        wc_most_word_50_jsonStr += str(wc_most_word_50_element[1])
-        wc_most_word_50_jsonStr += '},'
-    print(wc_most_word_50_jsonStr)
-
     focus_word = userData.User_Focus_word
     news_data_analysis_date = []
     news_data_analysis_count = []
+    news_data_analysis_counter = []
+    news_data_analysis_ratio = []
+    wc_news_data_list = []
+    temp_save = []
     for i in range(0, 7):
         check_date = datetime.today() - timedelta(days=i)
         input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
@@ -89,16 +67,47 @@ def index(request):
         news_data_analysis_count_num = 0
         for news_element in news_data_date:
             news_content = news_element.News_Morphs.split(',')
-            for n in news_content:
-                if focus_word in n:
+            for news_data_morphs_element in news_content:
+                if focus_word in news_data_morphs_element:
                     news_data_analysis_count_num += 1
-
+                if i == 1:
+                    if len(news_data_morphs_element) > 1:
+                        wc_news_data_list.append(news_data_morphs_element)
+                if len(news_data_morphs_element) > 1:
+                    temp_save.append(news_data_morphs_element)
+        temp_result = Counter(temp_save)
+        temp_result_10_ratio = [(i, temp_result[i] / len(temp_save) * 100.0) for i, count in temp_result.most_common(10)]
+        news_data_analysis_counter.append(temp_result_10_ratio)
+        news_data_analysis_ratio.append(temp_result_10_ratio)
         news_data_analysis_date.append(input_date)
         news_data_analysis_count.append(news_data_analysis_count_num)
-        print(news_data_analysis_date)
-        print(news_data_analysis_count)
-
+    news_data_analysis_counter.reverse()
     news_data_analysis_count.reverse()
+    news_data_analysis_ratio.reverse()
+    news_data_analysis_counter_word = []
+    news_data_analysis_counter_value = []
+    for news_data_analysis_counter_element in news_data_analysis_counter:
+        counter_value = []
+        counter_word = []
+        for n in news_data_analysis_counter_element:
+            counter_word.append(n[0])
+            counter_value.append(round(n[1],2))
+        news_data_analysis_counter_word.append(counter_word)
+        news_data_analysis_counter_value.append(counter_value)
+
+    news_data_analysis_counter_list = list(zip(news_data_analysis_counter_word, news_data_analysis_counter_value))
+
+    wc_result = Counter(wc_news_data_list)
+    wc_most_word_50 = wc_result.most_common(50)
+    wc_most_word_50_jsonStr = ''
+    for wc_most_word_50_element in wc_most_word_50:
+        wc_most_word_50_jsonStr += '{"tag":"'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[0])
+        wc_most_word_50_jsonStr += '",'
+        wc_most_word_50_jsonStr += '"weight":'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[1])
+        wc_most_word_50_jsonStr += '},'
+
     return render(request, 'index.html', {'news_count': obj.Dashboard_Total_News_Count,
                                           'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
                                           'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
@@ -107,7 +116,8 @@ def index(request):
                                           'focus_company_name': focus_company_name,
                                           'focus_word': focus_word,
                                           'news_data_analysis_date': news_data_analysis_date,
-                                          'news_data_analysis_count': news_data_analysis_count
+                                          'news_data_analysis_count': news_data_analysis_count,
+                                          'news_data_analysis_counter_list': news_data_analysis_counter_list
                                           })
 
 
