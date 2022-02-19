@@ -20,10 +20,45 @@
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">데이터 정책</h1>
+                        <h1 class="h3 mb-0 text-gray-800">데이터관리 정책</h1>
                     </div>
                     <!-- Content Row -->
                     <div class="row">
+                        <div class="accordion" id="accordionExample" style="width: 100%;">
+                          {% for item in policy_list %}
+                          <div class="card">
+                            <div class="card-header" id="heading{{item.id}}">
+                              <h5 class="mb-0">
+                                <button style="width: 100%;" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{item.id}}" aria-expanded="true" aria-controls="collapse{{item.id}}">
+                                    <span style="float: left;">{{item.Noticeboard_Title}} [시행일 : {{item.Noticeboard_CreateDT}}]</span>
+                                    <span style="float: right;">[최종 변경일자 : {{item.Noticeboard_UpdateDT}}]</span>
+                                </button>
+                              </h5>
+                            </div>
+                            <div id="collapse{{item.id}}" class="collapse" aria-labelledby="heading{{item.id}}" data-parent="#accordionExample">
+                              <div class="card-body">
+                                  {{item.Noticeboard_Content|safe}}
+                                </div>
+                            </div>
+                          </div>
+                          {% endfor %}
+                    </div>
+                    <div class="row" style="width: 100%; justify-content: center;">
+                        <div class="pagination" style="width: 100%; justify-content: center;">
+                            <span class="step-links">
+                                {% if policy_list.has_previous %}
+                                    <a href="?page={{ policy_list.previous_page_number }}">previous</a>
+                                {% endif %}
+                        
+                                <span class="current">
+                                    Page {{ policy_list.number }} of {{ policy_list.paginator.num_pages }}.
+                                </span>
+                        
+                                {% if policy_list.has_next %}
+                                    <a href="?page={{ policy_list.next_page_number }}">next</a>
+                                {% endif %}
+                            </span>
+                        </div>
                     </div>
                 <!-- /.container-fluid -->
             </div>

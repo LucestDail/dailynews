@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from bs4news.models import News, News_Analysis_Raw, News_Company
-from main.models import User, Dashboard
+from main.models import User, Dashboard, Noticeboard
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime, timedelta
 from konlpy.tag import Okt
@@ -250,8 +250,8 @@ def requestFocusData(request):
 
 
 def analysisraw(request):
-    if request.method == 'GET' and 'company' in request.GET:
-        News_data = News_Analysis_Raw.objects.filter(News_Analysis_Company=request.GET['company']).order_by('-News_Analysis_CreateDT')
+    if request.method == 'GET' and 'keyword' in request.GET:
+        News_data = News_Analysis_Raw.objects.filter(News_Morphs__contains=request.GET['keyword']).order_by('-News_Analysis_CreateDT')
     else:
         News_data = News_Analysis_Raw.objects.all().order_by('-News_Analysis_CreateDT')
     paginator = Paginator(News_data, 20)
@@ -268,7 +268,18 @@ def analysisraw(request):
 
 
 def datapolicy(request):
-    return render(request, 'datapolicy.html')
+    policy_data = Noticeboard.objects.filter(Noticeboard_Type='data').order_by('-Noticeboard_CreateDT')
+    paginator = Paginator(policy_data, 10)
+    page = request.GET.get('page')
+    try:
+        policy_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        policy_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        policy_list = paginator.page(paginator.num_pages)
+    return render(request, 'datapolicy.html', {'policy_list': policy_list})
 
 
 def keyworddashboard(request):
@@ -296,8 +307,8 @@ def newsdashboard(request):
 
 
 def newsraw(request):
-    if request.method == 'GET' and 'company' in request.GET:
-        News_data = News.objects.filter(News_company=request.GET['company']).order_by('-News_CreateDT')
+    if request.method == 'GET' and 'keyword' in request.GET:
+        News_data = News.objects.filter(News_contents__contains=request.GET['keyword']).order_by('-News_CreateDT')
     else:
         News_data = News.objects.all().order_by('-News_CreateDT')
     paginator = Paginator(News_data, 20)
@@ -326,7 +337,18 @@ def requestscrap(request):
 
 
 def sitepolicy(request):
-    return render(request, 'sitepolicy.html')
+    policy_data = Noticeboard.objects.filter(Noticeboard_Type='site').order_by('-Noticeboard_CreateDT')
+    paginator = Paginator(policy_data, 10)
+    page = request.GET.get('page')
+    try:
+        policy_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        policy_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        policy_list = paginator.page(paginator.num_pages)
+    return render(request, 'sitepolicy.html', {'policy_list': policy_list})
 
 
 def techsupport(request):

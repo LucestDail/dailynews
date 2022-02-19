@@ -20,9 +20,18 @@
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">분석 정보</h1>
+                        <h1 class="h3 mb-0 text-gray-800">분석 정보 {% if request.GET.keyword %} [검색결과 = {{request.GET.keyword}}] {% endif %}</h1>
                     </div>
                     <!-- Content Row -->
+                    <div class="row">
+                        <form action="{% url 'analysisraw' %}" method="get">
+                            <div class="form-group">
+                              <label for="keyword">키워드 검색 조건</label>
+                              <input type="text" class="form-control" id="keyword" name="keyword" aria-describedby="keywordHelp" placeholder="키워드 입력">
+                              <small id="keywordhelp" class="form-text text-muted">뉴스 분석중 검색하고 싶은 키워드를 입력 후 엔터를 눌러주세요!</small>
+                            </div>
+                        </form>
+                    </div>
                     <div class="row">
                         <div class="accordion" id="accordionExample" style="width: 100%;">
                           {% for news in news_list %}

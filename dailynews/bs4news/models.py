@@ -8,6 +8,11 @@ class News(models.Model):
     News_company = models.CharField(db_index=True, max_length=200)
     News_contents = models.TextField()
     News_CreateDT = models.DateTimeField('date created')
+    ETC1 = models.TextField(blank=True)
+    ETC2 = models.TextField(blank=True)
+    ETC3 = models.TextField(blank=True)
+    ETC4 = models.TextField(blank=True)
+    ETC5 = models.TextField(blank=True)
 
 
 class News_Company(models.Model):
