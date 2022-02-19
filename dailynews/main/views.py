@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from bs4news.models import News, News_Analysis_Raw, News_Company
 from main.models import User, Dashboard
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime, timedelta
 from konlpy.tag import Okt
 from django.views.decorators.csrf import csrf_exempt
@@ -246,3 +247,87 @@ def dashboard(request):
 
 def requestFocusData(request):
     return render(request, 'requestFocusData.html')
+
+
+def analysisraw(request):
+    if request.method == 'GET' and 'company' in request.GET:
+        News_data = News_Analysis_Raw.objects.filter(News_Analysis_Company=request.GET['company']).order_by('-News_Analysis_CreateDT')
+    else:
+        News_data = News_Analysis_Raw.objects.all().order_by('-News_Analysis_CreateDT')
+    paginator = Paginator(News_data, 20)
+    page = request.GET.get('page')
+    try:
+        news_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        news_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        news_list = paginator.page(paginator.num_pages)
+    return render(request, 'analysisraw.html', {'news_list': news_list})
+
+
+def datapolicy(request):
+    return render(request, 'datapolicy.html')
+
+
+def keyworddashboard(request):
+    return render(request, 'keyworddashboard.html')
+
+
+def mycrawl(request):
+    return render(request, 'mycrawl.html')
+
+
+def mykeyword(request):
+    return render(request, 'mykeyword.html')
+
+
+def mynews(request):
+    return render(request, 'mynews.html')
+
+
+def myscrap(request):
+    return render(request, 'myscrap.html')
+
+
+def newsdashboard(request):
+    return render(request, 'newsdashboard.html')
+
+
+def newsraw(request):
+    if request.method == 'GET' and 'company' in request.GET:
+        News_data = News.objects.filter(News_company=request.GET['company']).order_by('-News_CreateDT')
+    else:
+        News_data = News.objects.all().order_by('-News_CreateDT')
+    paginator = Paginator(News_data, 20)
+    page = request.GET.get('page')
+    try:
+        news_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        news_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        news_list = paginator.page(paginator.num_pages)
+    return render(request, 'newsraw.html', {'news_list': news_list})
+
+
+def qna(request):
+    return render(request, 'qna.html')
+
+
+def requestcrawl(request):
+    return render(request, 'requestcrawl.html')
+
+
+def requestscrap(request):
+    return render(request, 'requestscrap.html')
+
+
+def sitepolicy(request):
+    return render(request, 'sitepolicy.html')
+
+
+def techsupport(request):
+    return render(request, 'techsupport.html')

@@ -43,16 +43,16 @@
                             <div class="col-lg-12">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Welcome To Daily News, Where Your Information Starts</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">당신의 정보가 시작 되는 데일리 뉴스입니다</h1>
                                     </div>
                                     <form class="user">
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" id="id" placeholder="ID">
+                                            <input type="text" class="form-control form-control-user" id="id" placeholder="아이디 입력">
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" class="form-control form-control-user" id="password" placeholder="Password">
+                                            <input type="password" class="form-control form-control-user" id="password" placeholder="패스워드 입력">
                                         </div>
-                                        <input id="btnLogin" type="button" class="btn btn-primary btn-user btn-block" value="Login">
+                                        <input id="btnLogin" type="button" class="btn btn-primary btn-user btn-block" value="로그인">
                                         <script>
                                             $('#btnLogin').on('click', function(e) {
                                                 if($('#id').val() == "" ){
@@ -77,15 +77,15 @@
                                                     success : function(data){
                                                         console.log(data);
                                                         if(data === "TRUE"){
-                                                            alert("로그인 성공!");
+                                                            console.log("로그인 성공");
                                                             location.href="/index";
                                                         }else{
-                                                            alert("로그인 실패");
+                                                            console.log("로그인 실패");
                                                             // location.href="/";
                                                         }
                                                     },
                                                     error : function(error){
-                                                        alert("로그인 오류");
+                                                        console.log("로그인 오류");
                                                         // location.href="/";
                                                         console.log(JSON.stringify(error));
                                                     }
@@ -96,10 +96,10 @@
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="forgotPassword">Forgot Password?</a>
+                                        <a class="small" href="forgotPassword">비밀번호 초기화</a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="register">Create an Account!</a>
+                                        <a class="small" href="register">계정 생성</a>
                                     </div>
                                 </div>
                             </div>
