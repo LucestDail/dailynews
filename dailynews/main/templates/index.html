@@ -306,7 +306,9 @@
                                         series.events.on("arrangeprogress", function(ev) {
                                         ev.target.baseSprite.preloader.progress = ev.progress;
                                         });
-                                        series.text = "{{news_data}}";
+                                        series.data = [{{news_data | safe}}];
+                                        series.dataFields.word = "tag";
+                                        series.dataFields.value = "weight"; 
                                     </script>
                                 </div>
                             </div>

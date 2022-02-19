@@ -8,9 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 import requests
 import json
 from django.http import HttpResponse
-
-
-# Create your views here.
+from collections import Counter
+import json
 
 
 def basicTemplates(request):
@@ -48,6 +47,7 @@ def index(request):
     focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
     focus_company_name = focus_object.News_Company_Name
     focus_company = focus_object.News_Company_Code
+
     wc_check_date = datetime.today() - timedelta(days=1)
     wc_input_date = str(wc_check_date.year) + '-' + str(wc_check_date.month) + '-' + str(wc_check_date.day)
     wc_from_date = datetime.strptime(wc_input_date, '%Y-%m-%d').date()
@@ -55,13 +55,24 @@ def index(request):
     wc_to_date = datetime.combine(wc_from_date, datetime.max.time())
     news_data_all = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(wc_from_date, wc_to_date),
                                                      News_Analysis_Company=focus_company)
-    news_data_string = ''
+    wc_news_data_list = []
     for news_element in news_data_all:
         news_content = news_element.News_Morphs.split(',')
         for news_data_morphs_element in news_content:
             if len(news_data_morphs_element) > 1:
-                news_data_string += ' '
-                news_data_string += news_data_morphs_element
+                wc_news_data_list.append(news_data_morphs_element)
+
+    wc_result = Counter(wc_news_data_list)
+    wc_most_word_50 = wc_result.most_common(50)
+    wc_most_word_50_jsonStr = ''
+    for wc_most_word_50_element in wc_most_word_50:
+        wc_most_word_50_jsonStr += '{"tag":"'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[0])
+        wc_most_word_50_jsonStr += '",'
+        wc_most_word_50_jsonStr += '"weight":'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[1])
+        wc_most_word_50_jsonStr += '},'
+    print(wc_most_word_50_jsonStr)
 
     focus_word = userData.User_Focus_word
     news_data_analysis_date = []
@@ -91,7 +102,7 @@ def index(request):
     return render(request, 'index.html', {'news_count': obj.Dashboard_Total_News_Count,
                                           'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
                                           'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
-                                          'news_data': news_data_string,
+                                          'news_data': wc_most_word_50_jsonStr,
                                           'today_news_count': obj.Dashboard_Today_count,
                                           'focus_company_name': focus_company_name,
                                           'focus_word': focus_word,
