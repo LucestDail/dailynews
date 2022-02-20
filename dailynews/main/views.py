@@ -324,7 +324,101 @@ def myscrap(request):
 
 
 def newsdashboard(request):
-    return render(request, 'newsdashboard.html')
+
+    graph_news_all_count = []
+
+    focus1_company_name = 'SBS'
+    focus1_company_code = '055'
+    focus2_company_name = 'KBS'
+    focus2_company_code = '056'
+    focus3_company_name = 'YTN'
+    focus3_company_code = '052'
+
+    check_date = datetime.today() - timedelta(days=7)
+    input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
+    from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
+    from_date = datetime.combine(from_date, datetime.min.time())
+    to_date = datetime.combine(from_date, datetime.max.time())
+    focus_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date))
+    focus1_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                   News_Analysis_Company=focus1_company_code)
+    focus2_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                   News_Analysis_Company=focus2_company_code)
+    focus3_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                   News_Analysis_Company=focus3_company_code)
+    focus_temp_save = []
+    for focus_data_element in focus_data:
+        focus_news_content = focus_data_element.News_Morphs.split(',')
+        for focus_news_data_morphs_element in focus_news_content:
+            focus_temp_save.append(focus_news_data_morphs_element)
+    focus_result = Counter(focus_temp_save)
+    focus_most_word_100 = focus_result.most_common(100)
+    focus_most_word_100_jsonStr = ''
+    for focus_most_word_100_element in focus_most_word_100:
+        focus_most_word_100_jsonStr += '{"tag":"'
+        focus_most_word_100_jsonStr += str(focus_most_word_100_element[0])
+        focus_most_word_100_jsonStr += '",'
+        focus_most_word_100_jsonStr += '"weight":'
+        focus_most_word_100_jsonStr += str(focus_most_word_100_element[1])
+        focus_most_word_100_jsonStr += '},'
+
+
+    focus1_temp_save = []
+    for focus1_data_element in focus1_data:
+        focus1_news_content = focus1_data_element.News_Morphs.split(',')
+        for focus1_news_data_morphs_element in focus1_news_content:
+            focus1_temp_save.append(focus1_news_data_morphs_element)
+    focus1_result = Counter(focus1_temp_save)
+    focus1_most_word_50 = focus1_result.most_common(50)
+    focus1_most_word_50_jsonStr = ''
+    for focus1_most_word_50_element in focus1_most_word_50:
+        focus1_most_word_50_jsonStr += '{"tag":"'
+        focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[0])
+        focus1_most_word_50_jsonStr += '",'
+        focus1_most_word_50_jsonStr += '"weight":'
+        focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[1])
+        focus1_most_word_50_jsonStr += '},'
+
+    focus2_temp_save = []
+    for focus2_data_element in focus2_data:
+        focus2_news_content = focus2_data_element.News_Morphs.split(',')
+        for focus2_news_data_morphs_element in focus2_news_content:
+            focus2_temp_save.append(focus2_news_data_morphs_element)
+    focus2_result = Counter(focus2_temp_save)
+    focus2_most_word_50 = focus2_result.most_common(50)
+    focus2_most_word_50_jsonStr = ''
+    for focus2_most_word_50_element in focus2_most_word_50:
+        focus2_most_word_50_jsonStr += '{"tag":"'
+        focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[0])
+        focus2_most_word_50_jsonStr += '",'
+        focus2_most_word_50_jsonStr += '"weight":'
+        focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[1])
+        focus2_most_word_50_jsonStr += '},'
+
+    focus3_temp_save = []
+    for focus3_data_element in focus3_data:
+        focus3_news_content = focus3_data_element.News_Morphs.split(',')
+        for focus3_news_data_morphs_element in focus3_news_content:
+            focus3_temp_save.append(focus3_news_data_morphs_element)
+    focus3_result = Counter(focus3_temp_save)
+    focus3_most_word_50 = focus3_result.most_common(50)
+    focus3_most_word_50_jsonStr = ''
+    for focus3_most_word_50_element in focus3_most_word_50:
+        focus3_most_word_50_jsonStr += '{"tag":"'
+        focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[0])
+        focus3_most_word_50_jsonStr += '",'
+        focus3_most_word_50_jsonStr += '"weight":'
+        focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[1])
+        focus3_most_word_50_jsonStr += '},'
+
+    return render(request, 'newsdashboard.html', {'graph_news_all_count': graph_news_all_count,
+                                                  'all_news_data': focus_most_word_100_jsonStr,
+                                                  'focus1_company_name': focus1_company_name,
+                                                  'focus1_news_data': focus1_most_word_50_jsonStr,
+                                                  'focus2_company_name': focus2_company_name,
+                                                  'focus2_news_data': focus2_most_word_50_jsonStr,
+                                                  'focus3_company_name': focus3_company_name,
+                                                  'focus3_news_data': focus3_most_word_50_jsonStr})
 
 
 def newsraw(request):

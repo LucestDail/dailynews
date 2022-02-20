@@ -80,12 +80,12 @@
                                                             console.log("로그인 성공");
                                                             location.href="/index";
                                                         }else{
-                                                            console.log("로그인 실패");
+                                                            alert("로그인 실패");
                                                             // location.href="/";
                                                         }
                                                     },
                                                     error : function(error){
-                                                        console.log("로그인 오류");
+                                                        alert("로그인 오류");
                                                         // location.href="/";
                                                         console.log(JSON.stringify(error));
                                                     }

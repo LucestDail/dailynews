@@ -40,14 +40,14 @@
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                전체 수집된 뉴스</div>
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">전체 수집된 뉴스</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{news_count}}</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
+                                    <a href="newsraw" class="stretched-link"></a>
                                 </div>
                             </div>
                         </div>
@@ -66,6 +66,7 @@
                                             <i class="fas fa-newspaper fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
+                                    <a href="analysisraw" class="stretched-link"></a>
                                 </div>
                             </div>
                         </div>
@@ -95,6 +96,7 @@
                                             <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
+                                    <a href="analysisraw" class="stretched-link"></a>
                                 </div>
                             </div>
                         </div>
@@ -113,6 +115,7 @@
                                             <i class="fas fa-comments fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
+                                    <a href="newsraw" class="stretched-link"></a>
                                 </div>
                             </div>
                         </div>
@@ -251,7 +254,7 @@
                             </div>
                         </div>
 
-                        <!-- Pie Chart -->
+                        <!-- wc Chart -->
                         <div class="col-xl-4 col-lg-5">
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Dropdown -->
@@ -317,42 +320,70 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="card shadow mb-4 d-flex flex-row" style="width:100%">
-                        {% for a, b in news_data_analysis_counter_list %}{% for date in news_data_analysis_date reversed %}
-                        {% if forloop.counter == forloop.parentloop.counter %}
-                        {% if forloop.first %}
-                        {% else %}
-                            <div class="col-xl-2">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" colspan="2">{{date}}</th>
-                                        </tr>
-                                        <tr>
-                                            <th class="text-center" scope="col">키워드</th>
-                                            <th class="text-center" scope="col">비율</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for aa in a %}{% for bb in b %}
-                                    {% if forloop.counter == forloop.parentloop.counter %}
-                                        <tr>
-                                        {% if aa == focus_word %}
-                                            <td class="table-primary text-center">{{aa}}</td>
-                                            <td class="table-primary text-center">{{bb}}</td>
-                                        {% else%}
-                                            <td class="text-center">{{aa}}</td>
-                                            <td class="text-center">{{bb}}</td>
-                                        {% endif %}
-                                        </tr>
-                                    {% endif %}
-                                    {% endfor %} {% endfor %}
-                                    </tbody>
-                                </table>
+                        <!-- Area Chart -->
+                        <div class="col-xl-12 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="width:100%">
+                                    <h6 class="m-0 font-weight-bold text-primary">일단위 주요 키워드 순위 ( {{ focus_company_name }} )</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">키워드 순위 설정:</div>
+                                            <a class="dropdown-item" href="profile">관심 뉴스 변경</a>
+                                            <a class="dropdown-item" href="newsdashboard">관심 뉴스 대시보드</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="rank-area" style="height: 40rem;">
+                                        <div class="d-flex flex-row" id="rank-div" style="height: 100%">
+                                            {% for a, b in news_data_analysis_counter_list %}{% for date in news_data_analysis_date reversed %}
+                                            {% if forloop.counter == forloop.parentloop.counter %}
+                                            {% if forloop.first %}
+                                            {% else %}
+                                                <div class="col-xl-2 col-lg-5">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-center" colspan="2">{{date}}</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th class="text-center" scope="col">키워드</th>
+                                                                <th class="text-center" scope="col">비율</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for aa in a %}{% for bb in b %}
+                                                        {% if forloop.counter == forloop.parentloop.counter %}
+                                                            <tr>
+                                                            {% if aa == focus_word %}
+                                                                <td class="table-primary text-center">{{aa}}</td>
+                                                                <td class="table-primary text-center">{{bb}}</td>
+                                                            {% else%}
+                                                                <td class="text-center">{{aa}}</td>
+                                                                <td class="text-center">{{bb}}</td>
+                                                            {% endif %}
+                                                            </tr>
+                                                        {% endif %}
+                                                        {% endfor %} {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% endfor %}{% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        {% endif %}
-                        {% endif %}
-                        {% endfor %}{% endfor %}
                         </div>
                     </div>
                 <!-- /.container-fluid -->

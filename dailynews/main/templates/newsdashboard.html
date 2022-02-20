@@ -24,7 +24,427 @@
                     </div>
                     <!-- Content Row -->
                     <div class="row">
+
+                        <!-- graph Chart -->
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary"> 뉴스 발생건 분석 </h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-area" style="height: 22rem;">
+                                        <div id="chartdiv" style="width: 100%; height: 100%">
+                                        </div>
+                                        <!-- Chart code -->
+                                        <script>
+                                            am4core.ready(function() {
+                                            
+                                            // Themes begin
+                                            am4core.useTheme(am4themes_animated);
+                                            // Themes end
+                                            
+                                            // Create chart instance
+                                            var chart = am4core.create("chartdiv", am4charts.XYChart);
+                                            
+                                            // Add data
+                                            chart.data = [{
+                                            "date": "2013-01-16",
+                                            "focus1": 71,
+                                            "focus2": 75,
+                                            "focus3": 73,
+                                            "total": 5,
+                                            "focus": 8,
+                                            }, {
+                                            "date": "2013-01-17",
+                                            "focus1": 74,
+                                            "focus2": 78,
+                                            "focus3": 72,
+                                            "total": 4,
+                                            "focus": 6
+                                            }, {
+                                            "date": "2013-01-18",
+                                            "focus1": 78,
+                                            "focus2": 88,
+                                            "focus3": 83,
+                                            "total": 5,
+                                            "focus": 2
+                                            }, {
+                                            "date": "2013-01-19",
+                                            "focus1": 85,
+                                            "focus2": 89,
+                                            "focus3": 90,
+                                            "total": 8,
+                                            "focus": 9
+                                            }, {
+                                            "date": "2013-01-20",
+                                            "focus1": 82,
+                                            "focus2": 89,
+                                            "focus3": 73,
+                                            "total": 9,
+                                            "focus": 6
+                                            }, {
+                                            "date": "2013-01-21",
+                                            "focus1": 83,
+                                            "focus2": 85,
+                                            "focus3": 78,
+                                            "total": 3,
+                                            "focus": 5
+                                            }, {
+                                            "date": "2013-01-22",
+                                            "focus1": 88,
+                                            "focus2": 92,
+                                            "focus3": 90,
+                                            "total": 5,
+                                            "focus": 7
+                                            }, {
+                                            "date": "2013-01-23",
+                                            "focus1": 85,
+                                            "focus2": 90,
+                                            "focus3": 88,
+                                            "total": 7,
+                                            "focus": 6
+                                            }, {
+                                            "date": "2013-01-24",
+                                            "focus1": 85,
+                                            "focus2": 91,
+                                            "focus3": 80,
+                                            "total": 9,
+                                            "focus": 5
+                                            }, {
+                                            "date": "2013-01-25",
+                                            "focus1": 80,
+                                            "focus2": 84,
+                                            "focus3": 90,
+                                            "total": 5,
+                                            "focus": 8
+                                            }, {
+                                            "date": "2013-01-26",
+                                            "focus1": 87,
+                                            "focus2": 92,
+                                            "focus3": 85,
+                                            "total": 4,
+                                            "focus": 8
+                                            }, {
+                                            "date": "2013-01-27",
+                                            "focus1": 84,
+                                            "focus2": 87,
+                                            "focus3": 88,
+                                            "total": 3,
+                                            "focus": 4
+                                            }, {
+                                            "date": "2013-01-28",
+                                            "focus1": 83,
+                                            "focus2": 88,
+                                            "focus3": 90,
+                                            "total": 5,
+                                            "focus": 7
+                                            }, {
+                                            "date": "2013-01-29",
+                                            "focus1": 84,
+                                            "focus2": 87,
+                                            "focus3": 81,
+                                            "total": 5,
+                                            "focus": 8
+                                            }, {
+                                            "date": "2013-01-30",
+                                            "focus1": 81,
+                                            "focus2": 85,
+                                            "focus3": 89,
+                                            "total": 4,
+                                            "focus": 7
+                                            }];
+                                            
+                                            // Create axes
+                                            var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+                                            //dateAxis.renderer.grid.template.location = 0;
+                                            //dateAxis.renderer.minGridDistance = 30;
+                                            
+                                            var valueAxis1 = chart.yAxes.push(new am4charts.ValueAxis());
+                                            valueAxis1.title.text = "전체 기사 발생";
+                                            
+                                            var valueAxis2 = chart.yAxes.push(new am4charts.ValueAxis());
+                                            valueAxis2.title.text = "관심 기사 발생";
+                                            valueAxis2.renderer.opposite = true;
+                                            valueAxis2.renderer.grid.template.disabled = true;
+                                            
+                                            // Create series
+                                            var series1 = chart.series.push(new am4charts.ColumnSeries());
+                                            series1.dataFields.valueY = "total";
+                                            series1.dataFields.dateX = "date";
+                                            series1.yAxis = valueAxis1;
+                                            series1.name = "전체 기사 발생";
+                                            series1.tooltipText = "{name}\n[bold font-size: 20]{valueY}[/]";
+                                            series1.fill = chart.colors.getIndex(0);
+                                            series1.strokeWidth = 0;
+                                            series1.clustered = false;
+                                            series1.columns.template.width = am4core.percent(40);
+                                            
+                                            var series2 = chart.series.push(new am4charts.ColumnSeries());
+                                            series2.dataFields.valueY = "focus";
+                                            series2.dataFields.dateX = "date";
+                                            series2.yAxis = valueAxis1;
+                                            series2.name = "관심 기사 발생";
+                                            series2.tooltipText = "{name}\n[bold font-size: 20]{valueY}[/]";
+                                            series2.fill = chart.colors.getIndex(0).lighten(0.5);
+                                            series2.strokeWidth = 0;
+                                            series2.clustered = false;
+                                            series2.toBack();
+                                            
+                                            var series3 = chart.series.push(new am4charts.LineSeries());
+                                            series3.dataFields.valueY = "focus1";
+                                            series3.dataFields.dateX = "date";
+                                            series3.name = "{{focus1_company_name}}";
+                                            series3.strokeWidth = 2;
+                                            series3.tensionX = 0.7;
+                                            series3.yAxis = valueAxis2;
+                                            series3.tooltipText = "{name}\n[bold font-size: 20]{valueY}[/]";
+                                            
+                                            var bullet3 = series3.bullets.push(new am4charts.CircleBullet());
+                                            bullet3.circle.radius = 3;
+                                            bullet3.circle.strokeWidth = 2;
+                                            bullet3.circle.fill = am4core.color("#fff");
+                                            
+                                            var series4 = chart.series.push(new am4charts.LineSeries());
+                                            series4.dataFields.valueY = "focus2";
+                                            series4.dataFields.dateX = "date";
+                                            series4.name = "{{focus2_company_name}}";
+                                            series4.strokeWidth = 2;
+                                            series4.tensionX = 0.7;
+                                            series4.yAxis = valueAxis2;
+                                            series4.tooltipText = "{name}\n[bold font-size: 20]{valueY}[/]";
+                                            
+                                            var bullet4 = series4.bullets.push(new am4charts.CircleBullet());
+                                            bullet4.circle.radius = 3;
+                                            bullet4.circle.strokeWidth = 2;
+                                            bullet4.circle.fill = am4core.color("#fff");
+
+                                            var series5 = chart.series.push(new am4charts.LineSeries());
+                                            series5.dataFields.valueY = "focus3";
+                                            series5.dataFields.dateX = "date";
+                                            series5.name = "{{focus3_company_name}}";
+                                            series5.strokeWidth = 2;
+                                            series5.tensionX = 0.7;
+                                            series5.yAxis = valueAxis2;
+                                            series5.tooltipText = "{name}\n[bold font-size: 20]{valueY}[/]";
+                                            
+                                            var bullet5 = series3.bullets.push(new am4charts.CircleBullet());
+                                            bullet5.circle.radius = 3;
+                                            bullet5.circle.strokeWidth = 2;
+                                            bullet5.circle.fill = am4core.color("#fff");
+                                            
+                                            // Add cursor
+                                            chart.cursor = new am4charts.XYCursor();
+                                            
+                                            // Add legend
+                                            chart.legend = new am4charts.Legend();
+                                            chart.legend.position = "top";
+                                            
+                                            // Add scrollbar
+                                            chart.scrollbarX = new am4charts.XYChartScrollbar();
+                                            chart.scrollbarX.series.push(series1);
+                                            chart.scrollbarX.series.push(series3);
+                                            chart.scrollbarX.parent = chart.bottomAxesContainer;
+                                            
+                                            }); // end am4core.ready()
+                                            </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- all wc Chart -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">전체 뉴스 워드 클라우드</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div id="wcdiv" style="height: 22rem;"></div>
+                                    <script>
+                                        const hexValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+                                        let hex1 = "#";
+                                        let hex2 = "#";
+                                        for (let i = 0; i < 6; i++) { 
+                                        const index = Math.floor(Math.random() * hexValues.length); 
+                                        hex1 += hexValues[index];
+                                        hex2 += hexValues[index];
+                                        }
+                                        am4core.useTheme(am4themes_animated);
+                                        var chart = am4core.create("wcdiv", am4plugins_wordCloud.WordCloud);
+                                        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+                                        series.maxCount = 100;
+                                        series.minWordLength = 2;
+                                        series.randomness = 0;
+                                        series.heatRules.push({
+                                        "target": series.labels.template,
+                                        "property": "fill",
+                                        "min": am4core.color(hex1),
+                                        "max": am4core.color(hex2),
+                                        "dataField": "value"
+                                        });
+                                        series.events.on("arrangestarted", function(ev) {
+                                        ev.target.baseSprite.preloader.show(0);
+                                        });
+
+                                        series.events.on("arrangeprogress", function(ev) {
+                                        ev.target.baseSprite.preloader.progress = ev.progress;
+                                        });
+                                        series.data = [{{all_news_data | safe}}];
+                                        series.dataFields.word = "tag";
+                                        series.dataFields.value = "weight";
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <div class="row">
+                        <!-- focus1 wc Chart -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">관심 뉴스 워드 클라우드 ( {{ focus1_company_name }} )</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div id="focus1div" style="height: 22rem;"></div>
+                                    <script>
+                                        const hexValues1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+                                        let hex11 = "#";
+                                        let hex12 = "#";
+                                        for (let i = 0; i < 6; i++) { 
+                                        const index = Math.floor(Math.random() * hexValues1.length); 
+                                        hex11 += hexValues1[index];
+                                        hex12 += hexValues1[index];
+                                        }
+                                        am4core.useTheme(am4themes_animated);
+                                        var chart = am4core.create("focus1div", am4plugins_wordCloud.WordCloud);
+                                        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+                                        series.maxCount = 50;
+                                        series.minWordLength = 2;
+                                        series.randomness = 0;
+                                        series.heatRules.push({
+                                        "target": series.labels.template,
+                                        "property": "fill",
+                                        "min": am4core.color(hex11),
+                                        "max": am4core.color(hex12),
+                                        "dataField": "value"
+                                        });
+                                        series.events.on("arrangestarted", function(ev) {
+                                        ev.target.baseSprite.preloader.show(0);
+                                        });
+
+                                        series.events.on("arrangeprogress", function(ev) {
+                                        ev.target.baseSprite.preloader.progress = ev.progress;
+                                        });
+                                        series.data = [{{focus1_news_data | safe}}];
+                                        series.dataFields.word = "tag";
+                                        series.dataFields.value = "weight";
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- focus2 wc Chart -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">관심 뉴스 워드 클라우드 ( {{ focus2_company_name }} )</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div id="focus2div" style="height: 22rem;"></div>
+                                    <script>
+                                        const hexValues2 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+                                        let hex21 = "#";
+                                        let hex22 = "#";
+                                        for (let i = 0; i < 6; i++) { 
+                                        const index = Math.floor(Math.random() * hexValues2.length); 
+                                        hex21 += hexValues2[index];
+                                        hex22 += hexValues2[index];
+                                        }
+                                        am4core.useTheme(am4themes_animated);
+                                        var chart = am4core.create("focus2div", am4plugins_wordCloud.WordCloud);
+                                        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+                                        series.maxCount = 50;
+                                        series.minWordLength = 2;
+                                        series.randomness = 0;
+                                        series.heatRules.push({
+                                        "target": series.labels.template,
+                                        "property": "fill",
+                                        "min": am4core.color(hex21),
+                                        "max": am4core.color(hex22),
+                                        "dataField": "value"
+                                        });
+                                        series.events.on("arrangestarted", function(ev) {
+                                        ev.target.baseSprite.preloader.show(0);
+                                        });
+
+                                        series.events.on("arrangeprogress", function(ev) {
+                                        ev.target.baseSprite.preloader.progress = ev.progress;
+                                        });
+                                        series.data = [{{focus2_news_data | safe}}];
+                                        series.dataFields.word = "tag";
+                                        series.dataFields.value = "weight";
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- focus3 wc Chart -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">관심 뉴스 워드 클라우드 ( {{ focus3_company_name }} )</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div id="focus3div" style="height: 22rem;"></div>
+                                    <script>
+                                        const hexValues3 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+                                        let hex31 = "#";
+                                        let hex32 = "#";
+                                        for (let i = 0; i < 6; i++) { 
+                                        const index = Math.floor(Math.random() * hexValues3.length); 
+                                        hex31 += hexValues3[index];
+                                        hex32 += hexValues3[index];
+                                        }
+                                        am4core.useTheme(am4themes_animated);
+                                        var chart = am4core.create("focus3div", am4plugins_wordCloud.WordCloud);
+                                        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+                                        series.maxCount = 50;
+                                        series.minWordLength = 2;
+                                        series.randomness = 0;
+                                        series.heatRules.push({
+                                        "target": series.labels.template,
+                                        "property": "fill",
+                                        "min": am4core.color(hex31),
+                                        "max": am4core.color(hex32),
+                                        "dataField": "value"
+                                        });
+                                        series.events.on("arrangestarted", function(ev) {
+                                        ev.target.baseSprite.preloader.show(0);
+                                        });
+
+                                        series.events.on("arrangeprogress", function(ev) {
+                                        ev.target.baseSprite.preloader.progress = ev.progress;
+                                        });
+                                        series.data = [{{focus3_news_data | safe}}];
+                                        series.dataFields.word = "tag";
+                                        series.dataFields.value = "weight";
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 <!-- /.container-fluid -->
             </div>
                 {% include 'footer.html' %}
