@@ -1,16 +1,17 @@
 import traceback
 from datetime import datetime, timedelta
-from .models import News, News_Analysis_Raw, News_Company
+from .models import News, News_Analysis_Raw, News_Company, News_Analysis_Count_Company, News_Analysis_Word_Analysis_Company
 from konlpy.tag import Okt
 import time
 import requests
 from bs4 import BeautifulSoup
 import warnings
+from collections import Counter
 warnings.filterwarnings("ignore")
 
 
-def scrap_every_minute():
-    print('django bs4news crontab started -------------------')
+def scrap():
+    print('django bs4news scrap crontab started -------------------')
     news_company = News_Company.objects.all()
     for current_job_target_company in news_company:
         current_job_target_company_code = current_job_target_company.News_Company_Code
@@ -106,7 +107,7 @@ def scrap_every_minute():
             print('exception from outer loop')
             pass
         print('current step =====================================')
-    print('django bs4news crontab ended -------------------')
+    print('django bs4news scrap crontab ended -------------------')
 
 
 def news_analysis_create_morphs():
@@ -162,3 +163,83 @@ def news_analysis_create_morphs():
         print(' | fail (maybe duplicate)')
         print(fail)
     print('django bs4news news_analysis_create_morphs crontab ended -------------------')
+
+
+def news_analysis_create_news_dashboard_data():
+    print('django bs4news news_analysis_create_news_dashboard_data crontab started -------------------')
+    news_company = News_Company.objects.all()
+    for current_job_target_company in news_company:
+        current_job_target_company_code = current_job_target_company.News_Company_Code
+        print('current step =====================================')
+        print(current_job_target_company_code)
+        print('job start ========================================')
+        print(datetime.now())
+        print('job started =====================================>')
+        target = 0
+        success = 0
+        fail = 0
+        current_datetime = datetime.now()
+        target_company = current_job_target_company_code
+        from_date = current_datetime - timedelta(days=1)
+        to_date = current_datetime
+        target_news_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                            News_Analysis_Company=target_company)
+
+        target_news_data_analysis_jsonStr = ''
+        target_company_count = len(target_news_data)
+
+        target_temp_save = []
+        for target_data_element in target_news_data:
+            target_news_content = target_data_element.News_Morphs.split(',')
+            for target_news_data_morphs_element in target_news_content:
+                target_temp_save.append(target_news_data_morphs_element)
+        target_result = Counter(target_temp_save)
+        target_most_word_50 = target_result.most_common(50)
+
+        for target_most_word_50_element in target_most_word_50:
+            target_news_data_analysis_jsonStr += '{"tag":"'
+            target_news_data_analysis_jsonStr += str(target_most_word_50_element[0])
+            target_news_data_analysis_jsonStr += '",'
+            target_news_data_analysis_jsonStr += '"weight":'
+            target_news_data_analysis_jsonStr += str(target_most_word_50_element[1])
+            target_news_data_analysis_jsonStr += '},'
+
+        News_Analysis_Count_Company, News_Analysis_Word_Analysis_Company
+        if(News_Analysis_Count_Company.objects.filter(News_Analysis_Count_Company_Code=target_company,
+                                                      News_Analysis_Count_Company_CreateDT__range=(from_date, to_date))):
+            fail += 1
+            target += 1
+        else:
+            News_Analysis_Count_Company_Input = News_Analysis_Count_Company(
+                News_Analysis_Count_Company_Code=target_company,
+                News_Analysis_Count_Company_CreateDT=from_date,
+                News_Analysis_Count_Company_UpdateDT=current_datetime,
+                News_Analysis_Count_Company_Count=target_company_count
+            )
+            News_Analysis_Count_Company_Input.save()
+            success += 1
+            target += 1
+
+        if (News_Analysis_Word_Analysis_Company.objects.filter(News_Analysis_Word_Analysis_Company_Code=target_company,
+                                            News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date))):
+            fail += 1
+            target += 1
+        else:
+            News_Analysis_Word_Analysis_Company_Input = News_Analysis_Word_Analysis_Company(
+                News_Analysis_Word_Analysis_Company_Code=target_company,
+                News_Analysis_Word_Analysis_Company_CreateDT=from_date,
+                News_Analysis_Word_Analysis_Company_UpdateDT=current_datetime,
+                News_Analysis_Word_Analysis_Company_Data=target_news_data_analysis_jsonStr
+            )
+            News_Analysis_Word_Analysis_Company_Input.save()
+            success += 1
+            target += 1
+
+        print('====== analysis result ======')
+        print(' | count (should be 2)')
+        print(target)
+        print(' | success (2 : all success, 1 : something duplicated, 0 : all duplicated)')
+        print(success)
+        print(' | fail (maybe duplicate)')
+        print(fail)
+    print('django bs4news news_analysis_create_news_dashboard_data crontab ended -------------------')

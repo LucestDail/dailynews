@@ -38,3 +38,26 @@ class News_Analysis_Raw(models.Model):
     ETC4 = models.TextField(blank=True)
     ETC5 = models.TextField(blank=True)
     News_Analysis_CreateDT = models.DateTimeField('date created')
+
+
+class News_Analysis_Count_Company(models.Model):
+    News_Analysis_Count_Company_Code = models.CharField(max_length=200)
+    News_Analysis_Count_Company_Count = models.CharField(max_length=200)
+    ETC1 = models.TextField(blank=True)
+    ETC2 = models.TextField(blank=True)
+    ETC3 = models.TextField(blank=True)
+    ETC4 = models.TextField(blank=True)
+    ETC5 = models.TextField(blank=True)
+    News_Analysis_Count_Company_CreateDT = models.DateTimeField('date created')
+    News_Analysis_Count_Company_UpdateDT = models.DateTimeField('date updated')
+
+class News_Analysis_Word_Analysis_Company(models.Model):
+    News_Analysis_Word_Analysis_Company_Code = models.CharField(max_length=200)
+    News_Analysis_Word_Analysis_Company_Data = models.TextField(blank=True)
+    ETC1 = models.TextField(blank=True)
+    ETC2 = models.TextField(blank=True)
+    ETC3 = models.TextField(blank=True)
+    ETC4 = models.TextField(blank=True)
+    ETC5 = models.TextField(blank=True)
+    News_Analysis_Word_Analysis_Company_CreateDT = models.DateTimeField('date created')
+    News_Analysis_Word_Analysis_Company_UpdateDT = models.DateTimeField('date updated')
