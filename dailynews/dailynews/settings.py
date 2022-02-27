@@ -147,5 +147,5 @@ CRONJOBS = [
     ('20 */2 * * *', 'bs4news.cron.scrap', '>> bs4cron.log'),
     ('40 */2 * * *', 'bs4news.cron.news_analysis_create_morphs', '>> bs4cron.log'),
     ('0 */2 * * *', 'main.cron.dashboard_every_minute', '>> main4cron.log'),
-    ('0 */6 * * *', 'bs4news.cron.news_analysis_create_news_dashboard_data', '>> bs4cron.log'),
+    ('47 19 * * *', 'bs4news.cron.news_analysis_create_news_dashboard_data', '>> bs4cron.log'),
 ]
