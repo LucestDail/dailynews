@@ -243,7 +243,6 @@ def requestPasswordChange(request):
 
 
 def dashboard(request):
-    print('django main dashboard_every_minute crontab started -------------------')
     news_data_count = News.objects.all()
     news_data_count_input = len(news_data_count)
     print(news_data_count_input)
@@ -269,7 +268,6 @@ def dashboard(request):
         Dashboard_CreateDT=datetime.now(),
     )
     Dashboard_instance.save()
-    print('django main dashboard_every_minute crontab started -------------------')
 
 
 def requestFocusData(request):
@@ -331,10 +329,8 @@ def myscrap(request):
 
 def newsdashboard(request):
 
-    graph_news_all_count = []
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
-    print(userData)
     focus1_company_name = userData.User_Focus_Company
     focus1_company_code = News_Company.objects.get(News_Company_Name=focus1_company_name).News_Company_Code
     focus2_company_name = userData.User_Focus_Company_1
@@ -388,7 +384,6 @@ def newsdashboard(request):
         graph_focus_news_count_jsonStr += '"focus":'
         graph_focus_news_count_jsonStr += str(graph_focus_news_count)
         graph_focus_news_count_jsonStr += '},'
-        print(graph_focus_news_count_jsonStr)
 
     focus_temp_save = []
     for focus_data_element in focus_all_data_news:
@@ -405,7 +400,6 @@ def newsdashboard(request):
         focus_most_word_100_jsonStr += '"weight":'
         focus_most_word_100_jsonStr += str(focus_most_word_100_element[1])
         focus_most_word_100_jsonStr += '},'
-    print(focus_most_word_100_jsonStr)
 
     focus1_temp_save = []
     for focus1_data_element in focus1_data_news:
@@ -422,7 +416,6 @@ def newsdashboard(request):
         focus1_most_word_50_jsonStr += '"weight":'
         focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[1])
         focus1_most_word_50_jsonStr += '},'
-    print(focus1_most_word_50_jsonStr)
 
     focus2_temp_save = []
     for focus2_data_element in focus2_data_news:
@@ -439,7 +432,6 @@ def newsdashboard(request):
         focus2_most_word_50_jsonStr += '"weight":'
         focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[1])
         focus2_most_word_50_jsonStr += '},'
-    print(focus2_most_word_50_jsonStr)
 
     focus3_temp_save = []
     for focus3_data_element in focus3_data_news:
@@ -456,7 +448,6 @@ def newsdashboard(request):
         focus3_most_word_50_jsonStr += '"weight":'
         focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[1])
         focus3_most_word_50_jsonStr += '},'
-    print(focus3_most_word_50_jsonStr)
 
     return render(request, 'newsdashboard.html', {'graph_news_all_count': graph_focus_news_count_jsonStr,
                                                   'all_news_data': focus_most_word_100_jsonStr,
