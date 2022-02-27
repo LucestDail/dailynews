@@ -178,10 +178,15 @@ def news_analysis_create_news_dashboard_data():
         target = 0
         success = 0
         fail = 0
+
         current_datetime = datetime.now()
         target_company = current_job_target_company_code
-        from_date = current_datetime - timedelta(days=1)
-        to_date = current_datetime
+
+        check_date = datetime.today() - timedelta(days=1)
+        input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
+        from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
+        from_date = datetime.combine(from_date, datetime.min.time())
+        to_date = datetime.combine(from_date, datetime.max.time())
         target_news_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
                                                             News_Analysis_Company=target_company)
 

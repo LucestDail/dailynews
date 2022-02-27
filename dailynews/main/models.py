@@ -13,6 +13,8 @@ class User(models.Model):
     User_Email = models.CharField(max_length=200, blank=True)
     User_Focus_word = models.CharField(max_length=200, blank=True)
     User_Focus_Company = models.CharField(max_length=200, blank=True)
+    User_Focus_Company_1 = models.CharField(max_length=200, blank=True)
+    User_Focus_Company_2 = models.CharField(max_length=200, blank=True)
     USER_ETC01 = models.CharField(max_length=200, blank=True)
     USER_ETC02 = models.CharField(max_length=200, blank=True)
     USER_ETC03 = models.CharField(max_length=200, blank=True)

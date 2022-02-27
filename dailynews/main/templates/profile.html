@@ -42,10 +42,34 @@
                                         <div class="col-md-12"><label class="labels">이메일</label><input type="text" id="userEmail" class="form-control" placeholder="이메일 입력" value="{{user_data.User_Email}}"></div>
                                         <div class="col-md-12"><label class="labels">관심단어</label><input type="text" id="userFocusWord" class="form-control" placeholder="관심 키워드 입력" value="{{user_data.User_Focus_word}}"></div>
                                         <div class="col-md-12">
-                                            <label class="labels">관심 뉴스</label>
+                                            <label class="labels">관심 뉴스(메인)</label>
                                             <select class="form-control" aria-label="Default select example" id="userFocusCompany">
                                                 {% for company in company_data %}
                                                 {% if company.News_Company_Name == user_data.User_Focus_Company%}
+                                                <option selected value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% else %}
+                                                <option value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="labels">관심 뉴스(추가)</label>
+                                            <select class="form-control" aria-label="Default select example" id="userFocusCompany1">
+                                                {% for company in company_data %}
+                                                {% if company.News_Company_Name == user_data.User_Focus_Company_1%}
+                                                <option selected value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% else %}
+                                                <option value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="labels">관심 뉴스(추가)</label>
+                                            <select class="form-control" aria-label="Default select example" id="userFocusCompany2">
+                                                {% for company in company_data %}
+                                                {% if company.News_Company_Name == user_data.User_Focus_Company_2%}
                                                 <option selected value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
                                                 {% else %}
                                                 <option value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
@@ -88,6 +112,8 @@
                                                     userEmail:$('#userEmail').val(),
                                                     userFocusWord:$('#userFocusWord').val(),
                                                     userFocusCompany:$('#userFocusCompany option:selected').val(),
+                                                    userFocusCompany1:$('#userFocusCompany1 option:selected').val(),
+                                                    userFocusCompany2:$('#userFocusCompany2 option:selected').val(),
                                                     currentPassword:$('#currentPassword').val(),
                                             }
                                             $.ajax({

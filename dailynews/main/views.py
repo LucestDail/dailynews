@@ -141,6 +141,8 @@ def requestRegister(request):
             User_Password=registerPassword,
             User_Info='안녕하세요',
             User_Focus_Company='연합뉴스',
+            User_Focus_Company_1='KBS',
+            User_Focus_Company_2='SBS',
             User_Focus_word='코로나',
             User_CreateDT=datetime.now(),
             User_RecentDT=datetime.now()
@@ -190,6 +192,8 @@ def requestProfile(request):
     userEmail = request_input['userEmail']
     userFocusWord = request_input['userFocusWord']
     userFocusCompany = request_input['userFocusCompany']
+    userFocusCompany1 = request_input['userFocusCompany1']
+    userFocusCompany2 = request_input['userFocusCompany2']
     currentPassword = request_input['currentPassword']
 
     if userData.User_Password == currentPassword:
@@ -200,6 +204,8 @@ def requestProfile(request):
         userData.User_RecentDT = datetime.now()
         userData.User_Focus_word = userFocusWord
         userData.User_Focus_Company = userFocusCompany
+        userData.User_Focus_Company_1 = userFocusCompany1
+        userData.User_Focus_Company_2 = userFocusCompany2
         userData.save()
         print("password pass")
         result = "TRUE"
@@ -326,13 +332,16 @@ def myscrap(request):
 def newsdashboard(request):
 
     graph_news_all_count = []
+    user_id = request.session['userId']
+    userData = User.objects.get(User_Id=user_id)
+    print(userData)
+    focus1_company_name = userData.User_Focus_Company
+    focus1_company_code = News_Company.objects.get(News_Company_Name=focus1_company_name).News_Company_Code
+    focus2_company_name = userData.User_Focus_Company_1
+    focus2_company_code = News_Company.objects.get(News_Company_Name=focus2_company_name).News_Company_Code
+    focus3_company_name = userData.User_Focus_Company_2
+    focus3_company_code = News_Company.objects.get(News_Company_Name=focus3_company_name).News_Company_Code
 
-    focus1_company_name = 'SBS'
-    focus1_company_code = '055'
-    focus2_company_name = 'KBS'
-    focus2_company_code = '056'
-    focus3_company_name = 'YTN'
-    focus3_company_code = '052'
     focus_all_data_news = []
     focus1_data_news = []
     focus2_data_news = []
