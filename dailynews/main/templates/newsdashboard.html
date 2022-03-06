@@ -26,12 +26,12 @@
                     <div class="row">
 
                         <!-- graph Chart -->
-                        <div class="col-xl-8 col-lg-7">
+                        <div class="col-xl-12 col-lg-7">
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Dropdown -->
                                 <div
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary"> 뉴스 발생건 분석 </h6>
+                                    <h6 class="m-0 font-weight-bold text-primary"> 뉴스 발생건 시계열 분석 </h6>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
@@ -121,53 +121,6 @@
                                             }); // end am4core.ready()
                                             </script>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- all wc Chart -->
-                        <div class="col-xl-4 col-lg-5">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">전체 뉴스 워드 클라우드</h6>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div id="wcdiv" style="height: 22rem;"></div>
-                                    <script>
-                                        const hexValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
-                                        let hex1 = "#";
-                                        let hex2 = "#";
-                                        for (let i = 0; i < 6; i++) { 
-                                        const index = Math.floor(Math.random() * hexValues.length); 
-                                        hex1 += hexValues[index];
-                                        hex2 += hexValues[index];
-                                        }
-                                        am4core.useTheme(am4themes_animated);
-                                        var chart = am4core.create("wcdiv", am4plugins_wordCloud.WordCloud);
-                                        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
-                                        series.maxCount = 100;
-                                        series.minWordLength = 2;
-                                        series.randomness = 0;
-                                        series.heatRules.push({
-                                        "target": series.labels.template,
-                                        "property": "fill",
-                                        "min": am4core.color(hex1),
-                                        "max": am4core.color(hex2),
-                                        "dataField": "value"
-                                        });
-                                        series.events.on("arrangestarted", function(ev) {
-                                        ev.target.baseSprite.preloader.show(0);
-                                        });
-
-                                        series.events.on("arrangeprogress", function(ev) {
-                                        ev.target.baseSprite.preloader.progress = ev.progress;
-                                        });
-                                        series.data = [{{all_news_data | safe}}];
-                                        series.dataFields.word = "tag";
-                                        series.dataFields.value = "weight";
-                                    </script>
                                 </div>
                             </div>
                         </div>

@@ -30,6 +30,8 @@
           headers: { "X-CSRFToken": '{{csrf_token}}' }
         });
       </script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> 
 </head>
 <body class="bg-gradient-primary backgroundTheme">
     <div class="container">
@@ -56,11 +58,11 @@
                                         <script>
                                             $('#btnLogin').on('click', function(e) {
                                                 if($('#id').val() == "" ){
-                                                    alert('아이디를 입력하세요');
+                                                    toastr.warning('아이디를 입력하세요');
                                                     $('#id').focus();
                                                     return;
                                                 }else if($('#password').val() == "" ){
-                                                    alert('비밀번호를 입력하세요')
+                                                    toastr.warning('비밀번호를 입력하세요')
                                                     $('#password').focus();
                                                     return;
                                                 }else{
@@ -78,14 +80,15 @@
                                                         console.log(data);
                                                         if(data === "TRUE"){
                                                             console.log("로그인 성공");
+                                                            toastr.success('데일리 뉴스 관리자', '로그인 확인하였습니다.');
                                                             location.href="/index";
                                                         }else{
-                                                            alert("로그인 실패");
+                                                            toastr.error('데일리 뉴스 관리자', '로그인 실패하였습니다.');
                                                             // location.href="/";
                                                         }
                                                     },
                                                     error : function(error){
-                                                        alert("로그인 오류");
+                                                        toastr.warning('데일리 뉴스 관리자', '로그인 문제가 발생하였습니다.');
                                                         // location.href="/";
                                                         console.log(JSON.stringify(error));
                                                     }

@@ -22,6 +22,8 @@
     <!-- Custom styles for this template-->
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> 
 </head>
 
 <body class="bg-gradient-primary backgroundTheme">
@@ -62,31 +64,31 @@
                                         <script>
                                             $('#btnRegisterAccount').on('click', function(e) {
                                                 if($('#registerId').val() == "" ){
-                                                    alert('아이디를 입력하세요');
+                                                    toastr.error('아이디를 입력하세요');
                                                     $('#registerId').focus();
                                                     return;
                                                 }else if($('#registerId').val().length > 50 ){
-                                                    alert('아이디가 너무 깁니다.')
+                                                    toastr.error('아이디가 너무 깁니다.')
                                                     $('#registerId').focus();
                                                     return;
                                                 }else if($('#registerPassword').val() == "" ){
-                                                    alert('비밀번호를 입력하세요')
+                                                    toastr.error('비밀번호를 입력하세요')
                                                     $('#registerPassword').focus();
                                                     return;
                                                 }else if($('#registerPassword').val().length > 50 ){
-                                                    alert('비밀번호가 너무 깁니다.')
+                                                    toastr.error('비밀번호가 너무 깁니다.')
                                                     $('#registerPassword').focus();
                                                     return;
                                                 }else if($('#registerPassword').val() !== $('#registerPasswordRepeat').val() ){
-                                                    alert('비밀번호 재입력이 서로 다릅니다')
+                                                    toastr.error('비밀번호 재입력이 서로 다릅니다')
                                                     $('#registerPassword').focus();
                                                     return;
                                                 }else if($('#registerName').val() == "" ){
-                                                    alert('이름을 입력하세요')
+                                                    toastr.error('이름을 입력하세요')
                                                     $('#registerName').focus();
                                                     return;
                                                 }else if($('#registerName').val().length > 50 ){
-                                                    alert('이름이 너무 깁니다.')
+                                                    toastr.error('이름이 너무 깁니다.')
                                                     $('#registerName').focus();
                                                     return;
                                                 }else{
@@ -105,15 +107,17 @@
                                                     success : function(data){
                                                         console.log(data);
                                                         if(data === "TRUE"){
-                                                            alert("가입 성공!");
+                                                            toastr.success("가입 성공");
                                                             location.href="/";
                                                         }else{
-                                                            alert("가입 실패");
+                                                            // alert("가입 실패");
+                                                            toastr.error('중복된 아이디가 존재합니다');
                                                             // location.href="/";
                                                         }
                                                     },
                                                     error : function(error){
-                                                        alert("가입 오류");
+                                                        // alert("가입 오류");
+                                                        toastr.warning("가입 오류");
                                                         // location.href="/";
                                                         console.log(JSON.stringify(error));
                                                     }

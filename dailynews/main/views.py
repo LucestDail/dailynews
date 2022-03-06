@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from bs4news.models import News, News_Analysis_Raw, News_Company
+from bs4news.models import News, News_Analysis_Raw, News_Company, News_Analysis_Count_Company, News_Analysis_Word_Analysis_Company
 from main.models import User, Dashboard, Noticeboard
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime, timedelta
@@ -338,10 +338,6 @@ def newsdashboard(request):
     focus3_company_name = userData.User_Focus_Company_2
     focus3_company_code = News_Company.objects.get(News_Company_Name=focus3_company_name).News_Company_Code
 
-    focus_all_data_news = []
-    focus1_data_news = []
-    focus2_data_news = []
-    focus3_data_news = []
     graph_focus_news_count_jsonStr = ''
     for i in range(0, 7):
         graph_check_date = datetime.today() - timedelta(days=i)
@@ -349,26 +345,22 @@ def newsdashboard(request):
         graph_from_date = datetime.strptime(graph_input_date, '%Y-%m-%d').date()
         graph_from_date = datetime.combine(graph_from_date, datetime.min.time())
         graph_to_date = datetime.combine(graph_from_date, datetime.max.time())
-        graph_news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(graph_from_date, graph_to_date))
+        graph_news_data_date = News_Analysis_Count_Company.objects.filter(News_Analysis_Count_Company_CreateDT__range=(graph_from_date, graph_to_date))
         graph_focus1_news_count = 0
         graph_focus2_news_count = 0
         graph_focus3_news_count = 0
         graph_focus_news_count = 0
         for graph_count_target_news in graph_news_data_date:
-            if graph_count_target_news.News_Analysis_Company == focus1_company_code\
-                    or graph_count_target_news.News_Analysis_Company == focus2_company_code\
-                    or graph_count_target_news.News_Analysis_Company == focus3_company_code:
-                graph_focus_news_count += 1
-                focus_all_data_news.append(graph_count_target_news)
-                if graph_count_target_news.News_Analysis_Company == focus1_company_code:
-                    graph_focus1_news_count += 1
-                    focus1_data_news.append(graph_count_target_news)
-                elif graph_count_target_news.News_Analysis_Company == focus2_company_code:
-                    graph_focus2_news_count += 1
-                    focus2_data_news.append(graph_count_target_news)
-                elif graph_count_target_news.News_Analysis_Company == focus3_company_code:
-                    graph_focus3_news_count += 1
-                    focus3_data_news.append(graph_count_target_news)
+            if graph_count_target_news.News_Analysis_Count_Company_Code == focus1_company_code\
+                    or graph_count_target_news.News_Analysis_Count_Company_Code == focus2_company_code\
+                    or graph_count_target_news.News_Analysis_Count_Company_Code == focus3_company_code:
+                graph_focus_news_count += int(graph_count_target_news.News_Analysis_Count_Company_Count)
+                if graph_count_target_news.News_Analysis_Count_Company_Code == focus1_company_code:
+                    graph_focus1_news_count += int(graph_count_target_news.News_Analysis_Count_Company_Count)
+                elif graph_count_target_news.News_Analysis_Count_Company_Code == focus2_company_code:
+                    graph_focus2_news_count += int(graph_count_target_news.News_Analysis_Count_Company_Count)
+                elif graph_count_target_news.News_Analysis_Count_Company_Code == focus3_company_code:
+                    graph_focus3_news_count += int(graph_count_target_news.News_Analysis_Count_Company_Count)
         graph_focus_news_count_jsonStr += '{"date":"'
         graph_focus_news_count_jsonStr += graph_input_date
         graph_focus_news_count_jsonStr += '",'
@@ -385,78 +377,79 @@ def newsdashboard(request):
         graph_focus_news_count_jsonStr += str(graph_focus_news_count)
         graph_focus_news_count_jsonStr += '},'
 
-    focus_temp_save = []
-    for focus_data_element in focus_all_data_news:
-        focus_news_content = focus_data_element.News_Morphs.split(',')
-        for focus_news_data_morphs_element in focus_news_content:
-            focus_temp_save.append(focus_news_data_morphs_element)
-    focus_result = Counter(focus_temp_save)
-    focus_most_word_100 = focus_result.most_common(50)
-    focus_most_word_100_jsonStr = ''
-    for focus_most_word_100_element in focus_most_word_100:
-        focus_most_word_100_jsonStr += '{"tag":"'
-        focus_most_word_100_jsonStr += str(focus_most_word_100_element[0])
-        focus_most_word_100_jsonStr += '",'
-        focus_most_word_100_jsonStr += '"weight":'
-        focus_most_word_100_jsonStr += str(focus_most_word_100_element[1])
-        focus_most_word_100_jsonStr += '},'
+    # focus1_temp_save = []
+    # for focus1_data_element in focus1_data_news:
+    #     focus1_news_content = focus1_data_element.News_Morphs.split(',')
+    #     for focus1_news_data_morphs_element in focus1_news_content:
+    #         focus1_temp_save.append(focus1_news_data_morphs_element)
+    # focus1_result = Counter(focus1_temp_save)
+    # focus1_most_word_50 = focus1_result.most_common(50)
+    # focus1_most_word_50_jsonStr = ''
+    # for focus1_most_word_50_element in focus1_most_word_50:
+    #     focus1_most_word_50_jsonStr += '{"tag":"'
+    #     focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[0])
+    #     focus1_most_word_50_jsonStr += '",'
+    #     focus1_most_word_50_jsonStr += '"weight":'
+    #     focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[1])
+    #     focus1_most_word_50_jsonStr += '},'
 
-    focus1_temp_save = []
-    for focus1_data_element in focus1_data_news:
-        focus1_news_content = focus1_data_element.News_Morphs.split(',')
-        for focus1_news_data_morphs_element in focus1_news_content:
-            focus1_temp_save.append(focus1_news_data_morphs_element)
-    focus1_result = Counter(focus1_temp_save)
-    focus1_most_word_50 = focus1_result.most_common(50)
-    focus1_most_word_50_jsonStr = ''
-    for focus1_most_word_50_element in focus1_most_word_50:
-        focus1_most_word_50_jsonStr += '{"tag":"'
-        focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[0])
-        focus1_most_word_50_jsonStr += '",'
-        focus1_most_word_50_jsonStr += '"weight":'
-        focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[1])
-        focus1_most_word_50_jsonStr += '},'
+    target_date = datetime.today() - timedelta(days=1)
+    format_date = str(target_date.year) + '-' + str(target_date.month) + '-' + str(target_date.day)
+    from_date = datetime.strptime(format_date, '%Y-%m-%d').date()
+    from_date = datetime.combine(from_date, datetime.min.time())
+    to_date = datetime.combine(from_date, datetime.max.time())
+    focus1_most_word_50_jsonStr = News_Analysis_Word_Analysis_Company.objects\
+        .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
+             News_Analysis_Word_Analysis_Company_Code=focus1_company_code)
 
-    focus2_temp_save = []
-    for focus2_data_element in focus2_data_news:
-        focus2_news_content = focus2_data_element.News_Morphs.split(',')
-        for focus2_news_data_morphs_element in focus2_news_content:
-            focus2_temp_save.append(focus2_news_data_morphs_element)
-    focus2_result = Counter(focus2_temp_save)
-    focus2_most_word_50 = focus2_result.most_common(50)
-    focus2_most_word_50_jsonStr = ''
-    for focus2_most_word_50_element in focus2_most_word_50:
-        focus2_most_word_50_jsonStr += '{"tag":"'
-        focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[0])
-        focus2_most_word_50_jsonStr += '",'
-        focus2_most_word_50_jsonStr += '"weight":'
-        focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[1])
-        focus2_most_word_50_jsonStr += '},'
 
-    focus3_temp_save = []
-    for focus3_data_element in focus3_data_news:
-        focus3_news_content = focus3_data_element.News_Morphs.split(',')
-        for focus3_news_data_morphs_element in focus3_news_content:
-            focus3_temp_save.append(focus3_news_data_morphs_element)
-    focus3_result = Counter(focus3_temp_save)
-    focus3_most_word_50 = focus3_result.most_common(50)
-    focus3_most_word_50_jsonStr = ''
-    for focus3_most_word_50_element in focus3_most_word_50:
-        focus3_most_word_50_jsonStr += '{"tag":"'
-        focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[0])
-        focus3_most_word_50_jsonStr += '",'
-        focus3_most_word_50_jsonStr += '"weight":'
-        focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[1])
-        focus3_most_word_50_jsonStr += '},'
+
+    # focus2_temp_save = []
+    # for focus2_data_element in focus2_data_news:
+    #     focus2_news_content = focus2_data_element.News_Morphs.split(',')
+    #     for focus2_news_data_morphs_element in focus2_news_content:
+    #         focus2_temp_save.append(focus2_news_data_morphs_element)
+    # focus2_result = Counter(focus2_temp_save)
+    # focus2_most_word_50 = focus2_result.most_common(50)
+    # focus2_most_word_50_jsonStr = ''
+    # for focus2_most_word_50_element in focus2_most_word_50:
+    #     focus2_most_word_50_jsonStr += '{"tag":"'
+    #     focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[0])
+    #     focus2_most_word_50_jsonStr += '",'
+    #     focus2_most_word_50_jsonStr += '"weight":'
+    #     focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[1])
+    #     focus2_most_word_50_jsonStr += '},'
+
+    focus2_most_word_50_jsonStr = News_Analysis_Word_Analysis_Company.objects \
+        .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
+                News_Analysis_Word_Analysis_Company_Code=focus2_company_code)
+
+    # focus3_temp_save = []
+    # for focus3_data_element in focus3_data_news:
+    #     focus3_news_content = focus3_data_element.News_Morphs.split(',')
+    #     for focus3_news_data_morphs_element in focus3_news_content:
+    #         focus3_temp_save.append(focus3_news_data_morphs_element)
+    # focus3_result = Counter(focus3_temp_save)
+    # focus3_most_word_50 = focus3_result.most_common(50)
+    # focus3_most_word_50_jsonStr = ''
+    # for focus3_most_word_50_element in focus3_most_word_50:
+    #     focus3_most_word_50_jsonStr += '{"tag":"'
+    #     focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[0])
+    #     focus3_most_word_50_jsonStr += '",'
+    #     focus3_most_word_50_jsonStr += '"weight":'
+    #     focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[1])
+    #     focus3_most_word_50_jsonStr += '},'
+    focus3_most_word_50_jsonStr = News_Analysis_Word_Analysis_Company.objects \
+        .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
+                News_Analysis_Word_Analysis_Company_Code=focus3_company_code)
 
     return render(request, 'newsdashboard.html', {'graph_news_all_count': graph_focus_news_count_jsonStr,
-                                                  'all_news_data': focus_most_word_100_jsonStr,
                                                   'focus1_company_name': focus1_company_name,
-                                                  'focus1_news_data': focus1_most_word_50_jsonStr,
+                                                  'focus1_news_data': focus1_most_word_50_jsonStr.News_Analysis_Word_Analysis_Company_Data,
                                                   'focus2_company_name': focus2_company_name,
-                                                  'focus2_news_data': focus2_most_word_50_jsonStr,
+                                                  'focus2_news_data': focus2_most_word_50_jsonStr.News_Analysis_Word_Analysis_Company_Data,
                                                   'focus3_company_name': focus3_company_name,
-                                                  'focus3_news_data': focus3_most_word_50_jsonStr})
+                                                  'focus3_news_data': focus3_most_word_50_jsonStr.News_Analysis_Word_Analysis_Company_Data})
 
 
 def newsraw(request):
