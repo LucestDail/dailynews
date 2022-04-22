@@ -10,4 +10,6 @@ urlpatterns = [
     path('company', views.company, name='company'),
     path('morphs', views.create_morphs, name='morphs'),
     path('indexmorphs', views.index_morphs, name='indexmorphs'),
+    path('word2vec', views.word2vec, name='word2vec'),
+
 ]

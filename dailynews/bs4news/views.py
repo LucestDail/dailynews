@@ -3,10 +3,19 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from konlpy.tag import Okt
 from .models import News, News_Company, News_Analysis_Raw
+from gensim.models import Word2Vec
+from nltk.tokenize import word_tokenize, sent_tokenize
 import time
 import requests
+import re
 from bs4 import BeautifulSoup
 import warnings
+import pandas as pd
+
+import urllib.request
+import zipfile
+from lxml import etree
+
 warnings.filterwarnings("ignore")
 # Create your views here.
 
@@ -93,14 +102,14 @@ def scrap(request):
                             try:
                                 visitHtml = visitResponse.text
                                 visitSoup = BeautifulSoup(visitHtml, 'html.parser')
-                                articleTitle = visitSoup.find(id='articleTitle').text.strip()
-                                articleBody = visitSoup.find(id='articleBodyContents').text.strip()
+                                articleTitle = visitSoup.find(class_='media_end_head_headline').text.strip()
+                                articleBody = visitSoup.find(id='dic_area').text.strip()
                                 articleCompany = url[url.find('oid')+4:url.find('oid')+7]
                                 if type(visitSoup.find(class_='byline')) is None:
                                     articleBy = '기자 정보 없음'
                                 else:
                                     articleBy = visitSoup.find(class_='byline').text.strip()
-                                articleTime = visitSoup.find(class_='t11').text.strip()
+                                articleTime = visitSoup.find(class_='media_end_head_info_datestamp_time').text.strip()
                                 articleTimeDate = datetime.strptime(articleTime.split()[0],'%Y.%m.%d.')
                                 articleTimeAP = articleTime.split()[1]
                                 articleTimeHour = datetime.strptime(articleTime.split()[2], '%H:%M')
@@ -253,3 +262,61 @@ def index_morphs(request):
         print(target_contents)
 
 
+def word2vec(request):
+    print('word2vce started -------------------')
+    if request.method == 'GET' and 'word' in request.GET and 'date' in request.GET:
+        target_word = request.GET['word']
+        current_datetime = request.GET['date']
+    elif request.method == 'GET' and 'word' in request.GET:
+        target_company = request.GET['word']
+        current_datetime = datetime.now()
+    else:
+        target_word = '경향신문'
+        current_datetime = datetime.now()
+    target_company = '032'
+    input_date = str(current_datetime.year) + '-' + str(current_datetime.month) + '-' + str(current_datetime.day)
+    from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
+    from_date = datetime.combine(from_date, datetime.min.time())
+    to_date = datetime.combine(from_date, datetime.max.time())
+    target_news_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                        News_Analysis_Company=target_company)
+    target_news_sentences = News.objects.filter(News_CreateDT__range=(from_date, to_date), News_company=target_company)
+    # for target_news_element in target_news_data:
+    #     print(target_news_element)
+    #     sent_text = sent_tokenize(target_news_element)
+    #     print(sent_text)
+    #     normalized_text = []
+    #     normalized_text.append(sent_text)
+    #     print(normalized_text)
+    #     result = [word_tokenize(sentence) for sentence in normalized_text]
+    #     model = Word2Vec(sentences=result, size=100, window=5, min_count=5, workers=4, sg=0)
+    #     # 임베딩 벡터 차원
+    #     # window : 윈도우 크기
+    #     # mincont : 최소 5번 이상 등장한 단어
+    #     # sg = 0 : CBOW
+    #     # sg = 1 : skip - grows
+    #     model_result = model.wv.most_similar(target_word)
+    #     print(model_result)
+    for target_news_sentences_element in target_news_sentences:
+        print('news for start ================================')
+        content_text = target_news_sentences_element.News_contents
+        print(content_text)
+        # 입력 코퍼스에 대해서 NLTK를 이용하여 문장 토큰화를 수행.
+        sent_text = sent_tokenize(content_text)
+        # 각 문장에 대해서 구두점을 제거하고, 대문자를 소문자로 변환.
+        normalized_text = []
+        for string in sent_text:
+            normalized_text.append(string)
+        # 각 문장에 대해서 NLTK를 이용하여 단어 토큰화를 수행.
+        result = [word_tokenize(sentence) for sentence in normalized_text]
+        print('총 샘플의 개수 : {}'.format(len(result)))
+        for line in result[:3]:
+            print(line)
+        df = pd.DataFrame(result)
+        model = Word2Vec(map(eval, df['corpus'].values), sg=1, window=5, min_count=1, workers=4, iter=100)
+        model_result1 = model.wv.most_similar("정부")
+        model_result = model.wv.most_similar(target_word)
+        print(model_result)
+        print('news for ended ================================')
+    print('word2vce ended -------------------')
+    return render(request, 'bs4news.html', {'news_list': target_news_sentences})

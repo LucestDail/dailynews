@@ -45,14 +45,15 @@ def scrap():
                                 try:
                                     visitHtml = visitResponse.text
                                     visitSoup = BeautifulSoup(visitHtml, 'html.parser')
-                                    articleTitle = visitSoup.find(id='articleTitle').text.strip()
-                                    articleBody = visitSoup.find(id='articleBodyContents').text.strip()
+                                    articleTitle = visitSoup.find(class_='media_end_head_headline').text.strip()
+                                    articleBody = visitSoup.find(id='dic_area').text.strip()
                                     articleCompany = url[url.find('oid') + 4:url.find('oid') + 7]
                                     if type(visitSoup.find(class_='byline')) is None:
                                         articleBy = '기자 정보 없음'
                                     else:
                                         articleBy = visitSoup.find(class_='byline').text.strip()
-                                    articleTime = visitSoup.find(class_='t11').text.strip()
+                                    articleTime = visitSoup.find(
+                                        class_='media_end_head_info_datestamp_time').text.strip()
                                     articleTimeDate = datetime.strptime(articleTime.split()[0], '%Y.%m.%d.')
                                     articleTimeAP = articleTime.split()[1]
                                     articleTimeHour = datetime.strptime(articleTime.split()[2], '%H:%M')
