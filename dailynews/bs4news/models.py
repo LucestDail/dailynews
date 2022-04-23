@@ -194,3 +194,18 @@ class BS4_NEWS_ANALYSIS_WORD(models.Model):
     ETC3 = models.TextField(blank=True)
     ETC4 = models.TextField(blank=True)
     ETC5 = models.TextField(blank=True)
+
+
+class BS4_NEWS_ANALYSIS_WORD_EXCLUDED(models.Model):
+    COMPANY_CODE = models.CharField(db_index=True, max_length=200)
+    EXCLUDED_WORD = models.TextField(blank=True)
+    DESCRIPTION_INFO = models.TextField(blank=True)
+    UPDATE_DATETIME = models.DateTimeField('date updated')
+    UPDATE_USER = models.CharField(db_index=True, max_length=200)
+    CREATE_DATETIME = models.DateTimeField('date created')
+    CREATE_USER = models.CharField(db_index=True, max_length=200)
+    ETC1 = models.TextField(blank=True)
+    ETC2 = models.TextField(blank=True)
+    ETC3 = models.TextField(blank=True)
+    ETC4 = models.TextField(blank=True)
+    ETC5 = models.TextField(blank=True)

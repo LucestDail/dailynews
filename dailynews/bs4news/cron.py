@@ -1,6 +1,6 @@
 import traceback
 from datetime import datetime, timedelta
-from .models import News, News_Analysis_Raw, News_Company, News_Analysis_Count_Company, News_Analysis_Word_Analysis_Company
+from .models import *
 from konlpy.tag import Okt
 import time
 import requests
@@ -131,16 +131,23 @@ def news_analysis_create_morphs():
         success = 0
         fail = 0
         for target_news_element in target_news_data:
+            excluded_word_data = BS4_NEWS_ANALYSIS_WORD_EXCLUDED.objects.filter(
+                COMPANY_CODE=target_news_element.News_company)
+            excluded_word_list = []
+            if excluded_word_data > 0:
+                for excluded_word_data_element in excluded_word_data:
+                    excluded_word_list.append(excluded_word_data_element.EXCLUDED_WORD)
             target_news_morphs = okt.nouns(target_news_element.News_contents)
             target_news_morphs = [n for n in target_news_morphs if len(n) > 1]
             save_morphs = ''
             count = 0
             target += 1
             for morphs_element in target_news_morphs:
-                save_morphs += morphs_element
-                count += 1
-                if count < len(target_news_morphs):
-                    save_morphs += ","
+                if morphs_element not in excluded_word_list:
+                    save_morphs += morphs_element
+                    count += 1
+                    if count < len(target_news_morphs):
+                        save_morphs += ","
             if (News_Analysis_Raw.objects.filter(
                     News_Analysis_From=target_news_element.News_from,
                     News_Analysis_Title=target_news_element.News_title,
