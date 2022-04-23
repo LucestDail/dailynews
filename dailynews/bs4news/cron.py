@@ -134,7 +134,7 @@ def news_analysis_create_morphs():
             excluded_word_data = BS4_NEWS_ANALYSIS_WORD_EXCLUDED.objects.filter(
                 COMPANY_CODE=target_news_element.News_company)
             excluded_word_list = []
-            if excluded_word_data > 0:
+            if len(excluded_word_data) > 0:
                 for excluded_word_data_element in excluded_word_data:
                     excluded_word_list.append(excluded_word_data_element.EXCLUDED_WORD)
             target_news_morphs = okt.nouns(target_news_element.News_contents)

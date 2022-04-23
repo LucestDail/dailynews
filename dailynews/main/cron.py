@@ -3,7 +3,7 @@ from bs4news.models import News, News_Analysis_Raw, News_Company
 from main.models import Dashboard
 
 
-def dashboard_every_minute():
+def dashboard_index():
     print('django main dashboard_every_minute crontab started -------------------')
     news_data_count = News.objects.all()
     news_data_count_input = len(news_data_count)
