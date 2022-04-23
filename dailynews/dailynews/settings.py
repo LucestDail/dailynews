@@ -145,7 +145,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRONJOBS = [
     ('*/15 * * * *', 'bs4news.cron.scrap', '>> bs4cron.log'),
-    ('10 * * * *', 'bs4news.cron.news_analysis_create_morphs', '>> bs4cron.log'),
-    ('25 * * * *', 'main.cron.dashboard_every_minute', '>> main4cron.log'),
-    ('40 * * * *', 'bs4news.cron.news_analysis_create_news_dashboard_data', '>> bs4cron.log'),
+    ('10 */2 * * *', 'bs4news.cron.news_analysis_create_morphs', '>> bs4cron.log'),
+    ('25 */2 * * *', 'main.cron.dashboard_every_minute', '>> main4cron.log'),
+    ('40 */2 * * *', 'bs4news.cron.news_analysis_create_news_dashboard_data', '>> bs4cron.log'),
 ]
