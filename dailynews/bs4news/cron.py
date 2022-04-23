@@ -65,7 +65,7 @@ def scrap():
                                                                               '%H:%M').time()
                                     inputarticleTime = articleTimeDate.strftime(
                                         '%Y-%m-%d') + ' ' + articleTimeHourResult.strftime('%H:%M:%S')
-                                    time.sleep(5)
+                                    time.sleep(1)
                                     # News_from
                                     # News_title
                                     # News_contents

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bs4news</title>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+<table class="table">
+    <thead>
+        <tr>
+          <th scope="col">NEWS_ID</th>
+          <th scope="col">NEWS_AUTHOR</th>
+          <th scope="col">NEWS_TITLE</th>
+          <th scope="col">NEWS_CREATE_DATETIME</th>
+        </tr>
+      </thead>
+    <tbody>
+    {% for news in news_list %}
+    <tr>
+        <th scope="row">{{news.id}}</th>
+        <td>{{news.NEWS_AUTHOR}}</td>
+        <td>{{news.NEWS_TITLE}}</td>
+        <td>{{news.NEWS_CREATE_DATETIME}}</td>
+    </tr>
+    <tr>
+        <td colspan="4">{{news.NEWS_CONTENTS}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if news_list.has_previous %}
+            <a href="?page={{ news_list.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ news_list.number }} of {{ news_list.paginator.num_pages }}.
+        </span>
+
+        {% if news_list.has_next %}
+            <a href="?page={{ news_list.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+</body>
+</html>
