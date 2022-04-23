@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 import warnings
 from collections import Counter
+import random
 warnings.filterwarnings("ignore")
 
 
@@ -65,7 +66,7 @@ def scrap():
                                                                               '%H:%M').time()
                                     inputarticleTime = articleTimeDate.strftime(
                                         '%Y-%m-%d') + ' ' + articleTimeHourResult.strftime('%H:%M:%S')
-                                    time.sleep(1)
+                                    time.sleep(random.uniform(0, 1.0))
                                     # News_from
                                     # News_title
                                     # News_contents
