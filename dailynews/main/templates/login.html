@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Daily News</title>
+    <title>Daily Data Hub</title>
 
     <!-- Custom fonts for this template-->
     <link href="{% static 'fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -45,7 +45,7 @@
                             <div class="col-lg-12">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">당신의 정보가 시작 되는 데일리 뉴스입니다</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">당신의 정보가 시작 되는 데일리 데이터 허브입니다</h1>
                                     </div>
                                     <form class="user">
                                         <div class="form-group">
@@ -80,15 +80,15 @@
                                                         console.log(data);
                                                         if(data === "TRUE"){
                                                             console.log("로그인 성공");
-                                                            toastr.success('데일리 뉴스 관리자', '로그인 확인하였습니다.');
+                                                            toastr.success('데일리 데이터 허브 관리자', '로그인 확인하였습니다.');
                                                             location.href="/index";
                                                         }else{
-                                                            toastr.error('데일리 뉴스 관리자', '로그인 실패하였습니다.');
+                                                            toastr.error('데일리 데이터 허브 관리자', '로그인 실패하였습니다.');
                                                             // location.href="/";
                                                         }
                                                     },
                                                     error : function(error){
-                                                        toastr.warning('데일리 뉴스 관리자', '로그인 문제가 발생하였습니다.');
+                                                        toastr.warning('데일리 데이터 허브 관리자', '로그인 문제가 발생하였습니다.');
                                                         // location.href="/";
                                                         console.log(JSON.stringify(error));
                                                     }
