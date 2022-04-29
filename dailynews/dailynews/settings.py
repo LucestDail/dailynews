@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-va529#4i8s24opim1dr6$5vkwiew5l@y2a3pnm@x=xs*%*m7by'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS = ['localhost', 'teametastorage.com']
 ALLOWED_HOSTS = ['*']
@@ -95,6 +95,8 @@ DATABASES = {
         'PASSWORD': 'admin1234',
         'HOST': '192.168.11.21',
         'PORT': '3306'
+        # 'HOST': 'dailydatahub.com',
+        # 'PORT': '8050'
     }
 }
 
