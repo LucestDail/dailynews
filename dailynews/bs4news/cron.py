@@ -18,6 +18,9 @@ def scrap():
         current_job_target_company_code = current_job_target_company.News_Company_Code
         print('current step =====================================')
         print(current_job_target_company_code)
+        print('job start ========================================')
+        print(datetime.now())
+        print('job started =====================================>')
         current_datetime = datetime.now()
         format = '%Y%m%d'
         target_date = datetime.strftime(current_datetime, format)
@@ -97,18 +100,32 @@ def scrap():
                             else:
                                 print(visitResponse.status_code)
                                 print("end work")
+                                print('job end ========================================')
+                                print(datetime.now())
+                                print('job ended =====================================>')
                         except Exception:
                             print(Exception)
                             print('exception from inner loop')
+                            print('job end ========================================')
+                            print(datetime.now())
+                            print('job ended =====================================>')
                             pass
             else:
                 print(response.status_code)
                 print("end work, Job finished =============================")
+                print('job end ========================================')
+                print(datetime.now())
+                print('job ended =====================================>')
         except Exception:
             print(Exception)
             print('exception from outer loop')
+            print('job end ========================================')
+            print(datetime.now())
+            print('job ended =====================================>')
             pass
-        print('current step =====================================')
+        print('total end ========================================')
+        print(datetime.now())
+        print('total ended =====================================>')
     print('django bs4news scrap crontab ended -------------------')
 
 
@@ -119,6 +136,9 @@ def news_analysis_create_morphs():
         current_job_target_company_code = current_job_target_company.News_Company_Code
         print('current step =====================================')
         print(current_job_target_company_code)
+        print('job start ========================================')
+        print(datetime.now())
+        print('job started =====================================>')
         current_datetime = datetime.now()
         target_company = current_job_target_company_code
         okt = Okt()
@@ -171,6 +191,9 @@ def news_analysis_create_morphs():
         print(success)
         print(' | fail (maybe duplicate)')
         print(fail)
+        print('job end ========================================')
+        print(datetime.now())
+        print('job ended =====================================>')
     print('django bs4news news_analysis_create_morphs crontab ended -------------------')
 
 
@@ -196,34 +219,15 @@ def news_analysis_create_news_dashboard_data():
         from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
         from_date = datetime.combine(from_date, datetime.min.time())
         to_date = datetime.combine(from_date, datetime.max.time())
-        target_news_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
-                                                            News_Analysis_Company=target_company)
 
-        target_news_data_analysis_jsonStr = ''
-        target_company_count = len(target_news_data)
-
-        target_temp_save = []
-        for target_data_element in target_news_data:
-            target_news_content = target_data_element.News_Morphs.split(',')
-            for target_news_data_morphs_element in target_news_content:
-                target_temp_save.append(target_news_data_morphs_element)
-        target_result = Counter(target_temp_save)
-        target_most_word_50 = target_result.most_common(50)
-
-        for target_most_word_50_element in target_most_word_50:
-            target_news_data_analysis_jsonStr += '{"tag":"'
-            target_news_data_analysis_jsonStr += str(target_most_word_50_element[0])
-            target_news_data_analysis_jsonStr += '",'
-            target_news_data_analysis_jsonStr += '"weight":'
-            target_news_data_analysis_jsonStr += str(target_most_word_50_element[1])
-            target_news_data_analysis_jsonStr += '},'
-
-        News_Analysis_Count_Company, News_Analysis_Word_Analysis_Company
         if(News_Analysis_Count_Company.objects.filter(News_Analysis_Count_Company_Code=target_company,
                                                       News_Analysis_Count_Company_CreateDT__range=(from_date, to_date))):
             fail += 1
             target += 1
         else:
+            target_news_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                                News_Analysis_Company=target_company)
+            target_company_count = len(target_news_data)
             News_Analysis_Count_Company_Input = News_Analysis_Count_Company(
                 News_Analysis_Count_Company_Code=target_company,
                 News_Analysis_Count_Company_CreateDT=from_date,
@@ -239,6 +243,23 @@ def news_analysis_create_news_dashboard_data():
             fail += 1
             target += 1
         else:
+            target_news_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                                News_Analysis_Company=target_company)
+            target_temp_save = []
+            for target_data_element in target_news_data:
+                target_news_content = target_data_element.News_Morphs.split(',')
+                for target_news_data_morphs_element in target_news_content:
+                    target_temp_save.append(target_news_data_morphs_element)
+            target_result = Counter(target_temp_save)
+            target_most_word_50 = target_result.most_common(50)
+            target_news_data_analysis_jsonStr = ''
+            for target_most_word_50_element in target_most_word_50:
+                target_news_data_analysis_jsonStr += '{"tag":"'
+                target_news_data_analysis_jsonStr += str(target_most_word_50_element[0])
+                target_news_data_analysis_jsonStr += '",'
+                target_news_data_analysis_jsonStr += '"weight":'
+                target_news_data_analysis_jsonStr += str(target_most_word_50_element[1])
+                target_news_data_analysis_jsonStr += '},'
             News_Analysis_Word_Analysis_Company_Input = News_Analysis_Word_Analysis_Company(
                 News_Analysis_Word_Analysis_Company_Code=target_company,
                 News_Analysis_Word_Analysis_Company_CreateDT=from_date,
@@ -256,4 +277,7 @@ def news_analysis_create_news_dashboard_data():
         print(success)
         print(' | fail (maybe duplicate)')
         print(fail)
+        print('job end ========================================')
+        print(datetime.now())
+        print('job ended =====================================>')
     print('django bs4news news_analysis_create_news_dashboard_data crontab ended -------------------')

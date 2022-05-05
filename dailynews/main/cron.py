@@ -5,6 +5,9 @@ from main.models import Dashboard
 
 def dashboard_index():
     print('django main dashboard_every_minute crontab started -------------------')
+    print('job start ========================================')
+    print(datetime.now())
+    print('job started =====================================>')
     news_data_count = News.objects.all()
     news_data_count_input = len(news_data_count)
     print(news_data_count_input)
@@ -30,4 +33,7 @@ def dashboard_index():
         Dashboard_CreateDT=datetime.now(),
     )
     Dashboard_instance.save()
+    print('job end ========================================')
+    print(datetime.now())
+    print('job ended =====================================>')
     print('django main dashboard_every_minute crontab started -------------------')
