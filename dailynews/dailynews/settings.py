@@ -95,7 +95,7 @@ DATABASES = {
         'PASSWORD': 'admin1234',
         'HOST': '192.168.11.21',
         'PORT': '3306'
-        # 'HOST': 'dailydatahub.com',
+        # 'HOST': 'teametastorage.com',
         # 'PORT': '8050'
     }
 }
