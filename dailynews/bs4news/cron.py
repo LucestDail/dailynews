@@ -131,6 +131,7 @@ def news_analysis_create_morphs():
         success = 0
         fail = 0
         for target_news_element in target_news_data:
+            target += 1
             if (News_Analysis_Raw.objects.filter(
                     News_Analysis_From=target_news_element.News_from,
                     News_Analysis_Title=target_news_element.News_title,
@@ -148,7 +149,6 @@ def news_analysis_create_morphs():
                 target_news_morphs = [n for n in target_news_morphs if len(n) > 1]
                 save_morphs = ''
                 count = 0
-                target += 1
                 for morphs_element in target_news_morphs:
                     if morphs_element not in excluded_word_list:
                         save_morphs += morphs_element
