@@ -45,7 +45,10 @@ def scrap():
                         try:
                             visitResponse = requests.get(visiturl, headers=headers)
                             if response.status_code == 200:
-                                print('pass 1')
+                                print('pass 2')
+                                print('scrap start ========================================')
+                                print(datetime.now())
+                                print('scrap started =====================================>')
                                 try:
                                     visitHtml = visitResponse.text
                                     visitSoup = BeautifulSoup(visitHtml, 'html.parser')
@@ -80,6 +83,9 @@ def scrap():
                                             News_company=articleCompany
                                     )):
                                         print('duplicated, next article')
+                                        print('scrap end ========================================')
+                                        print(datetime.now())
+                                        print('scrap ended =====================================>')
                                     else:
                                         news_instance = News(
                                             News_from=articleBy,
@@ -90,7 +96,9 @@ def scrap():
                                         )
                                         news_instance.save()
                                         print('save success')
-
+                                        print('scrap end ========================================')
+                                        print(datetime.now())
+                                        print('scrap ended =====================================>')
                                 except Exception as e:
                                     trace_back = traceback.format_exc()
                                     message = str(e) + "\n" + str(trace_back)
