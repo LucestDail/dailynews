@@ -14,22 +14,19 @@
 <table class="table">
     <thead>
         <tr>
-          <th scope="col">NEWS_ID</th>
-          <th scope="col">NEWS_AUTHOR</th>
-          <th scope="col">NEWS_TITLE</th>
-          <th scope="col">NEWS_CREATE_DATETIME</th>
+          <th scope="col">DOMAIN_URL</th>
+          <th scope="col">TARGET_CRAWL_URL</th>
+          <th scope="col">CREATE_DATETIME</th>
+          <th scope="col">TARGET_RAW_HTML_DATA</th>
         </tr>
       </thead>
     <tbody>
     {% for news in news_list %}
     <tr>
-        <th scope="row">{{news.id}}</th>
-        <td>{{news.NEWS_AUTHOR}}</td>
-        <td>{{news.NEWS_TITLE}}</td>
-        <td>{{news.NEWS_CREATE_DATETIME}}</td>
-    </tr>
-    <tr>
-        <td colspan="4">{{news.NEWS_CONTENTS}}</td>
+        <th scope="row">{{news.DOMAIN_URL}}</th>
+        <td>{{news.TARGET_CRAWL_URL}}</td>
+        <td>{{news.CREATE_DATETIME}}</td>
+        <td>{{news.TARGET_RAW_HTML_DATA}}</td>
     </tr>
     {% endfor %}
     </tbody>
