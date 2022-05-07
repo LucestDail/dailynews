@@ -8,6 +8,9 @@ from bs4 import BeautifulSoup
 import warnings
 from collections import Counter
 import random
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from pathlib import Path
 warnings.filterwarnings("ignore")
 
 
@@ -289,3 +292,134 @@ def news_analysis_create_news_dashboard_data():
         print(datetime.now())
         print('job ended =====================================>')
     print('django bs4news news_analysis_create_news_dashboard_data crontab ended -------------------')
+
+
+def news_crawl_bia_selenium_every_hour():
+    print('django bs4news news_analysis_create_news_dashboard_data crontab started -------------------')
+    print('CRON START ========================================')
+    print(datetime.now())
+    print('CRON START =====================================>')
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                      "AppleWebKit/537.36 (KHTML, like Gecko)"
+                      "Chrome/87.0.4280.88 Safari/537.36"
+    }
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    # browser = webdriver.Chrome(str(Path(__file__).resolve().parent.parent)+ '/webdriver/chromedriver_mac', chrome_options=chrome_options)
+    browser = webdriver.Chrome(str(Path(__file__).resolve().parent.parent)+ '/webdriver/chromedriver_linux', chrome_options=chrome_options)
+    browser.implicitly_wait(time_to_wait=5)
+    bs4_news_company_list = BS4_NEWS_COMPANY.objects.all()
+    input_date = str(datetime.now().year) + '-'\
+                 + str(datetime.now().month) + '-'\
+                 + str(datetime.now().day) + " "\
+                 + str(datetime.now().hour) + ":"\
+                 + str(datetime.now().minute) + ":"\
+                 + str(datetime.now().second)
+    from_date = datetime.strptime(input_date, '%Y-%m-%d %H:%M:%S')
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> JOB START")
+    for bs4_news_company_element in bs4_news_company_list:
+        target_company_code = bs4_news_company_element.COMPANY_CODE
+        bs4_news_company_crawl_list = BS4_NEWS_COMPANY_CRAWL.objects.filter(COMPANY_CODE=target_company_code)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> current target company : " + target_company_code)
+        for bs4_news_company_crawl_element in bs4_news_company_crawl_list:
+            target_url = bs4_news_company_crawl_element.DOMAIN_URL + bs4_news_company_crawl_element.DOMAIN_QUERY_STRING
+            browser.get(target_url)
+            bs4_news_company_crawl_link_xpath = bs4_news_company_crawl_element.CRAWL_LINK_TARGET
+            print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> current target url : " + target_url)
+            print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> search target : "
+                  + bs4_news_company_crawl_link_xpath)
+            print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> request proceeding...")
+            try:
+                target_list_group = browser.find_element(by=By.XPATH,
+                                                         value=bs4_news_company_crawl_element.CRAWL_LINK_TARGET)
+                print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> accessing list collect start")
+                element_link_set = {find_target_element.get_attribute('href')
+                                for find_target_element
+                                in target_list_group.find_elements_by_tag_name("a")}
+                crawl_count = len(element_link_set)
+                crawl_success = 0
+                crawl_fail = 0
+                print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> accessing list count : " + str(len(element_link_set)))
+                print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> accessing list collect end")
+                for element_link_set_element in element_link_set:
+                    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> current access target_url : "
+                          + element_link_set_element)
+                    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> request proceeding...")
+                    try:
+                        response = requests.get(element_link_set_element, headers=headers)
+                        if response.status_code == 200:
+                            html = response.text
+                            if (BS4_NEWS_COMPANY_CRAWL_DATA.objects.filter(
+                                    COMPANY_CODE=target_company_code,
+                                    TARGET_CRAWL_URL=element_link_set_element
+                            )):
+                                print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> duplicated, next article")
+                            else:
+                                BS4_NEWS_COMPANY_CRAWL_DATA_INPUT = BS4_NEWS_COMPANY_CRAWL_DATA(
+                                    COMPANY_CODE=target_company_code,
+                                    DOMAIN_URL=bs4_news_company_crawl_element.DOMAIN_URL,
+                                    DOMAIN_QUERY_STRING=bs4_news_company_crawl_element.DOMAIN_QUERY_STRING,
+                                    TARGET_CRAWL_URL=element_link_set_element,
+                                    TARGET_RAW_HTML_DATA=html,
+                                    UPDATE_DATETIME=datetime.now(),
+                                    UPDATE_USER='SYSTEM',
+                                    CREATE_DATETIME=datetime.now(),
+                                    CREATE_USER='SYSTEM',
+                                    DESCRIPTION_INFO='NONE',
+                                )
+                                crawl_success += 1
+                                BS4_NEWS_COMPANY_CRAWL_DATA_INPUT.save()
+                                print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> save success")
+                        else:
+                            print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> response Error Code : "
+                                  + response.status_code)
+                        time.sleep(random.uniform(0, 1.0))
+                    except Exception:
+                        BS4_NEWS_COMPANY_CRAWL_DATA_INPUT = BS4_NEWS_COMPANY_CRAWL_DATA(
+                            COMPANY_CODE=target_company_code,
+                            DOMAIN_URL=bs4_news_company_crawl_element.DOMAIN_URL,
+                            DOMAIN_QUERY_STRING=bs4_news_company_crawl_element.DOMAIN_QUERY_STRING,
+                            TARGET_CRAWL_URL=element_link_set_element,
+                            TARGET_RAW_HTML_DATA=str(traceback.format_exc()),
+                            UPDATE_DATETIME=datetime.now(),
+                            UPDATE_USER='SYSTEM_ERROR',
+                            CREATE_DATETIME=datetime.now(),
+                            CREATE_USER='SYSTEM_ERROR',
+                            DESCRIPTION_INFO='NONE',
+                        )
+                        crawl_fail += 1
+                        BS4_NEWS_COMPANY_CRAWL_DATA_INPUT.save()
+                        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> response Exception")
+                        pass
+
+                BS4_NEWS_COMPANY_CRAWL_RESULT_INPUT = BS4_NEWS_COMPANY_CRAWL_RESULT(
+                    COMPANY_CODE=target_company_code,
+                    DOMAIN_URL=bs4_news_company_crawl_element.DOMAIN_URL,
+                    DOMAIN_QUERY_STRING=bs4_news_company_crawl_element.DOMAIN_QUERY_STRING,
+                    EXECUTE_DATE=datetime.now(),
+                    EXECUTE_RESULT_COUNT=str(crawl_count),
+                    EXECUTE_RESULT_FAIL=str(crawl_fail),
+                    EXECUTE_RESULT_SUCCESS=str(crawl_success),
+                    EXECUTE_RESULT='END',
+                    UPDATE_DATETIME=datetime.now(),
+                    UPDATE_USER='SYSTEM',
+                    CREATE_DATETIME=datetime.now(),
+                    CREATE_USER='SYSTEM',
+                    DESCRIPTION_INFO='NONE',
+                )
+                BS4_NEWS_COMPANY_CRAWL_RESULT_INPUT.save()
+
+            except Exception:
+                print(traceback.format_exc())
+                print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> request Exception")
+                pass
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> close target company : " + target_company_code)
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> JOB END")
+    browser.close()
+    print('CRON END ========================================')
+    print(datetime.now())
+    print('CRON END =====================================>')
+    print('django bs4news news_analysis_create_news_dashboard_data crontab started -------------------')

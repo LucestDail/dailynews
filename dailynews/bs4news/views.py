@@ -408,14 +408,23 @@ def bs4scrap(request):
 
 
 def bs4crawl(request):
+    if request.method == 'GET' and 'company' in request.GET:
+        request_company_code = request.GET['company']
+        bs4_news_company_list = BS4_NEWS_COMPANY.objects.filter(COMPANY_CODE=request_company_code)
+    else:
+        bs4_news_company_list = BS4_NEWS_COMPANY.objects.all()
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
                       "AppleWebKit/537.36 (KHTML, like Gecko)"
                       "Chrome/87.0.4280.88 Safari/537.36"
     }
-    browser = webdriver.Chrome(str(Path(__file__).resolve().parent.parent) + '/webdriver/chromedriver_mac')
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    browser = webdriver.Chrome(str(Path(__file__).resolve().parent.parent)+ '/webdriver/chromedriver_mac', chrome_options=chrome_options)
+    # browser = webdriver.Chrome(str(Path(__file__).resolve().parent.parent)+ '/webdriver/chromedriver_linux', chrome_options=chrome_options)
     browser.implicitly_wait(time_to_wait=5)
-    bs4_news_company_list = BS4_NEWS_COMPANY.objects.all()
     input_date = str(datetime.now().year) + '-'\
                  + str(datetime.now().month) + '-'\
                  + str(datetime.now().day) + " "\
