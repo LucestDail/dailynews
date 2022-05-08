@@ -237,8 +237,8 @@ def news_analysis_create_news_dashboard_data():
             target += 1
         else:
             target_news_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
-                                                                News_Analysis_Company=target_company)
-            target_company_count = len(target_news_data)
+                                                                News_Analysis_Company=target_company).count()
+            target_company_count = str(target_news_data)
             News_Analysis_Count_Company_Input = News_Analysis_Count_Company(
                 News_Analysis_Count_Company_Code=target_company,
                 News_Analysis_Count_Company_CreateDT=from_date,
