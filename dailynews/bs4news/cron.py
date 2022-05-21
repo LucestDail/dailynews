@@ -141,26 +141,38 @@ def scrap():
 
 
 def news_analysis_create_morphs():
-    print('django bs4news news_analysis_create_morphs crontab started -------------------')
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> NEWS_ANALYSIS_CRATE_MORPHS_CRON JOB START")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> GET NEW COMPANY DATA START")
     news_company = News_Company.objects.all()
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> GET NEW COMPANY DATA END")
     for current_job_target_company in news_company:
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> NEW_COMPANY TARGET DATA ANALYSIS START")
         current_job_target_company_code = current_job_target_company.News_Company_Code
-        print('current step =====================================')
-        print(current_job_target_company_code)
-        print('job start ========================================')
-        print(datetime.now())
-        print('job started =====================================>')
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") +
+              " >> CURRENT TARGET COMPANY : " + current_job_target_company_code)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS SETTING START")
         current_datetime = datetime.now()
         target_company = current_job_target_company_code
         okt = Okt()
         from_date = current_datetime - timedelta(days=1)
         to_date = current_datetime
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CURRENT_DATETIME : " + str(current_datetime))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> TARGET_COMPANY : " + str(target_company))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> FROM_DATE : " + str(from_date))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> TO_DATE : " + str(to_date))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS SETTING COMPLETE")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS TARGET DATA SEARCHING...")
         target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date), News_company=target_company)
-        print('====== target data count ======')
-        print(len(target_news_data))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS TARGET DATA SEARCHING COMPLETE")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS TARGET DATA COUNT : " +
+              str(len(target_news_data)))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> RESULT COUNT SETTING")
         target = 0
         success = 0
         fail = 0
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") +
+              " >> RESULT COUNT SETTING COMPLETE(TOTAL / SUCCESS / FAIL) -> " +
+              str(target) + " / " + str(success) + " / " + str(fail))
         for target_news_element in target_news_data:
             target += 1
             if (News_Analysis_Raw.objects.filter(
@@ -195,17 +207,13 @@ def news_analysis_create_morphs():
                 )
                 news_analysis_morphs.save()
                 success += 1
-        print('====== analysis result ======')
-        print(' | count')
-        print(target)
-        print(' | success')
-        print(success)
-        print(' | fail (maybe duplicate)')
-        print(fail)
-        print('job end ========================================')
-        print(datetime.now())
-        print('job ended =====================================>')
-    print('django bs4news news_analysis_create_morphs crontab ended -------------------')
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS RESULT")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS RESULT TOTAL : " + str(target))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS RESULT SUCCESS : " + str(success))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS RESULT FAILED : " + str(fail))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS TARGET DATA ANALYSIS END")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> NEW_COMPANY TARGET DATA ANALYSIS ENDED")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> NEWS_ANALYSIS_CRATE_MORPHS_CRON JOB END")
 
 
 def news_analysis_create_news_dashboard_data():

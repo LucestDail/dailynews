@@ -173,73 +173,79 @@ def company(request):
 
 
 def create_morphs(request):
-    if request.method == 'GET' and 'company' in request.GET and 'date' in request.GET:
-        target_company = request.GET['company']
-        current_datetime = request.GET['date']
-    elif request.method == 'GET' and 'company' in request.GET:
-        target_company = request.GET['company']
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> NEWS_ANALYSIS_CRATE_MORPHS_CRON JOB START")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> GET NEW COMPANY DATA START")
+    news_company = News_Company.objects.all()
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> GET NEW COMPANY DATA END")
+    for current_job_target_company in news_company:
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> NEW_COMPANY TARGET DATA ANALYSIS START")
+        current_job_target_company_code = current_job_target_company.News_Company_Code
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") +
+              " >> CURRENT TARGET COMPANY : " + current_job_target_company_code)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS SETTING START")
         current_datetime = datetime.now()
-    else:
-        current_datetime = datetime.now()
-        current_minute = current_datetime.minute
-        convert_minute_company = str(current_minute).zfill(3)
-        # target_company = convert_minute_company
-        target_company = '032'
-    print('django bs4news news_analysis_create_morphs crontab started -------------------')
-    # current_datetime = datetime.now()
-    # current_minute = current_datetime.minute
-    # convert_minute_company = str(current_minute).zfill(3)
-    # target_company = convert_minute_company
-    okt = Okt()
-    from_date = current_datetime - timedelta(days=1)
-    to_date = current_datetime
-    target_news_data = News.objects.filter(News_company=target_company, News_CreateDT__range=(from_date, to_date))
-    print('target data count===')
-    print(len(target_news_data))
-    target = 0
-    success = 0
-    fail = 0
-    for target_news_element in target_news_data:
-        excluded_word_data = BS4_NEWS_ANALYSIS_WORD_EXCLUDED.objects.filter(COMPANY_CODE=target_news_element.News_company)
-        excluded_word_list = []
-        if len(excluded_word_data) > 0:
-            for excluded_word_data_element in excluded_word_data:
-                excluded_word_list.append(excluded_word_data_element.EXCLUDED_WORD)
-        target_news_morphs = okt.nouns(target_news_element.News_contents)
-        target_news_morphs = [n for n in target_news_morphs if len(n) > 1]
-        save_morphs = ''
-        count = 0
-        target += 1
-        for morphs_element in target_news_morphs:
-            if morphs_element not in excluded_word_list:
-                save_morphs += morphs_element
-                count += 1
-                if count < len(target_news_morphs):
-                    save_morphs += ","
-        if (News_Analysis_Raw.objects.filter(
-                News_Analysis_From=target_news_element.News_from,
-                News_Analysis_Title=target_news_element.News_title,
-                News_Analysis_Company=target_news_element.News_company
-        )):
-            fail += 1
-        else:
-            news_analysis_morphs = News_Analysis_Raw(
-                News_Analysis_Company=target_news_element.News_company,
-                News_Analysis_Title=target_news_element.News_title,
-                News_Analysis_From=target_news_element.News_from,
-                News_Morphs=save_morphs,
-                News_Analysis_CreateDT=target_news_element.News_CreateDT,
-            )
-            news_analysis_morphs.save()
-            success += 1
-    print('====== analysis result ======')
-    print(' | count')
-    print(target)
-    print(' | success')
-    print(success)
-    print(' | fail (maybe duplicate)')
-    print(fail)
-    print('django bs4news news_analysis_create_morphs crontab ended -------------------')
+        target_company = current_job_target_company_code
+        okt = Okt()
+        from_date = current_datetime - timedelta(days=1)
+        to_date = current_datetime
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CURRENT_DATETIME : " + str(current_datetime))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> TARGET_COMPANY : " + str(target_company))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> FROM_DATE : " + str(from_date))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> TO_DATE : " + str(to_date))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS SETTING COMPLETE")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS TARGET DATA SEARCHING...")
+        target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date), News_company=target_company)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS TARGET DATA SEARCHING COMPLETE")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS TARGET DATA COUNT : " +
+              str(len(target_news_data)))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> RESULT COUNT SETTING")
+        target = 0
+        success = 0
+        fail = 0
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") +
+              " >> RESULT COUNT SETTING COMPLETE(TOTAL / SUCCESS / FAIL) -> " +
+              str(target) + " / " + str(success) + " / " + str(fail))
+        for target_news_element in target_news_data:
+            target += 1
+            if (News_Analysis_Raw.objects.filter(
+                    News_Analysis_From=target_news_element.News_from,
+                    News_Analysis_Title=target_news_element.News_title,
+                    News_Analysis_Company=target_news_element.News_company
+            )):
+                fail += 1
+            else:
+                excluded_word_data = BS4_NEWS_ANALYSIS_WORD_EXCLUDED.objects.filter(
+                    COMPANY_CODE=target_news_element.News_company)
+                excluded_word_list = []
+                if len(excluded_word_data) > 0:
+                    for excluded_word_data_element in excluded_word_data:
+                        excluded_word_list.append(excluded_word_data_element.EXCLUDED_WORD)
+                target_news_morphs = okt.nouns(target_news_element.News_contents)
+                target_news_morphs = [n for n in target_news_morphs if len(n) > 1]
+                save_morphs = ''
+                count = 0
+                for morphs_element in target_news_morphs:
+                    if morphs_element not in excluded_word_list:
+                        save_morphs += morphs_element
+                        count += 1
+                        if count < len(target_news_morphs):
+                            save_morphs += ","
+                news_analysis_morphs = News_Analysis_Raw(
+                    News_Analysis_Company=target_news_element.News_company,
+                    News_Analysis_Title=target_news_element.News_title,
+                    News_Analysis_From=target_news_element.News_from,
+                    News_Morphs=save_morphs,
+                    News_Analysis_CreateDT=target_news_element.News_CreateDT,
+                )
+                news_analysis_morphs.save()
+                success += 1
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS RESULT")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS RESULT TOTAL : " + str(target))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS RESULT SUCCESS : " + str(success))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS RESULT FAILED : " + str(fail))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS TARGET DATA ANALYSIS END")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> NEW_COMPANY TARGET DATA ANALYSIS ENDED")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> NEWS_ANALYSIS_CRATE_MORPHS_CRON JOB END")
 
 
 def index_morphs(request):
