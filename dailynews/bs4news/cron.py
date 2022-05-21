@@ -12,7 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from pathlib import Path
 warnings.filterwarnings("ignore")
-
+okt = Okt()
 
 def scrap():
     print('django bs4news scrap crontab started -------------------')
@@ -153,7 +153,7 @@ def news_analysis_create_morphs():
         print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS SETTING START")
         current_datetime = datetime.now()
         target_company = current_job_target_company_code
-        okt = Okt()
+
         from_date = current_datetime - timedelta(days=1)
         to_date = current_datetime
         print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CURRENT_DATETIME : " + str(current_datetime))

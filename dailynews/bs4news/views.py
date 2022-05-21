@@ -23,6 +23,7 @@ from pathlib import Path
 
 warnings.filterwarnings("ignore")
 # Create your views here.
+okt = Okt()
 
 def chart(request):
     news_data_all = News.objects.all()
@@ -185,7 +186,7 @@ def create_morphs(request):
         print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ANALYSIS SETTING START")
         current_datetime = datetime.now()
         target_company = current_job_target_company_code
-        okt = Okt()
+
         from_date = current_datetime - timedelta(days=1)
         to_date = current_datetime
         print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CURRENT_DATETIME : " + str(current_datetime))
