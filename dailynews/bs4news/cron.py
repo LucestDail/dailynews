@@ -316,8 +316,8 @@ def news_crawl_bia_selenium_every_hour():
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    # browser = webdriver.Chrome(str(Path(__file__).resolve().parent.parent)+ '/webdriver/chromedriver_mac', chrome_options=chrome_options)
-    browser = webdriver.Chrome(str(Path(__file__).resolve().parent.parent)+ '/webdriver/chromedriver_linux', chrome_options=chrome_options)
+    # browser = webdriver.Chrome(str(Path(__file__).resolve().parent.parent)+ '/webdriver/chromedriver_mac_102', chrome_options=chrome_options)
+    browser = webdriver.Chrome(str(Path(__file__).resolve().parent.parent)+ '/webdriver/chromedriver_linux_102', chrome_options=chrome_options)
     browser.implicitly_wait(time_to_wait=5)
     bs4_news_company_list = BS4_NEWS_COMPANY.objects.all()
     input_date = str(datetime.now().year) + '-'\
