@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from bs4news.models import News, News_Analysis_Raw, News_Company, News_Analysis_Count_Company, News_Analysis_Word_Analysis_Company
-from main.models import User, Dashboard, Noticeboard
+from bs4news.models import *
+from main.models import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime, timedelta
 from konlpy.tag import Okt
@@ -312,7 +312,21 @@ def keyworddashboard(request):
 
 
 def mycrawl(request):
-    return render(request, 'mycrawl.html')
+    if request.method == 'GET' and 'descriptionInfo' in request.GET:
+        crawl_data = BS4_NEWS_COMPANY_CRAWL.objects.filter(DESCRIPTION_INFO__contains=request.GET['descriptionInfo']).order_by('-UPDATE_DATETIME')
+    else:
+        crawl_data = BS4_NEWS_COMPANY_CRAWL.objects.all().order_by('-UPDATE_DATETIME')
+    paginator = Paginator(crawl_data, 30)
+    page = request.GET.get('page')
+    try:
+        crawl_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        crawl_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        crawl_list = paginator.page(paginator.num_pages)
+    return render(request, 'mycrawl.html', {'crawl_list': crawl_list})
 
 
 def mykeyword(request):

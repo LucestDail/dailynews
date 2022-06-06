@@ -23,7 +23,42 @@
                         <h1 class="h3 mb-0 text-gray-800">나의 크롤링 관리</h1>
                     </div>
                     <!-- Content Row -->
-                    <div class="row">
+                    <div class="card row">
+                        <table class="table">
+                            <tr align="center">
+                                <th>명칭</th>
+                                <th>타입</th>
+                                <th>URL</th>
+                                <th>URL 상세</th>
+                                <th>상세</th>
+                                <th>생성일</th>
+                            </tr>
+                            {% for news in crawl_list %}
+                            <tr align="center">
+                                <td><span>{{news.DESCRIPTION_INFO}}</span></td>
+                                <td><span>{{news.CRAWL_TYPE}}</span></td>
+                                <td><span>{{news.DOMAIN_URL}}</span></td>
+                                <td><span>{{news.DOMAIN_QUERY_STRING}}</span></td>
+                                <td><span>{{news.CRAWL_LINK_TARGET}}</span></td>
+                                <td><span>{{news.UPDATE_DATETIME}}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div class="row" style="width: 100%; justify-content: center;">
+                        <div class="pagination" style="width: 100%; justify-content: center;">
+                            <span class="step-links">
+                                {% if crawl_list.has_previous %}
+                                    <a href="?page={{ crawl_list.previous_page_number }}">previous</a>
+                                {% endif %}
+                                <span class="current">
+                                    Page {{ crawl_list.number }} of {{ crawl_list.paginator.num_pages }}.
+                                </span>
+                                {% if crawl_list.has_next %}
+                                    <a href="?page={{ crawl_list.next_page_number }}">next</a>
+                                {% endif %}
+                            </span>
+                        </div>
                     </div>
                 <!-- /.container-fluid -->
             </div>
