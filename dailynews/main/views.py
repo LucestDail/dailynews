@@ -1,15 +1,16 @@
 from django.shortcuts import render
-from bs4news.models import News
-from main.models import User
+from bs4news.models import *
+from main.models import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime, timedelta
 from konlpy.tag import Okt
 from django.views.decorators.csrf import csrf_exempt
 import requests
 import json
 from django.http import HttpResponse
-
-
-# Create your views here.
+from collections import Counter
+import json
+import math
 
 
 def basicTemplates(request):
@@ -43,47 +44,80 @@ def index(request):
         return render(request, 'login.html')
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
-    focus_company_name = '경향신문'
-    focus_company = '032'
-    news_data_all = News.objects.filter(News_company=focus_company)
-    news_count = len(news_data_all)
-    okt = Okt()
-    news_data_morphs = []
-    for news_element in news_data_all:
-        news_content = okt.nouns(news_element.News_contents)
-        news_content = [n for n in news_content if len(n) > 1]
-        news_data_morphs = news_data_morphs + news_content
-
-    news_data_string = ''
-    for news_data_morphs_element in news_data_morphs:
-        news_data_string += ' '
-        news_data_string += news_data_morphs_element
-
-    focus_word = '것'
+    obj = Dashboard.objects.last()
+    focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
+    focus_company_name = focus_object.News_Company_Name
+    focus_company = focus_object.News_Company_Code
+    focus_word = userData.User_Focus_word
     news_data_analysis_date = []
     news_data_analysis_count = []
+    news_data_analysis_counter = []
+    news_data_analysis_ratio = []
+    wc_news_data_list = []
+    temp_save = []
     for i in range(0, 7):
         check_date = datetime.today() - timedelta(days=i)
         input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
         from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
         from_date = datetime.combine(from_date, datetime.min.time())
         to_date = datetime.combine(from_date, datetime.max.time())
-        news_data_date = News.objects.filter(News_CreateDT__range=(from_date, to_date))
-        for news_element in news_data_date:
-            news_content = okt.nouns(news_element.News_contents)
-            news_content = [n for n in news_content if n in focus_word]
-        news_data_analysis_date.append(input_date)
-        news_data_analysis_count.append(len(news_content))
-        print(news_data_analysis_date)
-        print(news_data_analysis_count)
-        news_content = {}
 
-    return render(request, 'index.html', {'news_count': news_count,
-                                          'news_data': news_data_string,
+        news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                          News_Analysis_Company=focus_company)
+        news_data_analysis_count_num = 0
+        for news_element in news_data_date:
+            news_content = news_element.News_Morphs.split(',')
+            for news_data_morphs_element in news_content:
+                if focus_word in news_data_morphs_element:
+                    news_data_analysis_count_num += 1
+                if i == 1:
+                    if len(news_data_morphs_element) > 1:
+                        wc_news_data_list.append(news_data_morphs_element)
+                if len(news_data_morphs_element) > 1:
+                    temp_save.append(news_data_morphs_element)
+        temp_result = Counter(temp_save)
+        temp_result_10_ratio = [(i, temp_result[i] / len(temp_save) * 100.0) for i, count in temp_result.most_common(10)]
+        news_data_analysis_counter.append(temp_result_10_ratio)
+        news_data_analysis_ratio.append(temp_result_10_ratio)
+        news_data_analysis_date.append(input_date)
+        news_data_analysis_count.append(news_data_analysis_count_num)
+    news_data_analysis_counter.reverse()
+    news_data_analysis_count.reverse()
+    news_data_analysis_ratio.reverse()
+    news_data_analysis_counter_word = []
+    news_data_analysis_counter_value = []
+    for news_data_analysis_counter_element in news_data_analysis_counter:
+        counter_value = []
+        counter_word = []
+        for n in news_data_analysis_counter_element:
+            counter_word.append(n[0])
+            counter_value.append(round(n[1],2))
+        news_data_analysis_counter_word.append(counter_word)
+        news_data_analysis_counter_value.append(counter_value)
+
+    news_data_analysis_counter_list = list(zip(news_data_analysis_counter_word, news_data_analysis_counter_value))
+
+    wc_result = Counter(wc_news_data_list)
+    wc_most_word_50 = wc_result.most_common(50)
+    wc_most_word_50_jsonStr = ''
+    for wc_most_word_50_element in wc_most_word_50:
+        wc_most_word_50_jsonStr += '{"tag":"'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[0])
+        wc_most_word_50_jsonStr += '",'
+        wc_most_word_50_jsonStr += '"weight":'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[1])
+        wc_most_word_50_jsonStr += '},'
+
+    return render(request, 'index.html', {'news_count': obj.Dashboard_Total_News_Count,
+                                          'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
+                                          'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
+                                          'news_data': wc_most_word_50_jsonStr,
+                                          'today_news_count': obj.Dashboard_Today_count,
                                           'focus_company_name': focus_company_name,
                                           'focus_word': focus_word,
                                           'news_data_analysis_date': news_data_analysis_date,
-                                          'news_data_analysis_count': news_data_analysis_count
+                                          'news_data_analysis_count': news_data_analysis_count,
+                                          'news_data_analysis_counter_list': news_data_analysis_counter_list
                                           })
 
 
@@ -106,6 +140,10 @@ def requestRegister(request):
             User_Name=registerName,
             User_Password=registerPassword,
             User_Info='안녕하세요',
+            User_Focus_Company='연합뉴스',
+            User_Focus_Company_1='KBS',
+            User_Focus_Company_2='SBS',
+            User_Focus_word='코로나',
             User_CreateDT=datetime.now(),
             User_RecentDT=datetime.now()
         )
@@ -139,7 +177,9 @@ def initPassword(request):
 def profile(request):
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
-    return render(request, 'profile.html', {'user_data': userData})
+    company_data = News_Company.objects.all()
+    return render(request, 'profile.html', {'user_data': userData,
+                                            'company_data': company_data})
 
 
 @csrf_exempt
@@ -152,6 +192,8 @@ def requestProfile(request):
     userEmail = request_input['userEmail']
     userFocusWord = request_input['userFocusWord']
     userFocusCompany = request_input['userFocusCompany']
+    userFocusCompany1 = request_input['userFocusCompany1']
+    userFocusCompany2 = request_input['userFocusCompany2']
     currentPassword = request_input['currentPassword']
 
     if userData.User_Password == currentPassword:
@@ -162,6 +204,8 @@ def requestProfile(request):
         userData.User_RecentDT = datetime.now()
         userData.User_Focus_word = userFocusWord
         userData.User_Focus_Company = userFocusCompany
+        userData.User_Focus_Company_1 = userFocusCompany1
+        userData.User_Focus_Company_2 = userFocusCompany2
         userData.save()
         print("password pass")
         result = "TRUE"
@@ -196,3 +240,276 @@ def requestPasswordChange(request):
         print("password not equal")
         result = "FALSE"
     return HttpResponse(result, content_type='text')
+
+
+def dashboard(request):
+    news_data_count = News.objects.all()
+    news_data_count_input = len(news_data_count)
+    print(news_data_count_input)
+    news_analysis_count_data = News_Analysis_Raw.objects.all()
+    news_analysis_count = len(news_analysis_count_data)
+    print(news_analysis_count)
+    news_analysis_rate = round((news_analysis_count / news_data_count_input) * 100)
+    print(news_analysis_rate)
+    today_check_date = datetime.today() - timedelta(days=1)
+    today_input_date = str(today_check_date.year) + '-' + str(today_check_date.month) + '-' + str(today_check_date.day)
+    today_from_date = datetime.strptime(today_input_date, '%Y-%m-%d').date()
+    today_from_date = datetime.combine(today_from_date, datetime.min.time())
+    today_to_date = datetime.combine(today_from_date, datetime.max.time())
+    today_news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(today_from_date,
+                                                                                           today_to_date))
+    today_news_date_count = len(today_news_data_date)
+    print(today_news_date_count)
+    Dashboard_instance = Dashboard(
+        Dashboard_Total_News_Count=news_data_count_input,
+        Dashboard_Total_Analysis_Count=news_analysis_count,
+        Dashboard_Total_Analysis_Rate=news_analysis_rate,
+        Dashboard_Today_count=today_news_date_count,
+        Dashboard_CreateDT=datetime.now(),
+    )
+    Dashboard_instance.save()
+
+
+def requestFocusData(request):
+    return render(request, 'requestFocusData.html')
+
+
+def analysisraw(request):
+    if request.method == 'GET' and 'keyword' in request.GET:
+        News_data = News_Analysis_Raw.objects.filter(News_Morphs__contains=request.GET['keyword']).order_by('-News_Analysis_CreateDT')
+    else:
+        News_data = News_Analysis_Raw.objects.all().order_by('-News_Analysis_CreateDT')
+    paginator = Paginator(News_data, 20)
+    page = request.GET.get('page')
+    try:
+        news_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        news_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        news_list = paginator.page(paginator.num_pages)
+    return render(request, 'analysisraw.html', {'news_list': news_list})
+
+
+def datapolicy(request):
+    policy_data = Noticeboard.objects.filter(Noticeboard_Type='data').order_by('-Noticeboard_CreateDT')
+    paginator = Paginator(policy_data, 10)
+    page = request.GET.get('page')
+    try:
+        policy_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        policy_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        policy_list = paginator.page(paginator.num_pages)
+    return render(request, 'datapolicy.html', {'policy_list': policy_list})
+
+
+def keyworddashboard(request):
+    return render(request, 'keyworddashboard.html')
+
+
+def mycrawl(request):
+    if request.method == 'GET' and 'descriptionInfo' in request.GET:
+        crawl_data = BS4_NEWS_COMPANY_CRAWL.objects.filter(DESCRIPTION_INFO__contains=request.GET['descriptionInfo']).order_by('-UPDATE_DATETIME')
+    else:
+        crawl_data = BS4_NEWS_COMPANY_CRAWL.objects.all().order_by('-UPDATE_DATETIME')
+    paginator = Paginator(crawl_data, 30)
+    page = request.GET.get('page')
+    try:
+        crawl_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        crawl_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        crawl_list = paginator.page(paginator.num_pages)
+    return render(request, 'mycrawl.html', {'crawl_list': crawl_list})
+
+
+def mykeyword(request):
+    return render(request, 'mykeyword.html')
+
+
+def mynews(request):
+    return render(request, 'mynews.html')
+
+
+def myscrap(request):
+    return render(request, 'myscrap.html')
+
+
+def newsdashboard(request):
+
+    user_id = request.session['userId']
+    userData = User.objects.get(User_Id=user_id)
+    focus1_company_name = userData.User_Focus_Company
+    focus1_company_code = News_Company.objects.get(News_Company_Name=focus1_company_name).News_Company_Code
+    focus2_company_name = userData.User_Focus_Company_1
+    focus2_company_code = News_Company.objects.get(News_Company_Name=focus2_company_name).News_Company_Code
+    focus3_company_name = userData.User_Focus_Company_2
+    focus3_company_code = News_Company.objects.get(News_Company_Name=focus3_company_name).News_Company_Code
+
+    graph_focus_news_count_jsonStr = ''
+    for i in range(0, 7):
+        graph_check_date = datetime.today() - timedelta(days=i)
+        graph_input_date = str(graph_check_date.year) + '-' + str(graph_check_date.month) + '-' + str(graph_check_date.day)
+        graph_from_date = datetime.strptime(graph_input_date, '%Y-%m-%d').date()
+        graph_from_date = datetime.combine(graph_from_date, datetime.min.time())
+        graph_to_date = datetime.combine(graph_from_date, datetime.max.time())
+        graph_news_data_date = News_Analysis_Count_Company.objects.filter(News_Analysis_Count_Company_CreateDT__range=(graph_from_date, graph_to_date))
+        graph_focus1_news_count = 0
+        graph_focus2_news_count = 0
+        graph_focus3_news_count = 0
+        graph_focus_news_count = 0
+        for graph_count_target_news in graph_news_data_date:
+            if graph_count_target_news.News_Analysis_Count_Company_Code == focus1_company_code\
+                    or graph_count_target_news.News_Analysis_Count_Company_Code == focus2_company_code\
+                    or graph_count_target_news.News_Analysis_Count_Company_Code == focus3_company_code:
+                graph_focus_news_count += int(graph_count_target_news.News_Analysis_Count_Company_Count)
+                if graph_count_target_news.News_Analysis_Count_Company_Code == focus1_company_code:
+                    graph_focus1_news_count += int(graph_count_target_news.News_Analysis_Count_Company_Count)
+                elif graph_count_target_news.News_Analysis_Count_Company_Code == focus2_company_code:
+                    graph_focus2_news_count += int(graph_count_target_news.News_Analysis_Count_Company_Count)
+                elif graph_count_target_news.News_Analysis_Count_Company_Code == focus3_company_code:
+                    graph_focus3_news_count += int(graph_count_target_news.News_Analysis_Count_Company_Count)
+        graph_focus_news_count_jsonStr += '{"date":"'
+        graph_focus_news_count_jsonStr += graph_input_date
+        graph_focus_news_count_jsonStr += '",'
+        graph_focus_news_count_jsonStr += '"focus1":'
+        graph_focus_news_count_jsonStr += str(graph_focus1_news_count)
+        graph_focus_news_count_jsonStr += ','
+        graph_focus_news_count_jsonStr += '"focus2":'
+        graph_focus_news_count_jsonStr += str(graph_focus2_news_count)
+        graph_focus_news_count_jsonStr += ','
+        graph_focus_news_count_jsonStr += '"focus3":'
+        graph_focus_news_count_jsonStr += str(graph_focus3_news_count)
+        graph_focus_news_count_jsonStr += ','
+        graph_focus_news_count_jsonStr += '"focus":'
+        graph_focus_news_count_jsonStr += str(graph_focus_news_count)
+        graph_focus_news_count_jsonStr += '},'
+
+    # focus1_temp_save = []
+    # for focus1_data_element in focus1_data_news:
+    #     focus1_news_content = focus1_data_element.News_Morphs.split(',')
+    #     for focus1_news_data_morphs_element in focus1_news_content:
+    #         focus1_temp_save.append(focus1_news_data_morphs_element)
+    # focus1_result = Counter(focus1_temp_save)
+    # focus1_most_word_50 = focus1_result.most_common(50)
+    # focus1_most_word_50_jsonStr = ''
+    # for focus1_most_word_50_element in focus1_most_word_50:
+    #     focus1_most_word_50_jsonStr += '{"tag":"'
+    #     focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[0])
+    #     focus1_most_word_50_jsonStr += '",'
+    #     focus1_most_word_50_jsonStr += '"weight":'
+    #     focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[1])
+    #     focus1_most_word_50_jsonStr += '},'
+
+    target_date = datetime.today() - timedelta(days=1)
+    format_date = str(target_date.year) + '-' + str(target_date.month) + '-' + str(target_date.day)
+    from_date = datetime.strptime(format_date, '%Y-%m-%d').date()
+    from_date = datetime.combine(from_date, datetime.min.time())
+    to_date = datetime.combine(from_date, datetime.max.time())
+    focus1_most_word_50_jsonStr = News_Analysis_Word_Analysis_Company.objects\
+        .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
+             News_Analysis_Word_Analysis_Company_Code=focus1_company_code)
+
+
+
+    # focus2_temp_save = []
+    # for focus2_data_element in focus2_data_news:
+    #     focus2_news_content = focus2_data_element.News_Morphs.split(',')
+    #     for focus2_news_data_morphs_element in focus2_news_content:
+    #         focus2_temp_save.append(focus2_news_data_morphs_element)
+    # focus2_result = Counter(focus2_temp_save)
+    # focus2_most_word_50 = focus2_result.most_common(50)
+    # focus2_most_word_50_jsonStr = ''
+    # for focus2_most_word_50_element in focus2_most_word_50:
+    #     focus2_most_word_50_jsonStr += '{"tag":"'
+    #     focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[0])
+    #     focus2_most_word_50_jsonStr += '",'
+    #     focus2_most_word_50_jsonStr += '"weight":'
+    #     focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[1])
+    #     focus2_most_word_50_jsonStr += '},'
+
+    focus2_most_word_50_jsonStr = News_Analysis_Word_Analysis_Company.objects \
+        .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
+                News_Analysis_Word_Analysis_Company_Code=focus2_company_code)
+
+    # focus3_temp_save = []
+    # for focus3_data_element in focus3_data_news:
+    #     focus3_news_content = focus3_data_element.News_Morphs.split(',')
+    #     for focus3_news_data_morphs_element in focus3_news_content:
+    #         focus3_temp_save.append(focus3_news_data_morphs_element)
+    # focus3_result = Counter(focus3_temp_save)
+    # focus3_most_word_50 = focus3_result.most_common(50)
+    # focus3_most_word_50_jsonStr = ''
+    # for focus3_most_word_50_element in focus3_most_word_50:
+    #     focus3_most_word_50_jsonStr += '{"tag":"'
+    #     focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[0])
+    #     focus3_most_word_50_jsonStr += '",'
+    #     focus3_most_word_50_jsonStr += '"weight":'
+    #     focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[1])
+    #     focus3_most_word_50_jsonStr += '},'
+    focus3_most_word_50_jsonStr = News_Analysis_Word_Analysis_Company.objects \
+        .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
+                News_Analysis_Word_Analysis_Company_Code=focus3_company_code)
+
+    return render(request, 'newsdashboard.html', {'graph_news_all_count': graph_focus_news_count_jsonStr,
+                                                  'focus1_company_name': focus1_company_name,
+                                                  'focus1_news_data': focus1_most_word_50_jsonStr.News_Analysis_Word_Analysis_Company_Data,
+                                                  'focus2_company_name': focus2_company_name,
+                                                  'focus2_news_data': focus2_most_word_50_jsonStr.News_Analysis_Word_Analysis_Company_Data,
+                                                  'focus3_company_name': focus3_company_name,
+                                                  'focus3_news_data': focus3_most_word_50_jsonStr.News_Analysis_Word_Analysis_Company_Data})
+
+
+def newsraw(request):
+    if request.method == 'GET' and 'keyword' in request.GET:
+        News_data = News.objects.filter(News_contents__contains=request.GET['keyword']).order_by('-News_CreateDT')
+    else:
+        News_data = News.objects.all().order_by('-News_CreateDT')
+    paginator = Paginator(News_data, 20)
+    page = request.GET.get('page')
+    try:
+        news_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        news_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        news_list = paginator.page(paginator.num_pages)
+    return render(request, 'newsraw.html', {'news_list': news_list})
+
+
+def qna(request):
+    return render(request, 'qna.html')
+
+
+def requestcrawl(request):
+    return render(request, 'requestcrawl.html')
+
+
+def requestscrap(request):
+    return render(request, 'requestscrap.html')
+
+
+def sitepolicy(request):
+    policy_data = Noticeboard.objects.filter(Noticeboard_Type='site').order_by('-Noticeboard_CreateDT')
+    paginator = Paginator(policy_data, 10)
+    page = request.GET.get('page')
+    try:
+        policy_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        policy_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        policy_list = paginator.page(paginator.num_pages)
+    return render(request, 'sitepolicy.html', {'policy_list': policy_list})
+
+
+def techsupport(request):
+    return render(request, 'techsupport.html')

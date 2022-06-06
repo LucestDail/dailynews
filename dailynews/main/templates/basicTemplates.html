@@ -1,6 +1,12 @@
 {% load static %}
-<html>
-  {% include 'header.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Daily Data Hub</title>
+    {% include 'header.html' %}
+    {% include 'topscript.html' %}
+</head>
 <body id="page-top">
 
     <!-- Page Wrapper -->
@@ -14,7 +20,7 @@
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Daily News, Where Your Information Starts</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Request Focus Data</h1>
                     </div>
                     <!-- Content Row -->
                     <div class="row">
@@ -172,7 +178,7 @@
                 {% include 'footer.html' %}
         </div>
     </div>
-
-
+    {% include 'logout.html' %}
+    {% include 'script.html' %}
 </body>
 </html>
