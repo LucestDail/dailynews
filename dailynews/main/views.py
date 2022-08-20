@@ -275,21 +275,76 @@ def requestFocusData(request):
 
 
 def analysisraw(request):
-    if request.method == 'GET' and 'keyword' in request.GET:
-        News_data = News_Analysis_Raw.objects.filter(News_Morphs__contains=request.GET['keyword']).order_by('-News_Analysis_CreateDT')
+    News_data = []
+    if request.method == 'GET' and "page" in request.GET:
+        current_page = int((request.GET["page"]))
     else:
-        News_data = News_Analysis_Raw.objects.all().order_by('-News_Analysis_CreateDT')
-    paginator = Paginator(News_data, 20)
-    page = request.GET.get('page')
-    try:
-        news_list = paginator.get_page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        news_list = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        news_list = paginator.page(paginator.num_pages)
-    return render(request, 'analysisraw.html', {'news_list': news_list})
+        current_page = 1
+    search_keyword = ""
+    if request.method == 'GET' and 'keyword' in request.GET:
+        es_protocol = "http"
+        #es_host = "localhost"
+        es_host = "180.70.85.59"
+        #es_port = "9200"
+        es_port = "8040"
+        es_search_word = request.GET['keyword']
+        search_keyword = es_search_word
+        es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news_analysis_raw/_search"
+        if "page" in request.GET:
+            query_object = {"query": {"query_string": {"query": "*" + es_search_word + "*"}},
+                            "size": 20,
+                            "from": 20 * current_page,
+                            "sort": {"news_analysis_createdt": "desc"}}
+        else:
+            query_object = {"query": {"query_string": {"query": "*" + es_search_word + "*"}},
+                            "size": 20,
+                            "from": 0,
+                            "sort": {"news_analysis_createdt": "desc"}}
+        res = requests.post(es_url, json=query_object)
+        res_json = res.json()["hits"]["hits"]
+        total_es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news_analysis_raw/_count"
+        total_query_object = {"query": {"query_string": {"query": "*" + es_search_word + "*"}}}
+        total_count_res = requests.post(total_es_url, json=total_query_object)
+        print(total_count_res.text)
+        total_count = int(total_count_res.json()["count"])
+        for one_data in res_json:
+            News_data.append(one_data["_source"])
+    else:
+        es_protocol = "http"
+        # es_host = "localhost"
+        es_host = "180.70.85.59"
+        # es_port = "9200"
+        es_port = "8040"
+        es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news_analysis_raw/_search"
+        if "page" in request.GET:
+            query_object = {"query": {"match_all": {}},
+                            "size": 20,
+                            "from": 20 * current_page,
+                            "sort": {"news_analysis_createdt": "desc"}}
+        else:
+            query_object = {"query": {"match_all": {}},
+                            "size": 20,
+                            "from": 0,
+                            "sort": {"news_analysis_createdt": "desc"}}
+        res = requests.post(es_url, json=query_object)
+        res_json = res.json()["hits"]["hits"]
+        total_es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news_analysis_raw/_count"
+        total_query_object = {"query": {"match_all": {}}}
+        total_count_res = requests.post(total_es_url, json=total_query_object)
+        print(total_count_res.text)
+        total_count = int(total_count_res.json()["count"])
+        for one_data in res_json:
+            News_data.append(one_data["_source"])
+    news_list = News_data
+    page_total = math.ceil(total_count / 20)
+    page_previous = current_page - 1
+    page_next = current_page + 1
+    return render(request, 'analysisraw.html', {'news_list': news_list,
+                                            'page_total': page_total,
+                                            'page_current': current_page,
+                                            'page_previous': page_previous,
+                                            'page_next': page_next,
+                                            'search_keyword': search_keyword})
 
 
 def datapolicy(request):
@@ -527,21 +582,77 @@ def newsdashboard(request):
 
 
 def newsraw(request):
-    if request.method == 'GET' and 'keyword' in request.GET:
-        News_data = News.objects.filter(News_contents__contains=request.GET['keyword']).order_by('-News_CreateDT')
+    News_data = []
+    if request.method == 'GET' and "page" in request.GET:
+        current_page = int((request.GET["page"]))
     else:
-        News_data = News.objects.all().order_by('-News_CreateDT')
-    paginator = Paginator(News_data, 20)
-    page = request.GET.get('page')
-    try:
-        news_list = paginator.get_page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        news_list = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        news_list = paginator.page(paginator.num_pages)
-    return render(request, 'newsraw.html', {'news_list': news_list})
+        current_page = 1
+    search_keyword = ""
+    if request.method == 'GET' and 'keyword' in request.GET:
+        es_protocol = "http"
+        # es_host = "localhost"
+        es_host = "180.70.85.59"
+        # es_port = "9200"
+        es_port = "8040"
+        es_search_word = request.GET['keyword']
+        search_keyword = es_search_word
+        es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news/_search"
+        if "page" in request.GET:
+            query_object = {"query": {"query_string": {"query": "*" + es_search_word + "*"}},
+                            "size": 20,
+                            "from": 20*current_page,
+                            "sort": {"news_createdt": "desc"}}
+        else:
+            query_object = {"query": {"query_string": {"query": "*" + es_search_word + "*"}},
+                            "size": 20,
+                            "from": 0,
+                            "sort": {"news_createdt": "desc"}}
+        res = requests.post(es_url, json=query_object)
+        res_json = res.json()["hits"]["hits"]
+        total_es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news/_count"
+        total_query_object = {"query": {"query_string": {"query": "*" + es_search_word + "*"}}}
+        total_count_res = requests.post(total_es_url, json=total_query_object)
+        print(total_count_res.text)
+        total_count = int(total_count_res.json()["count"])
+        for one_data in res_json:
+            News_data.append(one_data["_source"])
+    else:
+        es_protocol = "http"
+        # es_host = "localhost"
+        es_host = "180.70.85.59"
+        # es_port = "9200"
+        es_port = "8040"
+        es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news/_search"
+        if "page" in request.GET:
+            query_object = {"query": {"match_all": {}},
+                            "size": 20,
+                            "from": 20*current_page,
+                            "sort": {"news_createdt": "desc"}}
+        else:
+            query_object = {"query": {"match_all": {}},
+                            "size": 20,
+                            "from": 0,
+                            "sort": {"news_createdt": "desc"}}
+        res = requests.post(es_url, json=query_object)
+        res_json = res.json()["hits"]["hits"]
+        total_es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news/_count"
+        total_query_object = {"query": {"match_all": {}}}
+        total_count_res = requests.post(total_es_url, json=total_query_object)
+        print(total_count_res.text)
+        total_count = int(total_count_res.json()["count"])
+        for one_data in res_json:
+            News_data.append(one_data["_source"])
+    news_list = News_data
+    page_total = math.ceil(total_count / 20)
+    page_previous = current_page - 1
+    page_next = current_page + 1
+
+    return render(request, 'newsraw.html', {'news_list': news_list,
+                                            'page_total': page_total,
+                                            'page_current': current_page,
+                                            'page_previous': page_previous,
+                                            'page_next': page_next,
+                                            'search_keyword': search_keyword})
 
 
 def qna(request):

@@ -27,7 +27,7 @@
                         <form action="{% url 'analysisraw' %}" method="get">
                             <div class="form-group">
                               <label for="keyword">키워드 검색 조건</label>
-                              <input type="text" class="form-control" id="keyword" name="keyword" aria-describedby="keywordHelp" placeholder="키워드 입력">
+                              <input type="text" class="form-control" id="keyword" name="keyword" aria-describedby="keywordHelp" placeholder="키워드 입력" {% if request.GET.keyword %} value = {{search_keyword}} {% endif %}>
                               <small id="keywordhelp" class="form-text text-muted">뉴스 분석중 검색하고 싶은 키워드를 입력 후 엔터를 눌러주세요!</small>
                             </div>
                         </form>
@@ -39,13 +39,13 @@
                             <div class="card-header" id="heading{{news.id}}">
                               <h5 class="mb-0">
                                 <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{news.id}}" aria-expanded="true" aria-controls="collapse{{news.id}}">
-                                    [{{news.News_Analysis_CreateDT}}]{{news.News_Analysis_Title}}({{news.News_Analysis_From}})
+                                    [{{news.news_analysis_createdt}}]{{news.news_analysis_title}}({{news.news_analysis_from}})
                                 </button>
                               </h5>
                             </div>
                             <div id="collapse{{news.id}}" class="collapse" aria-labelledby="heading{{news.id}}" data-parent="#accordionExample">
                               <div class="card-body">
-                                  {{news.News_Morphs}}
+                                  {{news.news_morphs}}
                               </div>
                             </div>
                           </div>
@@ -54,16 +54,17 @@
                     <div class="row" style="width: 100%; justify-content: center;">
                         <div class="pagination" style="width: 100%; justify-content: center;">
                             <span class="step-links">
-                                {% if news_list.has_previous %}
-                                    <a href="?page={{ news_list.previous_page_number }}">previous</a>
+                                {% if page_current > 1 %}
+                                    <a href="?page={{ page_previous }}{% if request.GET.keyword %}&keyword={{search_keyword}}{% endif %}">previous</a>
                                 {% endif %}
-                        
+
                                 <span class="current">
-                                    Page {{ news_list.number }} of {{ news_list.paginator.num_pages }}.
+                                    Page {{ page_current }} of {{ page_total }}.
                                 </span>
-                        
-                                {% if news_list.has_next %}
-                                    <a href="?page={{ news_list.next_page_number }}">next</a>
+
+                                {% if page_next < page_total or page_next == page_total %}
+
+                                    <a href="?page={{ page_next }}{% if request.GET.keyword %}&keyword={{search_keyword}}{% endif %}">next</a>
                                 {% endif %}
                             </span>
                         </div>
