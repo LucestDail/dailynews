@@ -314,9 +314,11 @@ def analysisraw(request):
     else:
         es_protocol = "http"
         # es_host = "localhost"
-        es_host = "180.70.85.59"
+        # es_host = "180.70.85.59"
+        es_host = "15.164.211.132"
         # es_port = "9200"
-        es_port = "8040"
+        # es_port = "8040"
+        es_port = "9200"
         es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news_analysis_raw/_search"
         if "page" in request.GET:
             query_object = {"query": {"match_all": {}},
@@ -623,9 +625,11 @@ def newsraw(request):
     else:
         es_protocol = "http"
         # es_host = "localhost"
-        es_host = "180.70.85.59"
+        # es_host = "180.70.85.59"
+        es_host = "15.164.211.132"
         # es_port = "9200"
-        es_port = "8040"
+        # es_port = "8040"
+        es_port = "9200"
         es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news/_search"
         if "page" in request.GET:
             query_object = {"query": {"match_all": {}},
@@ -638,6 +642,7 @@ def newsraw(request):
                             "from": 0,
                             "sort": {"news_createdt": "desc"}}
         res = requests.post(es_url, json=query_object)
+        print(res.text)
         res_json = res.json()["hits"]["hits"]
         total_es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news/_count"
         total_query_object = {"query": {"match_all": {}}}
