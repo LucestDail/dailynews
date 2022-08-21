@@ -284,9 +284,11 @@ def analysisraw(request):
     if request.method == 'GET' and 'keyword' in request.GET:
         es_protocol = "http"
         #es_host = "localhost"
-        es_host = "180.70.85.59"
+        #es_host = "180.70.85.59"
+        es_host = "15.164.211.132"
         #es_port = "9200"
-        es_port = "8040"
+        #es_port = "8040"
+        es_port = "9200"
         es_search_word = request.GET['keyword']
         search_keyword = es_search_word
         es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news_analysis_raw/_search"
@@ -591,9 +593,11 @@ def newsraw(request):
     if request.method == 'GET' and 'keyword' in request.GET:
         es_protocol = "http"
         # es_host = "localhost"
-        es_host = "180.70.85.59"
+        # es_host = "180.70.85.59"
+        es_host = "15.164.211.132"
         # es_port = "9200"
-        es_port = "8040"
+        # es_port = "8040"
+        es_port = "9200"
         es_search_word = request.GET['keyword']
         search_keyword = es_search_word
         es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news/_search"
