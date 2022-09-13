@@ -448,12 +448,57 @@ def mycrawl(request):
     return render(request, 'mycrawl.html', {'crawl_list': crawl_list})
 
 
-def mykeyword(request):
-    return render(request, 'mykeyword.html')
+def excludedkeyword(request):
+    excluded_word_data = BS4_NEWS_ANALYSIS_WORD_EXCLUDED.objects.all().order_by('-UPDATE_DATETIME')
+    paginator = Paginator(excluded_word_data, 15)
+    page = request.GET.get('page')
+    try:
+        excluded_word_data = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        excluded_word_data = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        excluded_word_data = paginator.page(paginator.num_pages)
+    return render(request,
+                  'excludedkeyword.html',
+                  {'excluded_word_list': excluded_word_data})
 
+def excludedkeywordadd(request):
+    user_id = request.session['userId']
+    userData = User.objects.get(User_Id=user_id)
+    company_data = News_Company.objects.all()
+    return render(request, 'excludedkeywordadd.html', {'user_data': userData,
+                                            'company_data': company_data})
 
-def mynews(request):
-    return render(request, 'mynews.html')
+@csrf_exempt
+def excludedkeywordrequest(request):
+    user_id = request.session['userId']
+    userData = User.objects.get(User_Id=user_id)
+    request_input = json.loads(request.body)
+    excludedWord = request_input['excludedWord']
+    descriptionInfo = request_input['descriptionInfo']
+    companyCode = request_input['companyCode']
+
+    if BS4_NEWS_ANALYSIS_WORD_EXCLUDED.objects.filter(COMPANY_CODE=companyCode,
+                                                      EXCLUDED_WORD=excludedWord):
+        print("duplicated, save fail")
+        result = "FALSE"
+    else:
+        excludedword_instance = BS4_NEWS_ANALYSIS_WORD_EXCLUDED(
+            COMPANY_CODE=companyCode,
+            EXCLUDED_WORD=excludedWord,
+            DESCRIPTION_INFO=descriptionInfo,
+            UPDATE_USER=userData.User_Id,
+            UPDATE_DATETIME=datetime.now(),
+            CREATE_USER=userData.User_Id,
+            CREATE_DATETIME=datetime.now()
+        )
+        excludedword_instance.save()
+        print("save success")
+        result = "TRUE"
+    return HttpResponse(result, content_type='text')
+
 
 
 def myscrap(request):

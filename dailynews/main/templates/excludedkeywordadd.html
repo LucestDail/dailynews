@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Daily Data Hub</title>
+    {% include 'header.html' %}
+    {% include 'topscript.html' %}
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+</head>
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        {% include 'sidebar.html' %}
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                {% include 'topbar.html' %}
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">제외 키워드 등록</h1>
+                    </div>
+                    <!-- Content Row -->
+                    <div class="container rounded bg-white mt-5 mb-5">
+                        <div class="row">
+                            <div class="col-md-12 border-right">
+                                <div class="p-3 py-5">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h3 class="text-right">제외 키워드 정보</h3>
+                                        </br>
+                                        <h5 class="text-right">제외한 키워드는 이후 수집 데이터부터 반영됩니다.</h5>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-12"><label class="labels">제외 단어</label><input type="text" id="excludedWord" class="form-control" placeholder="제외 단어 입력"></div>
+                                        <div class="col-md-12"><label class="labels">제외 사유</label><input type="text" id="descriptionInfo" class="form-control" placeholder="제외 사유 입력"></div>
+                                        <div class="col-md-12">
+                                            <label class="labels">대상 뉴스</label>
+                                            <select class="form-control" aria-label="Default select example" id="companyCode">
+                                                {% for company in company_data %}
+                                                <option value="{{company.News_Company_Code}}">{{company.News_Company_Name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mt-5 text-center"><button id="btnSaveWord" class="btn btn-primary profile-button" type="button">Save Word</button></div>
+                                    <script>
+                                        $('#btnSaveWord').on('click', function(e) {
+                                            if($('#excludedWord').val() == "" ){
+                                                toastr.warning('제외 단어를 입력하세요');
+                                                $('#excludedWord').focus();
+                                                return;
+                                            }else if($('#excludedWord').val().length > 50 ){
+                                                toastr.warning('제외 단어가 너무 깁니다.')
+                                                $('#excludedWord').focus();
+                                                return;
+                                            }else if($('#descriptionInfo').val() == "" ){
+                                                toastr.warning('제외 사유를 입력하세요');
+                                                $('#descriptionInfo').focus();
+                                                return;
+                                            }else if($('#descriptionInfo').val().length > 50 ){
+                                                toastr.warning('제외 사유가 너무 깁니다.')
+                                                $('#descriptionInfo').focus();
+                                                return;
+                                            }else{
+                                                var data={
+                                                    excludedWord:$('#excludedWord').val(),
+                                                    descriptionInfo:$('#descriptionInfo').val(),
+                                                    companyCode:$('#companyCode option:selected').val()
+                                            }
+                                            $.ajax({
+                                                type:'POST',
+                                                url:"/excludedkeywordrequest",
+                                                dataType: "text",
+                                                contentType:'application/json; charset=utf-8',
+                                                data:JSON.stringify(data),
+                                                success : function(data){
+                                                    console.log(data);
+                                                    setTimeout(() => toastr.success("제외 키워드 등록 완료"), 3000);
+                                                    location.reload();
+                                                },
+                                                error : function(error){
+                                                    toastr.warning("등록 오류");
+                                                    console.log(JSON.stringify(error));
+                                                }
+                                            })
+                                            }
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- /.container-fluid -->
+            </div>
+                {% include 'footer.html' %}
+        </div>
+    </div>
+    {% include 'logout.html' %}
+    {% include 'script.html' %}
+</body>
+</html>
