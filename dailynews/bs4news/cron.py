@@ -15,20 +15,19 @@ warnings.filterwarnings("ignore")
 okt = Okt()
 
 def scrap():
-    print('django bs4news scrap crontab started -------------------')
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> DJANGO BS4NEWS SCRAP CRONTAB START")
     news_company = News_Company.objects.all()
     for current_job_target_company in news_company:
         current_job_target_company_code = current_job_target_company.News_Company_Code
-        print('current step =====================================')
-        print(current_job_target_company_code)
-        print('job start ========================================')
-        print(datetime.now())
-        print('job started =====================================>')
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CURRENT JOB TARGET COMPANY CODE : "
+              + str(current_job_target_company_code))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CURRENT JOB START ")
         current_datetime = datetime.now()
         format = '%Y%m%d'
         target_date = datetime.strftime(current_datetime, format)
         target_company = current_job_target_company_code
-        print(target_date)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CURRENT JOB TARGET DATA : "
+              + str(target_date))
         url = 'https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=' + \
               target_company + \
               '&listType=title&date=' + \
@@ -38,7 +37,7 @@ def scrap():
         try:
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
-                print('pass 1')
+                print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 CHECK(HTTP RESPONSE 200) PASS")
                 html = response.text
                 soup = BeautifulSoup(html, 'html.parser')
                 for ulElements in soup.find_all("ul", class_="type02"):
@@ -48,10 +47,10 @@ def scrap():
                         try:
                             visitResponse = requests.get(visiturl, headers=headers)
                             if response.status_code == 200:
-                                print('pass 2')
-                                print('scrap start ========================================')
-                                print(datetime.now())
-                                print('scrap started =====================================>')
+                                print(datetime.now().strftime(
+                                    "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 2 CHECK(HTTP RESPONSE 200) PASS")
+                                print(datetime.now().strftime(
+                                    "%m/%d/%Y, %H:%M:%S") + " >> SCRAP START")
                                 try:
                                     visitHtml = visitResponse.text
                                     visitSoup = BeautifulSoup(visitHtml, 'html.parser')
@@ -85,10 +84,8 @@ def scrap():
                                             News_title=articleTitle,
                                             News_company=articleCompany
                                     )):
-                                        print('duplicated, next article')
-                                        print('scrap end ========================================')
-                                        print(datetime.now())
-                                        print('scrap ended =====================================>')
+                                        print(datetime.now().strftime(
+                                            "%m/%d/%Y, %H:%M:%S") + " >> ARTICLE DUPLICATED -> SCRAP END")
                                     else:
                                         news_instance = News(
                                             News_from=articleBy,
@@ -98,46 +95,41 @@ def scrap():
                                             News_company=articleCompany
                                         )
                                         news_instance.save()
-                                        print('save success')
-                                        print('scrap end ========================================')
-                                        print(datetime.now())
-                                        print('scrap ended =====================================>')
+                                        print(datetime.now().strftime(
+                                            "%m/%d/%Y, %H:%M:%S") + " >> ARTICLE SAVED -> SCRAP END")
                                 except Exception as e:
                                     trace_back = traceback.format_exc()
                                     message = str(e) + "\n" + str(trace_back)
                                     print(e)
-                                    print('Exception core')
+                                    print(datetime.now().strftime(
+                                        "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 2 EXCEPTION")
                                     pass
                             else:
                                 print(visitResponse.status_code)
-                                print("end work")
-                                print('job end ========================================')
-                                print(datetime.now())
-                                print('job ended =====================================>')
+                                print(datetime.now().strftime(
+                                    "%m/%d/%Y, %H:%M:%S") + " >> SCRAP TOTAL END")
                         except Exception:
                             print(Exception)
-                            print('exception from inner loop')
-                            print('job end ========================================')
-                            print(datetime.now())
-                            print('job ended =====================================>')
+                            print(datetime.now().strftime(
+                                "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 EXCEPTION")
                             pass
             else:
                 print(response.status_code)
-                print("end work, Job finished =============================")
-                print('job end ========================================')
-                print(datetime.now())
-                print('job ended =====================================>')
+                print(datetime.now().strftime(
+                    "%m/%d/%Y, %H:%M:%S") + " >> CURRENT JOB END")
         except Exception:
             print(Exception)
             print('exception from outer loop')
+            print(datetime.now().strftime(
+                "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 EXCEPTION")
             print('job end ========================================')
             print(datetime.now())
             print('job ended =====================================>')
             pass
-        print('total end ========================================')
-        print(datetime.now())
-        print('total ended =====================================>')
-    print('django bs4news scrap crontab ended -------------------')
+        print(datetime.now().strftime(
+            "%m/%d/%Y, %H:%M:%S") + " >> CURRENT JOB END")
+    print(datetime.now().strftime(
+        "%m/%d/%Y, %H:%M:%S") + " >> DJANGO BS4NEWS SCRAP CRONTAB END")
 
 
 def news_analysis_create_morphs():
