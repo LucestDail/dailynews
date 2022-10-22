@@ -42,7 +42,8 @@ def scrap():
                 soup = BeautifulSoup(html, 'html.parser')
                 for ulElements in soup.find_all("ul", class_="type02"):
                     for href in ulElements.find_all("li"):
-                        print(href.find("a")["href"])
+                        print(datetime.now().strftime(
+                            "%m/%d/%Y, %H:%M:%S") + " >> SCRAP URL : " + str(href.find("a")["href"]))
                         visiturl = href.find("a")["href"]
                         try:
                             visitResponse = requests.get(visiturl, headers=headers)
