@@ -57,6 +57,7 @@ def scrap():
                                     visitSoup = BeautifulSoup(visitHtml, 'html.parser')
                                     articleTitle = visitSoup.find(class_='media_end_head_headline').text.strip()
                                     articleBody = visitSoup.find(id='dic_area').text.strip()
+                                    articleBodyRaw = visitSoup.find(id='dic_area')
                                     articleCompany = url[url.find('oid') + 4:url.find('oid') + 7]
                                     if type(visitSoup.find(class_='byline')) is None:
                                         articleBy = '기자 정보 없음'
@@ -92,6 +93,7 @@ def scrap():
                                             News_from=articleBy,
                                             News_title=articleTitle,
                                             News_contents=articleBody,
+                                            News_contents_raw=articleBodyRaw,
                                             News_CreateDT=inputarticleTime,
                                             News_company=articleCompany
                                         )
