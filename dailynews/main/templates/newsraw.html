@@ -45,7 +45,9 @@
                             </div>
                             <div id="collapse{{news.id}}" class="collapse" aria-labelledby="heading{{news.id}}" data-parent="#accordionExample">
                               <div class="card-body">
-                                  {{news.news_contents}}
+                                  {% autoescape off %}
+                                  {{news.news_contents_raw}}
+                                  {% endautoescape %}
                               </div>
                             </div>
                           </div>
