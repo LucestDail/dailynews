@@ -57,7 +57,7 @@ def scrap():
                                     visitSoup = BeautifulSoup(visitHtml, 'html.parser')
                                     articleTitle = visitSoup.find(class_='media_end_head_headline').text.strip()
                                     articleBody = visitSoup.find(id='dic_area').text.strip()
-                                    articleBodyRaw = str(visitSoup.find(id='dic_area'))
+                                    articleBodyRaw = str(visitSoup.find(id='dic_area')).replace('data-src', 'src')
                                     articleCompany = url[url.find('oid') + 4:url.find('oid') + 7]
                                     if type(visitSoup.find(class_='byline')) is None:
                                         articleBy = '기자 정보 없음'
