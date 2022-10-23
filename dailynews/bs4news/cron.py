@@ -100,34 +100,46 @@ def scrap():
                                         news_instance.save()
                                         print(datetime.now().strftime(
                                             "%m/%d/%Y, %H:%M:%S") + " >> ARTICLE SAVED -> SCRAP END")
-                                except Exception as e:
-                                    trace_back = traceback.format_exc()
-                                    message = str(e) + "\n" + str(trace_back)
-                                    print(e)
+                                except Exception as e2:
+                                    trace_back2 = traceback.format_exc()
+                                    message2 = str(e2) + "\n" + str(trace_back2)
+                                    print(datetime.now().strftime(
+                                        "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 2 STACK TRACE START")
+                                    print(message2)
                                     print(datetime.now().strftime(
                                         "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 2 EXCEPTION")
+                                    print(datetime.now().strftime(
+                                        "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 2 STACK TRACE END")
                                     pass
                             else:
-                                print(visitResponse.status_code)
                                 print(datetime.now().strftime(
                                     "%m/%d/%Y, %H:%M:%S") + " >> SCRAP TOTAL END")
-                        except Exception:
-                            print(Exception)
+                        except Exception as e1:
+                            trace_back1 = traceback.format_exc()
+                            message1 = str(e1) + "\n" + str(trace_back1)
+                            print(datetime.now().strftime(
+                                "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 STACK TRACE START")
+                            print(message1)
+                            print(datetime.now().strftime(
+                                "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 STACK TRACE END")
                             print(datetime.now().strftime(
                                 "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 EXCEPTION")
                             pass
             else:
-                print(response.status_code)
                 print(datetime.now().strftime(
                     "%m/%d/%Y, %H:%M:%S") + " >> CURRENT JOB END")
-        except Exception:
-            print(Exception)
-            print('exception from outer loop')
+        except Exception as e:
+            trace_back = traceback.format_exc()
+            message = str(e) + "\n" + str(trace_back)
             print(datetime.now().strftime(
-                "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 EXCEPTION")
-            print('job end ========================================')
-            print(datetime.now())
-            print('job ended =====================================>')
+                "%m/%d/%Y, %H:%M:%S") + " >> CONDITION ROOT STACK TRACE START")
+            print(message)
+            print(datetime.now().strftime(
+                "%m/%d/%Y, %H:%M:%S") + " >> CONDITION ROOT STACK TRACE END")
+            print(datetime.now().strftime(
+                "%m/%d/%Y, %H:%M:%S") + " >> EXCEPTION FROM LOOPING")
+            print(datetime.now().strftime(
+                "%m/%d/%Y, %H:%M:%S") + " >> CONDITION ROOT EXCEPTION")
             pass
         print(datetime.now().strftime(
             "%m/%d/%Y, %H:%M:%S") + " >> CURRENT JOB END")
