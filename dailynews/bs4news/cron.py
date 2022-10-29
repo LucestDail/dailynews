@@ -448,19 +448,24 @@ def word2vec_modeling():
     from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
     from_date = datetime.combine(from_date, datetime.min.time())
     to_date = datetime.combine(from_date, datetime.max.time())
-    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC TARGET DATA ACCESS START")
-    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date))
-    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-          + " >> WORD2VEC TARGET DATA ACCESS END : TOTAL " + str(len(target_news_data)))
-    normalized_text = []
-    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING START")
-    for target_news_element in target_news_data:
-        sent_text = sent_tokenize(target_news_element.News_contents)
-        normalized_text.append(str(sent_text))
-    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING END")
-    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING START")
-    result = [word_tokenize(sentence) for sentence in normalized_text]
-    model = Word2Vec(sentences=result, window=5, min_count=30, workers=5, sg=0)
-    model.save("/home/oshdb/ddhmodel")
+    try:
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC TARGET DATA ACCESS START")
+        target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+              + " >> WORD2VEC TARGET DATA ACCESS END : TOTAL " + str(len(target_news_data)))
+        normalized_text = []
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING START")
+        for target_news_element in target_news_data:
+            sent_text = sent_tokenize(target_news_element.News_contents)
+            normalized_text.append(str(sent_text))
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING END")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING START")
+        result = [word_tokenize(sentence) for sentence in normalized_text]
+        model = Word2Vec(sentences=result, window=5, min_count=30, workers=5, sg=0)
+        model.save("/home/oshdb/ddhmodel")
+    except Exception as e:
+        trace_back = traceback.format_exc()
+        message = str(e) + "\n" + str(trace_back)
+        print(message)
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING END")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB END")
