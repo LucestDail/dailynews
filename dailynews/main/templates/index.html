@@ -292,7 +292,6 @@
                                         var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
                                         series.maxCount = 50;
                                         series.minWordLength = 2;
-                                        series.excludeWords = ["경향신문"];
                                         series.randomness = 0;
                                         series.heatRules.push({
                                         "target": series.labels.template,
@@ -311,9 +310,8 @@
                                         series.data = [{{news_data | safe}}];
                                         series.dataFields.word = "tag";
                                         series.dataFields.value = "weight";
-                                        console.log({{ news_data_analysis_counter_list | safe}});
-                                        console.log({{ news_data_analysis_counter_word | safe}});
-                                        console.log({{ news_data_analysis_counter_value | safe}});
+                                        series.labels.template.tooltipText = "{word}:\n[bold]{value}[/]";
+                                        series.labels.template.url = "newsraw?keyword={word}";
                                     </script>
                                 </div>
                             </div>
@@ -365,11 +363,19 @@
                                                         {% if forloop.counter == forloop.parentloop.counter %}
                                                             <tr>
                                                             {% if aa == focus_word %}
-                                                                <td class="table-primary text-center">{{aa}}</td>
-                                                                <td class="table-primary text-center">{{bb}}</td>
+                                                                <td class="table-primary text-center">
+                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="table-primary text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
+                                                                </td>
                                                             {% else%}
-                                                                <td class="text-center">{{aa}}</td>
-                                                                <td class="text-center">{{bb}}</td>
+                                                                <td class="text-center">
+                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
+                                                                </td>
                                                             {% endif %}
                                                             </tr>
                                                         {% endif %}

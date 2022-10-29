@@ -71,11 +71,19 @@
                                                         {% if forloop.counter == forloop.parentloop.counter %}
                                                             <tr>
                                                             {% if aa == focus_word %}
-                                                                <td class="table-primary text-center">{{aa}}</td>
-                                                                <td class="table-primary text-center">{{bb}}</td>
+                                                                <td class="table-primary text-center">
+                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="table-primary text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
+                                                                </td>
                                                             {% else%}
-                                                                <td class="text-center">{{aa}}</td>
-                                                                <td class="text-center">{{bb}}</td>
+                                                                <td class="text-center">
+                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
+                                                                </td>
                                                             {% endif %}
                                                             </tr>
                                                         {% endif %}
