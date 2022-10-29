@@ -669,8 +669,9 @@ def newsraw(request):
         total_count = int(total_count_res.json()["count"])
         for one_data in res_json:
             News_data.append(one_data["_source"])
-        # model = Word2Vec.load("/Users/oseunghyeon/samplemodel")
-        model = Word2Vec.load("/home/oshdb/ddhmodel")
+        # model = Word2Vec.load("/Users/oseunghyeon/ddhmodel")
+        # model = Word2Vec.load("/home/oshdb/ddhmodel")
+        model = Word2Vec.load("/home/ubuntu/ddhmodel")
         related_keyword = model.wv.most_similar(search_keyword)
         related_keyword = dict(related_keyword)
         for key in related_keyword.keys():

@@ -321,8 +321,9 @@ def word2vecrun(request):
         target_word = request.GET['keyword']
     else:
         target_word = '대한민국'
-    model = Word2Vec.load("/Users/oseunghyeon/samplemodel")
+    # model = Word2Vec.load("/Users/oseunghyeon/ddhmodel")
     # model = Word2Vec.load("/home/oshdb/ddhmodel")
+    model = Word2Vec.load("/home/ubuntu/ddhmodel")
     model_result = model.wv.most_similar(target_word)
     return render(request, 'bs4test.html', {'testobject': model_result})
 
@@ -350,7 +351,8 @@ def word2vec(request):
     result = [word_tokenize(sentence) for sentence in normalized_text]
     model = Word2Vec(sentences=result, window=5, min_count=30, workers=5, sg=0)
     # model.save("/home/oshdb/ddhmodel")
-    model.save("/Users/oseunghyeon/samplemodel")
+    # model.save("/Users/oseunghyeon/ddhmodel")
+    model.save("/users/ubuntu/ddhmodel")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING END")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB END")
     return render(request, 'bs4test.html', {'testobject': 'success!'})
