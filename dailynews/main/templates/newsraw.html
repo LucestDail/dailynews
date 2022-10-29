@@ -26,9 +26,14 @@
                     <div class="row">
                         <form action="{% url 'newsraw' %}" method="get">
                             <div class="form-group">
-                              <label for="keyword">키워드 검색 조건</label>
+                              <label for="keyword">뉴스 기사중 검색하고 싶은 키워드를 입력 후 엔터를 눌러주세요!</label>
                               <input type="text" class="form-control" id="keyword" name="keyword" aria-describedby="keywordHelp" placeholder="키워드 입력" {% if request.GET.keyword %} value = {{search_keyword}} {% endif %}>
-                              <small id="keywordhelp" class="form-text text-muted">뉴스 기사중 검색하고 싶은 키워드를 입력 후 엔터를 눌러주세요!</small>
+                                {% if related_keyword|length > 0%}
+                                <small id="keywordhelp" class="form-text text-muted">연관된 검색어는 다음과 같습니다. [단어(연관비율)]</small>
+                              {% for key, value in related_keyword.items %}
+                                <a href="newsraw?keyword={{key}}">[{{key}}<small>({{value}}%)</small>]</a>
+                                {% endfor %}
+                                {% endif %}
                             </div>
                         </form>
                     </div>

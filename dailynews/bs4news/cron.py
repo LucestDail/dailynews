@@ -11,6 +11,8 @@ import random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from pathlib import Path
+from gensim.models import Word2Vec
+from nltk.tokenize import word_tokenize, sent_tokenize
 warnings.filterwarnings("ignore")
 okt = Okt()
 
@@ -438,3 +440,27 @@ def news_crawl_bia_selenium_every_hour():
     print(datetime.now())
     print('CRON END =====================================>')
     print('django bs4news news_analysis_create_news_dashboard_data crontab started -------------------')
+
+def word2vec_modeling():
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB START")
+    current_datetime = datetime.now()
+    input_date = str(current_datetime.year) + '-' + str(current_datetime.month) + '-' + str(current_datetime.day)
+    from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
+    from_date = datetime.combine(from_date, datetime.min.time())
+    to_date = datetime.combine(from_date, datetime.max.time())
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC TARGET DATA ACCESS START")
+    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date))
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+          + " >> WORD2VEC TARGET DATA ACCESS END : TOTAL " + str(len(target_news_data)))
+    normalized_text = []
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING START")
+    for target_news_element in target_news_data:
+        sent_text = sent_tokenize(target_news_element.News_contents)
+        normalized_text.append(str(sent_text))
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING END")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING START")
+    result = [word_tokenize(sentence) for sentence in normalized_text]
+    model = Word2Vec(sentences=result, window=5, min_count=30, workers=5, sg=0)
+    model.save("/home/oshdb/ddhmodel")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING END")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB END")

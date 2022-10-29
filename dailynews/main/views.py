@@ -11,6 +11,8 @@ from django.http import HttpResponse
 from collections import Counter
 import json
 import math
+from gensim.models import Word2Vec
+from nltk.tokenize import word_tokenize, sent_tokenize
 
 
 def basicTemplates(request):
@@ -667,6 +669,12 @@ def newsraw(request):
         total_count = int(total_count_res.json()["count"])
         for one_data in res_json:
             News_data.append(one_data["_source"])
+        # model = Word2Vec.load("/Users/oseunghyeon/samplemodel")
+        model = Word2Vec.load("/home/oshdb/ddhmodel")
+        related_keyword = model.wv.most_similar(search_keyword)
+        related_keyword = dict(related_keyword)
+        for key in related_keyword.keys():
+            related_keyword[key] = math.ceil(related_keyword[key] * 100)
     else:
         es_protocol = "http"
         # es_host = "localhost"
@@ -696,6 +704,7 @@ def newsraw(request):
         total_count = int(total_count_res.json()["count"])
         for one_data in res_json:
             News_data.append(one_data["_source"])
+        related_keyword = []
     news_list = News_data
     page_total = math.ceil(total_count / 20)
     page_previous = current_page - 1
@@ -706,7 +715,8 @@ def newsraw(request):
                                             'page_current': current_page,
                                             'page_previous': page_previous,
                                             'page_next': page_next,
-                                            'search_keyword': search_keyword})
+                                            'search_keyword': search_keyword,
+                                            'related_keyword': related_keyword})
 
 
 def qna(request):

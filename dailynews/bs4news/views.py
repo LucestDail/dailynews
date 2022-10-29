@@ -89,73 +89,110 @@ def scrap(request):
         url = 'https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid='+ request.GET['company']\
               + '&listType=title'
     else:
-        url = 'https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=032&listType=title'
+        url = 'https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=002&listType=title'
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"}
     try:
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
+            print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 CHECK(HTTP RESPONSE 200) PASS")
             html = response.text
             soup = BeautifulSoup(html, 'html.parser')
             for ulElements in soup.find_all("ul", class_="type02"):
                 for href in ulElements.find_all("li"):
-                    print(href.find("a")["href"])
+                    print(datetime.now().strftime(
+                        "%m/%d/%Y, %H:%M:%S") + " >> SCRAP URL : " + str(href.find("a")["href"]))
                     visiturl = href.find("a")["href"]
                     try:
                         visitResponse = requests.get(visiturl, headers=headers)
                         if response.status_code == 200:
+                            print(datetime.now().strftime(
+                                "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 2 CHECK(HTTP RESPONSE 200) PASS")
+                            print(datetime.now().strftime(
+                                "%m/%d/%Y, %H:%M:%S") + " >> SCRAP START")
                             try:
                                 visitHtml = visitResponse.text
                                 visitSoup = BeautifulSoup(visitHtml, 'html.parser')
                                 articleTitle = visitSoup.find(class_='media_end_head_headline').text.strip()
                                 articleBody = visitSoup.find(id='dic_area').text.strip()
-                                articleCompany = url[url.find('oid')+4:url.find('oid')+7]
+                                print(articleBody)
+                                articleBodyRaw = str(visitSoup.find(id='dic_area'))
+                                print(articleBodyRaw)
+                                articleCompany = url[url.find('oid') + 4:url.find('oid') + 7]
                                 if type(visitSoup.find(class_='byline')) is None:
                                     articleBy = '기자 정보 없음'
                                 else:
                                     articleBy = visitSoup.find(class_='byline').text.strip()
-                                articleTime = visitSoup.find(class_='media_end_head_info_datestamp_time').text.strip()
-                                articleTimeDate = datetime.strptime(articleTime.split()[0],'%Y.%m.%d.')
+                                articleTime = visitSoup.find(
+                                    class_='media_end_head_info_datestamp_time').text.strip()
+                                articleTimeDate = datetime.strptime(articleTime.split()[0], '%Y.%m.%d.')
                                 articleTimeAP = articleTime.split()[1]
                                 articleTimeHour = datetime.strptime(articleTime.split()[2], '%H:%M')
-                                if(articleTimeAP == '오후'):
+                                if (articleTimeAP == '오후'):
                                     articleTimeHourConvert = timedelta(hours=12) + articleTimeHour
                                 else:
                                     articleTimeHourConvert = articleTimeHour
-                                articleTimeHourResult = datetime.strptime(articleTimeHourConvert.strftime("%H:%M"), '%H:%M').time()
-                                inputarticleTime = articleTimeDate.strftime('%Y-%m-%d') + ' ' + articleTimeHourResult.strftime('%H:%M:%S')
+                                articleTimeHourResult = datetime.strptime(articleTimeHourConvert.strftime("%H:%M"),
+                                                                          '%H:%M').time()
+                                inputarticleTime = articleTimeDate.strftime(
+                                    '%Y-%m-%d') + ' ' + articleTimeHourResult.strftime('%H:%M:%S')
                                 time.sleep(random.uniform(0, 1.0))
                                 # News_from
                                 # News_title
                                 # News_contents
                                 # News_CreateDT
-                                if(News.objects.filter(
-                                    News_from=articleBy,
-                                    News_title=articleTitle
+                                if (News.objects.filter(
+                                        News_from=articleBy,
+                                        News_title=articleTitle,
+                                        News_company=articleCompany
                                 )):
-                                    print('duplicated, next article')
+                                    print(datetime.now().strftime(
+                                        "%m/%d/%Y, %H:%M:%S") + " >> ARTICLE DUPLICATED -> SCRAP END")
                                 else:
                                     news_instance = News(
                                         News_from=articleBy,
                                         News_title=articleTitle,
                                         News_contents=articleBody,
+                                        News_contents_raw=articleBodyRaw,
                                         News_CreateDT=inputarticleTime,
                                         News_company=articleCompany
                                     )
-                                    news_instance.save()
-                                    print('save success')
-                            except Exception:
+                                    # news_instance.save()
+                                    print(datetime.now().strftime(
+                                        "%m/%d/%Y, %H:%M:%S") + " >> ARTICLE SAVED -> SCRAP END")
+                            except Exception as e:
+                                trace_back = traceback.format_exc()
+                                message = str(e) + "\n" + str(trace_back)
+                                print(e)
+                                print(datetime.now().strftime(
+                                    "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 2 EXCEPTION")
                                 pass
                         else:
                             print(visitResponse.status_code)
-                            print("end work")
+                            print(datetime.now().strftime(
+                                "%m/%d/%Y, %H:%M:%S") + " >> SCRAP TOTAL END")
                     except Exception:
+                        print(Exception)
+                        print(datetime.now().strftime(
+                            "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 EXCEPTION")
                         pass
         else:
             print(response.status_code)
-            print("end work")
+            print(datetime.now().strftime(
+                "%m/%d/%Y, %H:%M:%S") + " >> CURRENT JOB END")
     except Exception:
+        print(Exception)
+        print('exception from outer loop')
+        print(datetime.now().strftime(
+            "%m/%d/%Y, %H:%M:%S") + " >> CONDITION 1 EXCEPTION")
+        print('job end ========================================')
+        print(datetime.now())
+        print('job ended =====================================>')
         pass
+    print(datetime.now().strftime(
+        "%m/%d/%Y, %H:%M:%S") + " >> CURRENT JOB END")
+    print(datetime.now().strftime(
+        "%m/%d/%Y, %H:%M:%S") + " >> DJANGO BS4NEWS SCRAP CRONTAB END")
 
 
 def company(request):
@@ -279,64 +316,44 @@ def index_morphs(request):
         print(target_contents)
 
 
-def word2vec(request):
-    print('word2vce started -------------------')
-    if request.method == 'GET' and 'word' in request.GET and 'date' in request.GET:
-        target_word = request.GET['word']
-        current_datetime = request.GET['date']
-    elif request.method == 'GET' and 'word' in request.GET:
-        target_company = request.GET['word']
-        current_datetime = datetime.now()
+def word2vecrun(request):
+    if request.method == 'GET' and 'keyword' in request.GET:
+        target_word = request.GET['keyword']
     else:
-        target_word = '경향신문'
-        current_datetime = datetime.now()
-    target_company = '032'
+        target_word = '대한민국'
+    model = Word2Vec.load("/Users/oseunghyeon/samplemodel")
+    # model = Word2Vec.load("/home/oshdb/ddhmodel")
+    model_result = model.wv.most_similar(target_word)
+    return render(request, 'bs4test.html', {'testobject': model_result})
+
+def word2vec(request):
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB START")
+    current_datetime = datetime.now()
     input_date = str(current_datetime.year) + '-' + str(current_datetime.month) + '-' + str(current_datetime.day)
     from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
     from_date = datetime.combine(from_date, datetime.min.time())
     to_date = datetime.combine(from_date, datetime.max.time())
-    target_news_data = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
-                                                        News_Analysis_Company=target_company)
-    target_news_sentences = News.objects.filter(News_CreateDT__range=(from_date, to_date), News_company=target_company)
-    # for target_news_element in target_news_data:
-    #     print(target_news_element)
-    #     sent_text = sent_tokenize(target_news_element)
-    #     print(sent_text)
-    #     normalized_text = []
-    #     normalized_text.append(sent_text)
-    #     print(normalized_text)
-    #     result = [word_tokenize(sentence) for sentence in normalized_text]
-    #     model = Word2Vec(sentences=result, size=100, window=5, min_count=5, workers=4, sg=0)
-    #     # 임베딩 벡터 차원
-    #     # window : 윈도우 크기
-    #     # mincont : 최소 5번 이상 등장한 단어
-    #     # sg = 0 : CBOW
-    #     # sg = 1 : skip - grows
-    #     model_result = model.wv.most_similar(target_word)
-    #     print(model_result)
-    for target_news_sentences_element in target_news_sentences:
-        print('news for start ================================')
-        content_text = target_news_sentences_element.News_contents
-        print(content_text)
-        # 입력 코퍼스에 대해서 NLTK를 이용하여 문장 토큰화를 수행.
-        sent_text = sent_tokenize(content_text)
-        # 각 문장에 대해서 구두점을 제거하고, 대문자를 소문자로 변환.
-        normalized_text = []
-        for string in sent_text:
-            normalized_text.append(string)
-        # 각 문장에 대해서 NLTK를 이용하여 단어 토큰화를 수행.
-        result = [word_tokenize(sentence) for sentence in normalized_text]
-        print('총 샘플의 개수 : {}'.format(len(result)))
-        for line in result[:3]:
-            print(line)
-        df = pd.DataFrame(result)
-        model = Word2Vec(map(eval, df['corpus'].values), sg=1, window=5, min_count=1, workers=4, iter=100)
-        model_result1 = model.wv.most_similar("정부")
-        model_result = model.wv.most_similar(target_word)
-        print(model_result)
-        print('news for ended ================================')
-    print('word2vce ended -------------------')
-    return render(request, 'bs4news.html', {'news_list': target_news_sentences})
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC TARGET DATA ACCESS START")
+    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date))
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+          + " >> WORD2VEC TARGET DATA ACCESS END : TOTAL " + str(len(target_news_data)))
+    normalized_text = []
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING START")
+    stack_count = 0
+    for target_news_element in target_news_data:
+        sent_text = sent_tokenize(target_news_element.News_contents)
+        normalized_text.append(str(sent_text))
+        stack_count += 1
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> STACKING COUNT : " + str(stack_count))
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING END")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING START")
+    result = [word_tokenize(sentence) for sentence in normalized_text]
+    model = Word2Vec(sentences=result, window=5, min_count=30, workers=5, sg=0)
+    # model.save("/home/oshdb/ddhmodel")
+    model.save("/Users/oseunghyeon/samplemodel")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING END")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB END")
+    return render(request, 'bs4test.html', {'testobject': 'success!'})
 
 
 def bs4scrap(request):
