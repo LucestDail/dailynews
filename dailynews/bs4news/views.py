@@ -352,7 +352,7 @@ def word2vec(request):
     model = Word2Vec(sentences=result, window=5, min_count=30, workers=5, sg=0)
     # model.save("/home/oshdb/ddhmodel")
     # model.save("/Users/oseunghyeon/ddhmodel")
-    model.save("/users/ubuntu/ddhmodel")
+    model.save("/home/ubuntu/ddhmodel")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING END")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB END")
     return render(request, 'bs4test.html', {'testobject': 'success!'})
