@@ -25,6 +25,7 @@ warnings.filterwarnings("ignore")
 # Create your views here.
 okt = Okt()
 
+
 def chart(request):
     news_data_all = News.objects.all()
     okt = Okt()
@@ -326,6 +327,7 @@ def word2vecrun(request):
     model = Word2Vec.load("/home/ubuntu/ddhmodel")
     model_result = model.wv.most_similar(target_word)
     return render(request, 'bs4test.html', {'testobject': model_result})
+
 
 def word2vec(request):
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB START")
