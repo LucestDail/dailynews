@@ -519,7 +519,7 @@ def newsdashboard(request):
     focus3_company_code = News_Company.objects.get(News_Company_Name=focus3_company_name).News_Company_Code
 
     graph_focus_news_count_jsonStr = ''
-    for i in range(0, 7):
+    for i in range(1, 6):
         graph_check_date = datetime.today() - timedelta(days=i)
         graph_input_date = str(graph_check_date.year) + '-' + str(graph_check_date.month) + '-' + str(graph_check_date.day)
         graph_from_date = datetime.strptime(graph_input_date, '%Y-%m-%d').date()
@@ -556,22 +556,6 @@ def newsdashboard(request):
         graph_focus_news_count_jsonStr += '"focus":'
         graph_focus_news_count_jsonStr += str(graph_focus_news_count)
         graph_focus_news_count_jsonStr += '},'
-
-    # focus1_temp_save = []
-    # for focus1_data_element in focus1_data_news:
-    #     focus1_news_content = focus1_data_element.News_Morphs.split(',')
-    #     for focus1_news_data_morphs_element in focus1_news_content:
-    #         focus1_temp_save.append(focus1_news_data_morphs_element)
-    # focus1_result = Counter(focus1_temp_save)
-    # focus1_most_word_50 = focus1_result.most_common(50)
-    # focus1_most_word_50_jsonStr = ''
-    # for focus1_most_word_50_element in focus1_most_word_50:
-    #     focus1_most_word_50_jsonStr += '{"tag":"'
-    #     focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[0])
-    #     focus1_most_word_50_jsonStr += '",'
-    #     focus1_most_word_50_jsonStr += '"weight":'
-    #     focus1_most_word_50_jsonStr += str(focus1_most_word_50_element[1])
-    #     focus1_most_word_50_jsonStr += '},'
 
     target_date = datetime.today() - timedelta(days=1)
     format_date = str(target_date.year) + '-' + str(target_date.month) + '-' + str(target_date.day)
