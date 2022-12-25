@@ -152,7 +152,7 @@
                                     <h6 class="m-0 font-weight-bold text-primary">분석 대상 검색 ( {{ focus_word }} - {{focus_company_name}} )</h6>
                                 </div>
                                 <div class="card-body">
-                                    <form action="{% url 'keywordtimedashboard' %}" method="get">
+                                    <form action="{% url 'keywordtimedashboard' %}" method="get" id="keywordtimedashboardform">
                                         <div class="form-group">
                                           <label for="keyword">데이터 중 검색하고 싶은 키워드를 입력 후 엔터를 눌러주세요!</label>
                                           <input type="text" class="form-control mb-4" id="keyword" name="keyword" aria-describedby="keywordHelp" placeholder="키워드 입력" {% if request.GET.keyword %} value = {{focus_word}} {% endif %}>
@@ -175,6 +175,7 @@
                                         </select>
                                         </div>
                                     </form>
+                                    <div class="mt-5 text-center"><button type="submit" form="keywordtimedashboardform" id="btnSearch" class="btn btn-primary profile-button">분석</button></div>
                                 </div>
                             </div>
                         </div>
