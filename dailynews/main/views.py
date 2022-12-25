@@ -466,12 +466,32 @@ def newsdashboard(request):
 
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
-    focus1_company_name = userData.User_Focus_Company
-    focus1_company_code = News_Company.objects.get(News_Company_Name=focus1_company_name).News_Company_Code
-    focus2_company_name = userData.User_Focus_Company_1
-    focus2_company_code = News_Company.objects.get(News_Company_Name=focus2_company_name).News_Company_Code
-    focus3_company_name = userData.User_Focus_Company_2
-    focus3_company_code = News_Company.objects.get(News_Company_Name=focus3_company_name).News_Company_Code
+    company_data = News_Company.objects.all()
+
+    if request.method == 'GET' and "company1" in request.GET:
+        focus1_object = News_Company.objects.get(News_Company_Name=(request.GET["company1"]))
+        focus1_company_name = focus1_object.News_Company_Name
+        focus1_company_code = focus1_object.News_Company_Code
+    else:
+        focus1_company_name = userData.User_Focus_Company
+        focus1_company_code = News_Company.objects.get(News_Company_Name=focus1_company_name).News_Company_Code
+
+    if request.method == 'GET' and "company2" in request.GET:
+        focus2_object = News_Company.objects.get(News_Company_Name=(request.GET["company2"]))
+        focus2_company_name = focus2_object.News_Company_Name
+        focus2_company_code = focus2_object.News_Company_Code
+    else:
+        focus2_company_name = userData.User_Focus_Company_1
+        focus2_company_code = News_Company.objects.get(News_Company_Name=focus2_company_name).News_Company_Code
+
+    if request.method == 'GET' and "company1" in request.GET:
+        focus3_object = News_Company.objects.get(News_Company_Name=(request.GET["company3"]))
+        focus3_company_name = focus3_object.News_Company_Name
+        focus3_company_code = focus3_object.News_Company_Code
+    else:
+        focus3_company_name = userData.User_Focus_Company_2
+        focus3_company_code = News_Company.objects.get(News_Company_Name=focus3_company_name).News_Company_Code
+
 
     graph_focus_news_count_jsonStr = ''
     for i in range(1, 6):
@@ -527,7 +547,8 @@ def newsdashboard(request):
         .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
                 News_Analysis_Word_Analysis_Company_Code=focus3_company_code)
 
-    return render(request, 'newsdashboard.html', {'graph_news_all_count': graph_focus_news_count_jsonStr,
+    return render(request, 'newsdashboard.html', {'company_data': company_data,
+                                                  'graph_news_all_count': graph_focus_news_count_jsonStr,
                                                   'focus1_company_name': focus1_company_name,
                                                   'focus1_news_data': focus1_most_word_50_jsonStr.News_Analysis_Word_Analysis_Company_Data,
                                                   'focus2_company_name': focus2_company_name,
@@ -752,28 +773,37 @@ def companywordcloud(request):
 
 
 def keywordtimedashboard(request):
+
     if 'userId' not in request.session:
         return render(request, 'login.html')
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
-    obj = Dashboard.objects.last()
-    focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
-    focus_company_name = focus_object.News_Company_Name
-    focus_company = focus_object.News_Company_Code
-    focus_word = userData.User_Focus_word
+    company_data = News_Company.objects.all()
+    if request.method == 'GET' and "company" in request.GET:
+        focus_object = News_Company.objects.get(News_Company_Name=(request.GET["company"]))
+        focus_company_name = focus_object.News_Company_Name
+        focus_company = focus_object.News_Company_Code
+    else:
+        focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
+        focus_company_name = focus_object.News_Company_Name
+        focus_company = focus_object.News_Company_Code
+
+    if request.method == 'GET' and "keyword" in request.GET:
+        focus_word = (request.GET["keyword"])
+    else:
+        focus_word = userData.User_Focus_word
+
     news_data_analysis_date = []
     news_data_analysis_count = []
     news_data_analysis_counter = []
     news_data_analysis_ratio = []
-    wc_news_data_list = []
     temp_save = []
-    for i in range(0, 7):
+    for i in range(0, 6):
         check_date = datetime.today() - timedelta(days=i)
         input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
         from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
         from_date = datetime.combine(from_date, datetime.min.time())
         to_date = datetime.combine(from_date, datetime.max.time())
-
         news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
                                                           News_Analysis_Company=focus_company)
         news_data_analysis_count_num = 0
@@ -782,20 +812,17 @@ def keywordtimedashboard(request):
             for news_data_morphs_element in news_content:
                 if focus_word in news_data_morphs_element:
                     news_data_analysis_count_num += 1
-                if i == 1:
-                    if len(news_data_morphs_element) > 1:
-                        wc_news_data_list.append(news_data_morphs_element)
                 if len(news_data_morphs_element) > 1:
                     temp_save.append(news_data_morphs_element)
         temp_result = Counter(temp_save)
-        temp_result_10_ratio = [(i, temp_result[i] / len(temp_save) * 100.0) for i, count in temp_result.most_common(10)]
+        temp_result_10_ratio = [(i, temp_result[i] / len(temp_save) * 100.0) for i, count in
+                                temp_result.most_common(10)]
         news_data_analysis_counter.append(temp_result_10_ratio)
         news_data_analysis_ratio.append(temp_result_10_ratio)
         news_data_analysis_date.append(input_date)
         news_data_analysis_count.append(news_data_analysis_count_num)
     news_data_analysis_counter.reverse()
     news_data_analysis_count.reverse()
-    news_data_analysis_ratio.reverse()
     news_data_analysis_counter_word = []
     news_data_analysis_counter_value = []
     for news_data_analysis_counter_element in news_data_analysis_counter:
@@ -803,34 +830,18 @@ def keywordtimedashboard(request):
         counter_word = []
         for n in news_data_analysis_counter_element:
             counter_word.append(n[0])
-            counter_value.append(round(n[1],2))
+            counter_value.append(round(n[1], 2))
         news_data_analysis_counter_word.append(counter_word)
         news_data_analysis_counter_value.append(counter_value)
-
     news_data_analysis_counter_list = list(zip(news_data_analysis_counter_word, news_data_analysis_counter_value))
-
-    wc_result = Counter(wc_news_data_list)
-    wc_most_word_50 = wc_result.most_common(50)
-    wc_most_word_50_jsonStr = ''
-    for wc_most_word_50_element in wc_most_word_50:
-        wc_most_word_50_jsonStr += '{"tag":"'
-        wc_most_word_50_jsonStr += str(wc_most_word_50_element[0])
-        wc_most_word_50_jsonStr += '",'
-        wc_most_word_50_jsonStr += '"weight":'
-        wc_most_word_50_jsonStr += str(wc_most_word_50_element[1])
-        wc_most_word_50_jsonStr += '},'
-
-    return render(request, 'keywordtimedashboard.html', {'news_count': obj.Dashboard_Total_News_Count,
-                                          'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
-                                          'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
-                                          'news_data': wc_most_word_50_jsonStr,
-                                          'today_news_count': obj.Dashboard_Today_count,
-                                          'focus_company_name': focus_company_name,
-                                          'focus_word': focus_word,
-                                          'news_data_analysis_date': news_data_analysis_date,
-                                          'news_data_analysis_count': news_data_analysis_count,
-                                          'news_data_analysis_counter_list': news_data_analysis_counter_list
-                                          })
+    return render(request, 'keywordtimedashboard.html', {
+          'company_data': company_data,
+          'focus_company_name': focus_company_name,
+          'focus_word': focus_word,
+          'news_data_analysis_date': news_data_analysis_date,
+          'news_data_analysis_count': news_data_analysis_count,
+          'news_data_analysis_counter_list': news_data_analysis_counter_list
+      })
 
 def maindashboard(request):
     if 'userId' not in request.session:

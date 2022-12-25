@@ -30,30 +30,15 @@
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">키워드 시계열 분석</h1>
                     </div>
-
                     <!-- Content Row -->
                     <div class="row">
                         <!-- Area Chart -->
-                        <div class="col-xl-12 col-lg-12">
+                        
+                        <div class="col-xl-8">
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">관심 키워드 시계열 그래프 분석 ( {{ focus_word }} - {{focus_company_name}} )</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">관심 키워드 설정:</div>
-                                            <a class="dropdown-item" href="profile">관심 키워드 변경</a>
-                                            <a class="dropdown-item" href="keyworddashboard">관심 키워드 대시보드</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
-                                        </div>
-                                    </div>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
@@ -161,8 +146,150 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-xl-4">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">분석 대상 검색 ( {{ focus_word }} - {{focus_company_name}} )</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form action="{% url 'keywordtimedashboard' %}" method="get">
+                                        <div class="form-group">
+                                          <label for="keyword">데이터 중 검색하고 싶은 키워드를 입력 후 엔터를 눌러주세요!</label>
+                                          <input type="text" class="form-control mb-4" id="keyword" name="keyword" aria-describedby="keywordHelp" placeholder="키워드 입력" {% if request.GET.keyword %} value = {{focus_word}} {% endif %}>
+                                          <select class="form-control" aria-label="Default select example" id="company" name="company">
+                                            {% for company in company_data %}
+                                            {% if request.GET.company %}
+                                                {% if company.News_Company_Name == request.GET.company%}
+                                                <option selected value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% else %}
+                                                <option value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% endif %}
+                                            {% else %}
+                                                {% if company.News_Company_Name == focus_company_name%}
+                                                <option selected value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% else %}
+                                                <option value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    
+                    <div class="row">
+                        <!-- Area Chart -->
+                        <div class="col-xl-12 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="width:100%">
+                                    <h6 class="m-0 font-weight-bold text-primary">일단위 주요 키워드 순위 ( {{ focus_company_name }} )</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">키워드 순위 설정:</div>
+                                            <a class="dropdown-item" href="profile">관심 뉴스 변경</a>
+                                            <a class="dropdown-item" href="newsdashboard">관심 뉴스 대시보드</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="rank-area" style="height: 40rem;">
+                                        <div class="d-flex flex-row" id="rank-div" style="height: 100%">
+                                            {% for a, b in news_data_analysis_counter_list %}{% for date in news_data_analysis_date reversed %}
+                                            {% if forloop.counter == forloop.parentloop.counter %}
+                                            {% if forloop.first %}
+                                                <div class="col-xl-2 col-lg-5">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-center" colspan="2">{{date}}</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th class="text-center" scope="col">키워드</th>
+                                                                <th class="text-center" scope="col">비율</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for aa in a %}{% for bb in b %}
+                                                        {% if forloop.counter == forloop.parentloop.counter %}
+                                                            <tr>
+                                                            {% if aa == focus_word %}
+                                                                <td class="table-primary text-center">
+                                                                    <a href="newsraw?keyword={{aa}}&company={{focus_word}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="table-primary text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}&company={{focus_word}}">{{bb}}</a>
+                                                                </td>
+                                                            {% else%}
+                                                                <td class="text-center">
+                                                                    <a href="newsraw?keyword={{aa}}&company={{focus_word}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}&company={{focus_word}}">{{bb}}</a>
+                                                                </td>
+                                                            {% endif %}
+                                                            </tr>
+                                                        {% endif %}
+                                                        {% endfor %} {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            {% else %}
+                                                <div class="col-xl-2 col-lg-5">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-center" colspan="2">{{date}}</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th class="text-center" scope="col">키워드</th>
+                                                                <th class="text-center" scope="col">비율</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for aa in a %}{% for bb in b %}
+                                                        {% if forloop.counter == forloop.parentloop.counter %}
+                                                            <tr>
+                                                            {% if aa == focus_word %}
+                                                                <td class="table-primary text-center">
+                                                                    <a href="newsraw?keyword={{aa}}&company={{focus_word}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="table-primary text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}&company={{focus_word}}">{{bb}}</a>
+                                                                </td>
+                                                            {% else%}
+                                                                <td class="text-center">
+                                                                    <a href="newsraw?keyword={{aa}}&company={{focus_word}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}&company={{focus_word}}">{{bb}}</a>
+                                                                </td>
+                                                            {% endif %}
+                                                            </tr>
+                                                        {% endif %}
+                                                        {% endfor %} {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% endfor %}{% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 <!-- /.container-fluid -->
 
             </div>
