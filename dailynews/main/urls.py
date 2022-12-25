@@ -32,4 +32,7 @@ urlpatterns = [
     path('requestscrap', views.requestscrap, name='requestscrap'),
     path('sitepolicy', views.sitepolicy, name='sitepolicy'),
     path('techsupport', views.techsupport, name='techsupport'),
+    path('companywordcloud', views.companywordcloud, name='companywordcloud'),
+    path('keywordtimedashboard', views.keywordtimedashboard, name='keywordtimedashboard'),
+    path('maindashboard', views.maindashboard, name='maindashboard'),
 ]

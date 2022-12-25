@@ -15,18 +15,81 @@
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
-                {% include 'topbar.html' %}
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ request.session.userId }}</span>
+                                <img class="img-profile rounded-circle"
+                                    src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="profile">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    프로필 확인
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) SNS 분석
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 커뮤니티 분석
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 웹사이트 분석
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 인물 분석
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 감정 분석
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 보고서 생성
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 업무 관리
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    로그아웃
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">뉴스 정보 {% if request.GET.keyword %} [검색결과 = {{request.GET.keyword}}] {% endif %}</h1>
+                        <h1 class="h3 mb-0 text-gray-800">데이터 정보 {% if request.GET.keyword %} [검색결과 = {{request.GET.keyword}}] {% endif %}</h1>
                     </div>
                     <!-- Content Row -->
                     <div class="row">
                         <form action="{% url 'newsraw' %}" method="get">
                             <div class="form-group">
-                              <label for="keyword">뉴스 기사중 검색하고 싶은 키워드를 입력 후 엔터를 눌러주세요!</label>
+                              <label for="keyword">데이터 중 검색하고 싶은 키워드를 입력 후 엔터를 눌러주세요!</label>
                               <input type="text" class="form-control" id="keyword" name="keyword" aria-describedby="keywordHelp" placeholder="키워드 입력" {% if request.GET.keyword %} value = {{search_keyword}} {% endif %}>
                                 {% if related_keyword|length > 0%}
                                 <small id="keywordhelp" class="form-text text-muted">연관된 검색어가 발견되었습니다! [단어(연관비율)]</small>

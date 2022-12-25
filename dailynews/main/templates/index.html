@@ -124,270 +124,153 @@
                     <!-- Content Row -->
 
                     <div class="row">
-
-                        <!-- Area Chart -->
-                        <div class="col-xl-8 col-lg-7">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">관심 키워드 시계열 그래프 분석 ( {{ focus_word }} - {{focus_company_name}} )</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">관심 키워드 설정:</div>
-                                            <a class="dropdown-item" href="profile">관심 키워드 변경</a>
-                                            <a class="dropdown-item" href="keyworddashboard">관심 키워드 대시보드</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Card Body -->
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-6 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
                                 <div class="card-body">
-                                    <div class="chart-area" style="height: 22rem;">
-                                        <div id="timegraphdiv" style="height: 100%">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">키워드 대시보드</div>
+                                            <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                                사용자가 설정한 키워드 중심으로 데이터를 확인합니다.</div>
                                         </div>
-                                        <script>
-                                            var dateList = {{ news_data_analysis_date | safe}}
-                                            var countList = {{ news_data_analysis_count | safe}}
-                                            var chartData = [];
-                                            for(var i in dateList.sort()){
-                                                var inputObject = {}
-                                                inputObject.date = new Date(dateList[i]).getTime();
-                                                inputObject.value = countList[i];
-                                                if(i == dateList.length - 1){
-                                                    inputObject.bullet = true;
-                                                }
-                                                chartData.push(inputObject);
-                                            }
-                                            am5.ready(function() {
-                                            var root = am5.Root.new("timegraphdiv");
-                                            root.setThemes([
-                                            am5themes_Animated.new(root)
-                                            ]);
-
-                                            var chart = root.container.children.push(am5xy.XYChart.new(root, {
-                                            panX: true,
-                                            panY: true,
-                                            wheelX: "panX",
-                                            wheelY: "zoomX"
-                                            }));
-                                            chart.get("colors").set("step", 3);
-                                            var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
-                                            cursor.lineY.set("visible", false);
-
-                                            var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-                                            maxDeviation: 0.3,
-                                            baseInterval: {
-                                                timeUnit: "day",
-                                                count: 1
-                                            },
-                                            renderer: am5xy.AxisRendererX.new(root, {}),
-                                            tooltip: am5.Tooltip.new(root, {})
-                                            }));
-
-                                            var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-                                            maxDeviation: 0.3,
-                                            renderer: am5xy.AxisRendererY.new(root, {})
-                                            }));
-
-                                            var series = chart.series.push(am5xy.LineSeries.new(root, {
-                                            name: "Series 1",
-                                            xAxis: xAxis,
-                                            yAxis: yAxis,
-                                            valueYField: "value",
-                                            valueXField: "date",
-                                            tooltip: am5.Tooltip.new(root, {
-                                                labelText: "{valueY}"
-                                            })
-                                            }));
-                                            series.strokes.template.setAll({
-                                            strokeWidth: 2,
-                                            strokeDasharray: [3, 3]
-                                            });
-
-                                            series.bullets.push(function(root, series, dataItem) {
-                                            if (dataItem.dataContext.bullet) {
-                                                var container = am5.Container.new(root, {});
-                                                var circle0 = container.children.push(am5.Circle.new(root, {
-                                                radius: 5,
-                                                fill: am5.color(0xff0000)
-                                                }));
-                                                var circle1 = container.children.push(am5.Circle.new(root, {
-                                                radius: 5,
-                                                fill: am5.color(0xff0000)
-                                                }));
-
-                                                circle1.animate({
-                                                key: "radius",
-                                                to: 20,
-                                                duration: 1000,
-                                                easing: am5.ease.out(am5.ease.cubic),
-                                                loops: Infinity
-                                                });
-                                                circle1.animate({
-                                                key: "opacity",
-                                                to: 0,
-                                                from: 1,
-                                                duration: 1000,
-                                                easing: am5.ease.out(am5.ease.cubic),
-                                                loops: Infinity
-                                                });
-
-                                                return am5.Bullet.new(root, {
-                                                sprite: container
-                                                })
-                                            }
-                                            })
-                                            series.data.setAll(chartData);
-                                            series.appear(1000);
-                                            chart.appear(1000, 100);
-                                            }); 
-                                        </script>
+                                        <div class="col-auto">
+                                            <i class="fas fa-chart-area fa-2x text-gray-300"></i>
+                                        </div>
                                     </div>
+                                    <a href="keyworddashboard" class="stretched-link"></a>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- wc Chart -->
-                        <div class="col-xl-4 col-lg-5">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">관심 뉴스 워드 클라우드 ( {{ focus_company_name }} )</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">관심 뉴스 설정:</div>
-                                            <a class="dropdown-item" href="profile">관심 뉴스 변경</a>
-                                            <a class="dropdown-item" href="newsdashboard">관심 뉴스 대시보드</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-6 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">키워드 시계열 분석</div>
+                                            <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                                사용자가 설정한 키워드를 중심으로 시간에 따른 데이터 변화를 확인합니다.</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-chart-area fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div id="chartdiv" style="height: 22rem;"></div>
-                                    <script>
-                                        const hexValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
-                                        let hex1 = "#";
-                                        let hex2 = "#";
-                                        for (let i = 0; i < 6; i++) { 
-                                        const index = Math.floor(Math.random() * hexValues.length); 
-                                        hex1 += hexValues[index];
-                                        hex2 += hexValues[index];
-                                        }
-                                        am4core.useTheme(am4themes_animated);
-                                        var chart = am4core.create("chartdiv", am4plugins_wordCloud.WordCloud);
-                                        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
-                                        series.maxCount = 50;
-                                        series.minWordLength = 2;
-                                        series.randomness = 0;
-                                        series.heatRules.push({
-                                        "target": series.labels.template,
-                                        "property": "fill",
-                                        "min": am4core.color(hex1),
-                                        "max": am4core.color(hex2),
-                                        "dataField": "value"
-                                        });
-                                        series.events.on("arrangestarted", function(ev) {
-                                        ev.target.baseSprite.preloader.show(0);
-                                        });
-
-                                        series.events.on("arrangeprogress", function(ev) {
-                                        ev.target.baseSprite.preloader.progress = ev.progress;
-                                        });
-                                        series.data = [{{news_data | safe}}];
-                                        series.dataFields.word = "tag";
-                                        series.dataFields.value = "weight";
-                                        series.labels.template.tooltipText = "{word}:\n[bold]{value}[/]";
-                                        series.labels.template.url = "newsraw?keyword={word}";
-                                    </script>
+                                    <a href="keywordtimedashboard" class="stretched-link"></a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <!-- Area Chart -->
-                        <div class="col-xl-12 col-lg-7">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="width:100%">
-                                    <h6 class="m-0 font-weight-bold text-primary">일단위 주요 키워드 순위 ( {{ focus_company_name }} )</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">키워드 순위 설정:</div>
-                                            <a class="dropdown-item" href="profile">관심 뉴스 변경</a>
-                                            <a class="dropdown-item" href="newsdashboard">관심 뉴스 대시보드</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Card Body -->
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-6 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
                                 <div class="card-body">
-                                    <div class="rank-area" style="height: 40rem;">
-                                        <div class="d-flex flex-row" id="rank-div" style="height: 100%">
-                                            {% for a, b in news_data_analysis_counter_list %}{% for date in news_data_analysis_date reversed %}
-                                            {% if forloop.counter == forloop.parentloop.counter %}
-                                            {% if forloop.first %}
-                                            {% else %}
-                                                <div class="col-xl-2 col-lg-5">
-                                                    <table class="table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th class="text-center" colspan="2">{{date}}</th>
-                                                            </tr>
-                                                            <tr>
-                                                                <th class="text-center" scope="col">키워드</th>
-                                                                <th class="text-center" scope="col">비율</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        {% for aa in a %}{% for bb in b %}
-                                                        {% if forloop.counter == forloop.parentloop.counter %}
-                                                            <tr>
-                                                            {% if aa == focus_word %}
-                                                                <td class="table-primary text-center">
-                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
-                                                                </td>
-                                                                <td class="table-primary text-center">
-                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
-                                                                </td>
-                                                            {% else%}
-                                                                <td class="text-center">
-                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
-                                                                </td>
-                                                                <td class="text-center">
-                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
-                                                                </td>
-                                                            {% endif %}
-                                                            </tr>
-                                                        {% endif %}
-                                                        {% endfor %} {% endfor %}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            {% endif %}
-                                            {% endif %}
-                                            {% endfor %}{% endfor %}
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">데이터 발생 현황</div>
+                                            <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                                데이터 발생 현황을 확인합니다.</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-chart-area fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
+                                    <a href="newsdashboard" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-6 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">종합 대시보드</div>
+                                            <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                                사용자가 설정한 옵션을 기반으로 전체적인 데이터를 확인합니다.</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-chart-area fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <a href="maindashboard" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-6 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">제외 키워드 열람</div>
+                                            <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                                제외된 키워드를 확인합니다.</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-table fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <a href="excludekeyword" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-6 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">제외 키워드 등록</div>
+                                            <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                                제외 키워드를 등록하여 분섣 데이터를 관리합니다.</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-table fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <a href="excludekeywordadd" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-6 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">원본 데이터 열람</div>
+                                            <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                                분석 기준의 원본 데이터를 열람합니다.</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-table fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <a href="newsraw" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-6 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">분석 데이터 열람</div>
+                                            <div class="text-xs font-weight-bold text-gray-500 text-uppercase mb-1">
+                                                형태소 단위로 분석된 기반 데이터를 확인합니다.</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-table fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <a href="analysisraw" class="stretched-link"></a>
                                 </div>
                             </div>
                         </div>
@@ -414,7 +297,7 @@
 
 
 
-    
+
     {% include 'logout.html' %}
     {% include 'script.html' %}
 </body>

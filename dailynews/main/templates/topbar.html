@@ -1,6 +1,8 @@
 {% load static %}
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
+                    <form action="{% url 'newsraw' %}" method="get" style="width:100%">
+                        <input type="text" class="form-control form-control-lg" id="keyword" name="keyword" aria-describedby="keywordHelp" placeholder="키워드 입력 후 엔터를 눌러주세요" {% if request.GET.keyword %} value = {{search_keyword}} {% endif %}>
+                    </form>
                     <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>

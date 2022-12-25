@@ -1,0 +1,422 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Daily Data Hub</title>
+    {% include 'header.html' %}
+    {% include 'topscript.html' %}
+</head>
+<body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar -->
+        {% include 'sidebar.html' %}
+        <!-- End of Sidebar -->
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                {% include 'topbar.html' %}
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">당신의 정보가 시작하는 데일리 데이터 허브입니다</h1>
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">전체 수집된 뉴스</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{news_count}}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <a href="newsraw" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                전체 분석된 뉴스 건수</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{news_analysis_count}}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-newspaper fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <a href="analysisraw" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">뉴스 분석 상태
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{news_analysis_rate}}%</div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{news_analysis_rate}}%" aria-valuenow="{{news_analysis_rate}}" aria-valuemin="0"
+                                                            aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <a href="analysisraw" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                오늘/어제 수집된 신규 뉴스</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{today_news_count}}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <a href="newsraw" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Row -->
+
+                    <div class="row">
+
+                        <!-- Area Chart -->
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">관심 키워드 시계열 그래프 분석 ( {{ focus_word }} - {{focus_company_name}} )</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">관심 키워드 설정:</div>
+                                            <a class="dropdown-item" href="profile">관심 키워드 변경</a>
+                                            <a class="dropdown-item" href="keyworddashboard">관심 키워드 대시보드</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-area" style="height: 22rem;">
+                                        <div id="timegraphdiv" style="height: 100%">
+                                        </div>
+                                        <script>
+                                            var dateList = {{ news_data_analysis_date | safe}}
+                                            var countList = {{ news_data_analysis_count | safe}}
+                                            var chartData = [];
+                                            for(var i in dateList.sort()){
+                                                var inputObject = {}
+                                                inputObject.date = new Date(dateList[i]).getTime();
+                                                inputObject.value = countList[i];
+                                                if(i == dateList.length - 1){
+                                                    inputObject.bullet = true;
+                                                }
+                                                chartData.push(inputObject);
+                                            }
+                                            am5.ready(function() {
+                                            var root = am5.Root.new("timegraphdiv");
+                                            root.setThemes([
+                                            am5themes_Animated.new(root)
+                                            ]);
+
+                                            var chart = root.container.children.push(am5xy.XYChart.new(root, {
+                                            panX: true,
+                                            panY: true,
+                                            wheelX: "panX",
+                                            wheelY: "zoomX"
+                                            }));
+                                            chart.get("colors").set("step", 3);
+                                            var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
+                                            cursor.lineY.set("visible", false);
+
+                                            var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+                                            maxDeviation: 0.3,
+                                            baseInterval: {
+                                                timeUnit: "day",
+                                                count: 1
+                                            },
+                                            renderer: am5xy.AxisRendererX.new(root, {}),
+                                            tooltip: am5.Tooltip.new(root, {})
+                                            }));
+
+                                            var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                                            maxDeviation: 0.3,
+                                            renderer: am5xy.AxisRendererY.new(root, {})
+                                            }));
+
+                                            var series = chart.series.push(am5xy.LineSeries.new(root, {
+                                            name: "Series 1",
+                                            xAxis: xAxis,
+                                            yAxis: yAxis,
+                                            valueYField: "value",
+                                            valueXField: "date",
+                                            tooltip: am5.Tooltip.new(root, {
+                                                labelText: "{valueY}"
+                                            })
+                                            }));
+                                            series.strokes.template.setAll({
+                                            strokeWidth: 2,
+                                            strokeDasharray: [3, 3]
+                                            });
+
+                                            series.bullets.push(function(root, series, dataItem) {
+                                            if (dataItem.dataContext.bullet) {
+                                                var container = am5.Container.new(root, {});
+                                                var circle0 = container.children.push(am5.Circle.new(root, {
+                                                radius: 5,
+                                                fill: am5.color(0xff0000)
+                                                }));
+                                                var circle1 = container.children.push(am5.Circle.new(root, {
+                                                radius: 5,
+                                                fill: am5.color(0xff0000)
+                                                }));
+
+                                                circle1.animate({
+                                                key: "radius",
+                                                to: 20,
+                                                duration: 1000,
+                                                easing: am5.ease.out(am5.ease.cubic),
+                                                loops: Infinity
+                                                });
+                                                circle1.animate({
+                                                key: "opacity",
+                                                to: 0,
+                                                from: 1,
+                                                duration: 1000,
+                                                easing: am5.ease.out(am5.ease.cubic),
+                                                loops: Infinity
+                                                });
+
+                                                return am5.Bullet.new(root, {
+                                                sprite: container
+                                                })
+                                            }
+                                            })
+                                            series.data.setAll(chartData);
+                                            series.appear(1000);
+                                            chart.appear(1000, 100);
+                                            }); 
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- wc Chart -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">관심 뉴스 워드 클라우드 ( {{ focus_company_name }} )</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">관심 뉴스 설정:</div>
+                                            <a class="dropdown-item" href="profile">관심 뉴스 변경</a>
+                                            <a class="dropdown-item" href="newsdashboard">관심 뉴스 대시보드</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div id="chartdiv" style="height: 22rem;"></div>
+                                    <script>
+                                        const hexValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+                                        let hex1 = "#";
+                                        let hex2 = "#";
+                                        for (let i = 0; i < 6; i++) { 
+                                        const index = Math.floor(Math.random() * hexValues.length); 
+                                        hex1 += hexValues[index];
+                                        hex2 += hexValues[index];
+                                        }
+                                        am4core.useTheme(am4themes_animated);
+                                        var chart = am4core.create("chartdiv", am4plugins_wordCloud.WordCloud);
+                                        var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+                                        series.maxCount = 50;
+                                        series.minWordLength = 2;
+                                        series.randomness = 0;
+                                        series.heatRules.push({
+                                        "target": series.labels.template,
+                                        "property": "fill",
+                                        "min": am4core.color(hex1),
+                                        "max": am4core.color(hex2),
+                                        "dataField": "value"
+                                        });
+                                        series.events.on("arrangestarted", function(ev) {
+                                        ev.target.baseSprite.preloader.show(0);
+                                        });
+
+                                        series.events.on("arrangeprogress", function(ev) {
+                                        ev.target.baseSprite.preloader.progress = ev.progress;
+                                        });
+                                        series.data = [{{news_data | safe}}];
+                                        series.dataFields.word = "tag";
+                                        series.dataFields.value = "weight";
+                                        series.labels.template.tooltipText = "{word}:\n[bold]{value}[/]";
+                                        series.labels.template.url = "newsraw?keyword={word}";
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- Area Chart -->
+                        <div class="col-xl-12 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="width:100%">
+                                    <h6 class="m-0 font-weight-bold text-primary">일단위 주요 키워드 순위 ( {{ focus_company_name }} )</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">키워드 순위 설정:</div>
+                                            <a class="dropdown-item" href="profile">관심 뉴스 변경</a>
+                                            <a class="dropdown-item" href="newsdashboard">관심 뉴스 대시보드</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="rank-area" style="height: 40rem;">
+                                        <div class="d-flex flex-row" id="rank-div" style="height: 100%">
+                                            {% for a, b in news_data_analysis_counter_list %}{% for date in news_data_analysis_date reversed %}
+                                            {% if forloop.counter == forloop.parentloop.counter %}
+                                            {% if forloop.first %}
+                                            {% else %}
+                                                <div class="col-xl-2 col-lg-5">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-center" colspan="2">{{date}}</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th class="text-center" scope="col">키워드</th>
+                                                                <th class="text-center" scope="col">비율</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for aa in a %}{% for bb in b %}
+                                                        {% if forloop.counter == forloop.parentloop.counter %}
+                                                            <tr>
+                                                            {% if aa == focus_word %}
+                                                                <td class="table-primary text-center">
+                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="table-primary text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
+                                                                </td>
+                                                            {% else%}
+                                                                <td class="text-center">
+                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
+                                                                </td>
+                                                            {% endif %}
+                                                            </tr>
+                                                        {% endif %}
+                                                        {% endfor %} {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% endfor %}{% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            {% include 'footer.html' %}
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+
+
+
+    {% include 'logout.html' %}
+    {% include 'script.html' %}
+</body>
+
+</html>

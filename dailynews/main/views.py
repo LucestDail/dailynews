@@ -49,77 +49,11 @@ def index(request):
     obj = Dashboard.objects.last()
     focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
     focus_company_name = focus_object.News_Company_Name
-    focus_company = focus_object.News_Company_Code
-    focus_word = userData.User_Focus_word
-    news_data_analysis_date = []
-    news_data_analysis_count = []
-    news_data_analysis_counter = []
-    news_data_analysis_ratio = []
-    wc_news_data_list = []
-    temp_save = []
-    for i in range(0, 7):
-        check_date = datetime.today() - timedelta(days=i)
-        input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
-        from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
-        from_date = datetime.combine(from_date, datetime.min.time())
-        to_date = datetime.combine(from_date, datetime.max.time())
-
-        news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
-                                                          News_Analysis_Company=focus_company)
-        news_data_analysis_count_num = 0
-        for news_element in news_data_date:
-            news_content = news_element.News_Morphs.split(',')
-            for news_data_morphs_element in news_content:
-                if focus_word in news_data_morphs_element:
-                    news_data_analysis_count_num += 1
-                if i == 1:
-                    if len(news_data_morphs_element) > 1:
-                        wc_news_data_list.append(news_data_morphs_element)
-                if len(news_data_morphs_element) > 1:
-                    temp_save.append(news_data_morphs_element)
-        temp_result = Counter(temp_save)
-        temp_result_10_ratio = [(i, temp_result[i] / len(temp_save) * 100.0) for i, count in temp_result.most_common(10)]
-        news_data_analysis_counter.append(temp_result_10_ratio)
-        news_data_analysis_ratio.append(temp_result_10_ratio)
-        news_data_analysis_date.append(input_date)
-        news_data_analysis_count.append(news_data_analysis_count_num)
-    news_data_analysis_counter.reverse()
-    news_data_analysis_count.reverse()
-    news_data_analysis_ratio.reverse()
-    news_data_analysis_counter_word = []
-    news_data_analysis_counter_value = []
-    for news_data_analysis_counter_element in news_data_analysis_counter:
-        counter_value = []
-        counter_word = []
-        for n in news_data_analysis_counter_element:
-            counter_word.append(n[0])
-            counter_value.append(round(n[1],2))
-        news_data_analysis_counter_word.append(counter_word)
-        news_data_analysis_counter_value.append(counter_value)
-
-    news_data_analysis_counter_list = list(zip(news_data_analysis_counter_word, news_data_analysis_counter_value))
-
-    wc_result = Counter(wc_news_data_list)
-    wc_most_word_50 = wc_result.most_common(50)
-    wc_most_word_50_jsonStr = ''
-    for wc_most_word_50_element in wc_most_word_50:
-        wc_most_word_50_jsonStr += '{"tag":"'
-        wc_most_word_50_jsonStr += str(wc_most_word_50_element[0])
-        wc_most_word_50_jsonStr += '",'
-        wc_most_word_50_jsonStr += '"weight":'
-        wc_most_word_50_jsonStr += str(wc_most_word_50_element[1])
-        wc_most_word_50_jsonStr += '},'
-
     return render(request, 'index.html', {'news_count': obj.Dashboard_Total_News_Count,
                                           'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
                                           'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
-                                          'news_data': wc_most_word_50_jsonStr,
                                           'today_news_count': obj.Dashboard_Today_count,
-                                          'focus_company_name': focus_company_name,
-                                          'focus_word': focus_word,
-                                          'news_data_analysis_date': news_data_analysis_date,
-                                          'news_data_analysis_count': news_data_analysis_count,
-                                          'news_data_analysis_counter_list': news_data_analysis_counter_list
+                                          'focus_company_name': focus_company_name
                                           })
 
 
@@ -245,6 +179,8 @@ def requestPasswordChange(request):
 
 
 def dashboard(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     news_data_count = News.objects.all()
     news_data_count_input = len(news_data_count)
     print(news_data_count_input)
@@ -273,10 +209,14 @@ def dashboard(request):
 
 
 def requestFocusData(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     return render(request, 'requestFocusData.html')
 
 
 def analysisraw(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     News_data = []
     if request.method == 'GET' and "page" in request.GET:
         current_page = int((request.GET["page"]))
@@ -354,6 +294,8 @@ def analysisraw(request):
 
 
 def datapolicy(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     policy_data = Noticeboard.objects.filter(Noticeboard_Type='data').order_by('-Noticeboard_CreateDT')
     paginator = Paginator(policy_data, 10)
     page = request.GET.get('page')
@@ -433,6 +375,8 @@ def keyworddashboard(request):
 
 
 def mycrawl(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     if request.method == 'GET' and 'descriptionInfo' in request.GET:
         crawl_data = BS4_NEWS_COMPANY_CRAWL.objects.filter(DESCRIPTION_INFO__contains=request.GET['descriptionInfo']).order_by('-UPDATE_DATETIME')
     else:
@@ -451,6 +395,8 @@ def mycrawl(request):
 
 
 def excludedkeyword(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     excluded_word_data = BS4_NEWS_ANALYSIS_WORD_EXCLUDED.objects.all().order_by('-UPDATE_DATETIME')
     paginator = Paginator(excluded_word_data, 15)
     page = request.GET.get('page')
@@ -467,6 +413,8 @@ def excludedkeyword(request):
                   {'excluded_word_list': excluded_word_data})
 
 def excludedkeywordadd(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
     company_data = News_Company.objects.all()
@@ -475,6 +423,8 @@ def excludedkeywordadd(request):
 
 @csrf_exempt
 def excludedkeywordrequest(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
     request_input = json.loads(request.body)
@@ -504,10 +454,15 @@ def excludedkeywordrequest(request):
 
 
 def myscrap(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     return render(request, 'myscrap.html')
 
 
 def newsdashboard(request):
+
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
 
     user_id = request.session['userId']
     userData = User.objects.get(User_Id=user_id)
@@ -565,44 +520,9 @@ def newsdashboard(request):
     focus1_most_word_50_jsonStr = News_Analysis_Word_Analysis_Company.objects\
         .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
              News_Analysis_Word_Analysis_Company_Code=focus1_company_code)
-
-
-
-    # focus2_temp_save = []
-    # for focus2_data_element in focus2_data_news:
-    #     focus2_news_content = focus2_data_element.News_Morphs.split(',')
-    #     for focus2_news_data_morphs_element in focus2_news_content:
-    #         focus2_temp_save.append(focus2_news_data_morphs_element)
-    # focus2_result = Counter(focus2_temp_save)
-    # focus2_most_word_50 = focus2_result.most_common(50)
-    # focus2_most_word_50_jsonStr = ''
-    # for focus2_most_word_50_element in focus2_most_word_50:
-    #     focus2_most_word_50_jsonStr += '{"tag":"'
-    #     focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[0])
-    #     focus2_most_word_50_jsonStr += '",'
-    #     focus2_most_word_50_jsonStr += '"weight":'
-    #     focus2_most_word_50_jsonStr += str(focus2_most_word_50_element[1])
-    #     focus2_most_word_50_jsonStr += '},'
-
     focus2_most_word_50_jsonStr = News_Analysis_Word_Analysis_Company.objects \
         .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
                 News_Analysis_Word_Analysis_Company_Code=focus2_company_code)
-
-    # focus3_temp_save = []
-    # for focus3_data_element in focus3_data_news:
-    #     focus3_news_content = focus3_data_element.News_Morphs.split(',')
-    #     for focus3_news_data_morphs_element in focus3_news_content:
-    #         focus3_temp_save.append(focus3_news_data_morphs_element)
-    # focus3_result = Counter(focus3_temp_save)
-    # focus3_most_word_50 = focus3_result.most_common(50)
-    # focus3_most_word_50_jsonStr = ''
-    # for focus3_most_word_50_element in focus3_most_word_50:
-    #     focus3_most_word_50_jsonStr += '{"tag":"'
-    #     focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[0])
-    #     focus3_most_word_50_jsonStr += '",'
-    #     focus3_most_word_50_jsonStr += '"weight":'
-    #     focus3_most_word_50_jsonStr += str(focus3_most_word_50_element[1])
-    #     focus3_most_word_50_jsonStr += '},'
     focus3_most_word_50_jsonStr = News_Analysis_Word_Analysis_Company.objects \
         .get(News_Analysis_Word_Analysis_Company_CreateDT__range=(from_date, to_date),
                 News_Analysis_Word_Analysis_Company_Code=focus3_company_code)
@@ -617,6 +537,8 @@ def newsdashboard(request):
 
 
 def newsraw(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     News_data = []
     if request.method == 'GET' and "page" in request.GET:
         current_page = int((request.GET["page"]))
@@ -710,18 +632,26 @@ def newsraw(request):
 
 
 def qna(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     return render(request, 'qna.html')
 
 
 def requestcrawl(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     return render(request, 'requestcrawl.html')
 
 
 def requestscrap(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     return render(request, 'requestscrap.html')
 
 
 def sitepolicy(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
     policy_data = Noticeboard.objects.filter(Noticeboard_Type='site').order_by('-Noticeboard_CreateDT')
     paginator = Paginator(policy_data, 10)
     page = request.GET.get('page')
@@ -738,3 +668,247 @@ def sitepolicy(request):
 
 def techsupport(request):
     return render(request, 'techsupport.html')
+
+def companywordcloud(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
+    user_id = request.session['userId']
+    userData = User.objects.get(User_Id=user_id)
+    obj = Dashboard.objects.last()
+    focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
+    focus_company_name = focus_object.News_Company_Name
+    focus_company = focus_object.News_Company_Code
+    focus_word = userData.User_Focus_word
+    news_data_analysis_date = []
+    news_data_analysis_count = []
+    news_data_analysis_counter = []
+    news_data_analysis_ratio = []
+    wc_news_data_list = []
+    temp_save = []
+    for i in range(0, 7):
+        check_date = datetime.today() - timedelta(days=i)
+        input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
+        from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
+        from_date = datetime.combine(from_date, datetime.min.time())
+        to_date = datetime.combine(from_date, datetime.max.time())
+
+        news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                          News_Analysis_Company=focus_company)
+        news_data_analysis_count_num = 0
+        for news_element in news_data_date:
+            news_content = news_element.News_Morphs.split(',')
+            for news_data_morphs_element in news_content:
+                if focus_word in news_data_morphs_element:
+                    news_data_analysis_count_num += 1
+                if i == 1:
+                    if len(news_data_morphs_element) > 1:
+                        wc_news_data_list.append(news_data_morphs_element)
+                if len(news_data_morphs_element) > 1:
+                    temp_save.append(news_data_morphs_element)
+        temp_result = Counter(temp_save)
+        temp_result_10_ratio = [(i, temp_result[i] / len(temp_save) * 100.0) for i, count in temp_result.most_common(10)]
+        news_data_analysis_counter.append(temp_result_10_ratio)
+        news_data_analysis_ratio.append(temp_result_10_ratio)
+        news_data_analysis_date.append(input_date)
+        news_data_analysis_count.append(news_data_analysis_count_num)
+    news_data_analysis_counter.reverse()
+    news_data_analysis_count.reverse()
+    news_data_analysis_ratio.reverse()
+    news_data_analysis_counter_word = []
+    news_data_analysis_counter_value = []
+    for news_data_analysis_counter_element in news_data_analysis_counter:
+        counter_value = []
+        counter_word = []
+        for n in news_data_analysis_counter_element:
+            counter_word.append(n[0])
+            counter_value.append(round(n[1],2))
+        news_data_analysis_counter_word.append(counter_word)
+        news_data_analysis_counter_value.append(counter_value)
+
+    news_data_analysis_counter_list = list(zip(news_data_analysis_counter_word, news_data_analysis_counter_value))
+
+    wc_result = Counter(wc_news_data_list)
+    wc_most_word_50 = wc_result.most_common(50)
+    wc_most_word_50_jsonStr = ''
+    for wc_most_word_50_element in wc_most_word_50:
+        wc_most_word_50_jsonStr += '{"tag":"'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[0])
+        wc_most_word_50_jsonStr += '",'
+        wc_most_word_50_jsonStr += '"weight":'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[1])
+        wc_most_word_50_jsonStr += '},'
+
+    return render(request, 'companywordcloud.html', {'news_count': obj.Dashboard_Total_News_Count,
+                                          'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
+                                          'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
+                                          'news_data': wc_most_word_50_jsonStr,
+                                          'today_news_count': obj.Dashboard_Today_count,
+                                          'focus_company_name': focus_company_name,
+                                          'focus_word': focus_word,
+                                          'news_data_analysis_date': news_data_analysis_date,
+                                          'news_data_analysis_count': news_data_analysis_count,
+                                          'news_data_analysis_counter_list': news_data_analysis_counter_list
+                                          })
+
+
+def keywordtimedashboard(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
+    user_id = request.session['userId']
+    userData = User.objects.get(User_Id=user_id)
+    obj = Dashboard.objects.last()
+    focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
+    focus_company_name = focus_object.News_Company_Name
+    focus_company = focus_object.News_Company_Code
+    focus_word = userData.User_Focus_word
+    news_data_analysis_date = []
+    news_data_analysis_count = []
+    news_data_analysis_counter = []
+    news_data_analysis_ratio = []
+    wc_news_data_list = []
+    temp_save = []
+    for i in range(0, 7):
+        check_date = datetime.today() - timedelta(days=i)
+        input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
+        from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
+        from_date = datetime.combine(from_date, datetime.min.time())
+        to_date = datetime.combine(from_date, datetime.max.time())
+
+        news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                          News_Analysis_Company=focus_company)
+        news_data_analysis_count_num = 0
+        for news_element in news_data_date:
+            news_content = news_element.News_Morphs.split(',')
+            for news_data_morphs_element in news_content:
+                if focus_word in news_data_morphs_element:
+                    news_data_analysis_count_num += 1
+                if i == 1:
+                    if len(news_data_morphs_element) > 1:
+                        wc_news_data_list.append(news_data_morphs_element)
+                if len(news_data_morphs_element) > 1:
+                    temp_save.append(news_data_morphs_element)
+        temp_result = Counter(temp_save)
+        temp_result_10_ratio = [(i, temp_result[i] / len(temp_save) * 100.0) for i, count in temp_result.most_common(10)]
+        news_data_analysis_counter.append(temp_result_10_ratio)
+        news_data_analysis_ratio.append(temp_result_10_ratio)
+        news_data_analysis_date.append(input_date)
+        news_data_analysis_count.append(news_data_analysis_count_num)
+    news_data_analysis_counter.reverse()
+    news_data_analysis_count.reverse()
+    news_data_analysis_ratio.reverse()
+    news_data_analysis_counter_word = []
+    news_data_analysis_counter_value = []
+    for news_data_analysis_counter_element in news_data_analysis_counter:
+        counter_value = []
+        counter_word = []
+        for n in news_data_analysis_counter_element:
+            counter_word.append(n[0])
+            counter_value.append(round(n[1],2))
+        news_data_analysis_counter_word.append(counter_word)
+        news_data_analysis_counter_value.append(counter_value)
+
+    news_data_analysis_counter_list = list(zip(news_data_analysis_counter_word, news_data_analysis_counter_value))
+
+    wc_result = Counter(wc_news_data_list)
+    wc_most_word_50 = wc_result.most_common(50)
+    wc_most_word_50_jsonStr = ''
+    for wc_most_word_50_element in wc_most_word_50:
+        wc_most_word_50_jsonStr += '{"tag":"'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[0])
+        wc_most_word_50_jsonStr += '",'
+        wc_most_word_50_jsonStr += '"weight":'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[1])
+        wc_most_word_50_jsonStr += '},'
+
+    return render(request, 'keywordtimedashboard.html', {'news_count': obj.Dashboard_Total_News_Count,
+                                          'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
+                                          'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
+                                          'news_data': wc_most_word_50_jsonStr,
+                                          'today_news_count': obj.Dashboard_Today_count,
+                                          'focus_company_name': focus_company_name,
+                                          'focus_word': focus_word,
+                                          'news_data_analysis_date': news_data_analysis_date,
+                                          'news_data_analysis_count': news_data_analysis_count,
+                                          'news_data_analysis_counter_list': news_data_analysis_counter_list
+                                          })
+
+def maindashboard(request):
+    if 'userId' not in request.session:
+        return render(request, 'login.html')
+    user_id = request.session['userId']
+    userData = User.objects.get(User_Id=user_id)
+    obj = Dashboard.objects.last()
+    focus_object = News_Company.objects.get(News_Company_Name=userData.User_Focus_Company)
+    focus_company_name = focus_object.News_Company_Name
+    focus_company = focus_object.News_Company_Code
+    focus_word = userData.User_Focus_word
+    news_data_analysis_date = []
+    news_data_analysis_count = []
+    news_data_analysis_counter = []
+    news_data_analysis_ratio = []
+    wc_news_data_list = []
+    temp_save = []
+    for i in range(0, 7):
+        check_date = datetime.today() - timedelta(days=i)
+        input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
+        from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
+        from_date = datetime.combine(from_date, datetime.min.time())
+        to_date = datetime.combine(from_date, datetime.max.time())
+
+        news_data_date = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__range=(from_date, to_date),
+                                                          News_Analysis_Company=focus_company)
+        news_data_analysis_count_num = 0
+        for news_element in news_data_date:
+            news_content = news_element.News_Morphs.split(',')
+            for news_data_morphs_element in news_content:
+                if focus_word in news_data_morphs_element:
+                    news_data_analysis_count_num += 1
+                if i == 1:
+                    if len(news_data_morphs_element) > 1:
+                        wc_news_data_list.append(news_data_morphs_element)
+                if len(news_data_morphs_element) > 1:
+                    temp_save.append(news_data_morphs_element)
+        temp_result = Counter(temp_save)
+        temp_result_10_ratio = [(i, temp_result[i] / len(temp_save) * 100.0) for i, count in temp_result.most_common(10)]
+        news_data_analysis_counter.append(temp_result_10_ratio)
+        news_data_analysis_ratio.append(temp_result_10_ratio)
+        news_data_analysis_date.append(input_date)
+        news_data_analysis_count.append(news_data_analysis_count_num)
+    news_data_analysis_counter.reverse()
+    news_data_analysis_count.reverse()
+    news_data_analysis_ratio.reverse()
+    news_data_analysis_counter_word = []
+    news_data_analysis_counter_value = []
+    for news_data_analysis_counter_element in news_data_analysis_counter:
+        counter_value = []
+        counter_word = []
+        for n in news_data_analysis_counter_element:
+            counter_word.append(n[0])
+            counter_value.append(round(n[1],2))
+        news_data_analysis_counter_word.append(counter_word)
+        news_data_analysis_counter_value.append(counter_value)
+
+    news_data_analysis_counter_list = list(zip(news_data_analysis_counter_word, news_data_analysis_counter_value))
+
+    wc_result = Counter(wc_news_data_list)
+    wc_most_word_50 = wc_result.most_common(50)
+    wc_most_word_50_jsonStr = ''
+    for wc_most_word_50_element in wc_most_word_50:
+        wc_most_word_50_jsonStr += '{"tag":"'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[0])
+        wc_most_word_50_jsonStr += '",'
+        wc_most_word_50_jsonStr += '"weight":'
+        wc_most_word_50_jsonStr += str(wc_most_word_50_element[1])
+        wc_most_word_50_jsonStr += '},'
+
+    return render(request, 'maindashboard.html', {'news_count': obj.Dashboard_Total_News_Count,
+                                          'news_analysis_count': obj.Dashboard_Total_Analysis_Count,
+                                          'news_analysis_rate': obj.Dashboard_Total_Analysis_Rate,
+                                          'news_data': wc_most_word_50_jsonStr,
+                                          'today_news_count': obj.Dashboard_Today_count,
+                                          'focus_company_name': focus_company_name,
+                                          'focus_word': focus_word,
+                                          'news_data_analysis_date': news_data_analysis_date,
+                                          'news_data_analysis_count': news_data_analysis_count,
+                                          'news_data_analysis_counter_list': news_data_analysis_counter_list
+                                          })
