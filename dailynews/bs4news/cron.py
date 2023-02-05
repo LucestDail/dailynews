@@ -13,7 +13,6 @@ from selenium.webdriver.common.by import By
 from pathlib import Path
 from gensim.models import Word2Vec
 import nltk
-nltk.download()
 from nltk import word_tokenize, sent_tokenize
 warnings.filterwarnings("ignore")
 okt = Okt()
