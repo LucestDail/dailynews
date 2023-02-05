@@ -12,7 +12,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from pathlib import Path
 from gensim.models import Word2Vec
-from nltk.tokenize import word_tokenize, sent_tokenize
+import nltk
+nltk.download()
+from nltk import word_tokenize, sent_tokenize
 warnings.filterwarnings("ignore")
 okt = Okt()
 
@@ -469,3 +471,27 @@ def word2vec_modeling():
         print(message)
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING END")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB END")
+
+def old_data_manage():
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE JOB START")
+    check_date = datetime.today() - timedelta(weeks=3)
+    input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA PERIOD LIMIT DATE : " + str(input_date))
+    try:
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - NEWS RAW DELETE START")
+        news_instance = News.objects.filter(News_CreateDT__lte=input_date)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - NEWS RAW DELETE TARGET : "
+              + str(len(news_instance)))
+        news_instance.delete()
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - NEW RAW DELETE END")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - ANALYSIS RAW DELETE START")
+        news_analysis_instance = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__lte=input_date)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - ANALYSIS RAW DELETE TARGET : "
+              + str(len(news_analysis_instance)))
+        news_analysis_instance.delete()
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - ANALYSIS RAW DELETE END")
+    except Exception as e:
+        trace_back = traceback.format_exc()
+        message = str(e) + "\n" + str(trace_back)
+        print(message)
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE JOB END")

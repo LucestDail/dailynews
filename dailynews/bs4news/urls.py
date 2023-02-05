@@ -14,4 +14,5 @@ urlpatterns = [
     path('word2vecrun', views.word2vecrun, name='word2vecrun'),
     path('bs4crawl', views.bs4crawl, name='bs4crawl'),
     path('bs4scrap', views.bs4scrap, name='bs4scrap'),
+    path('olddelete', views.olddelete, name='olddelete'),
 ]

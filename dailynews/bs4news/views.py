@@ -573,3 +573,71 @@ def bs4crawl(request):
         CREATE_DATETIME__range=(from_date, to_date),
     )
     return render(request, 'bs4newst.html', {'news_list': news_list})
+
+def kobertrun(request):
+    if request.method == 'GET' and 'keyword' in request.GET:
+        target_word = request.GET['keyword']
+    else:
+        target_word = '대한민국'
+    # model = Word2Vec.load("/Users/oseunghyeon/ddhmodel")
+    # model = Word2Vec.load("/home/oshdb/ddhmodel")
+    model = Word2Vec.load("/home/ubuntu/ddhmodel")
+    model_result = model.wv.most_similar(target_word)
+    return render(request, 'bs4test.html', {'testobject': model_result})
+
+
+def kobert(request):
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB START")
+    current_datetime = datetime.now()
+    input_date = str(current_datetime.year) + '-' + str(current_datetime.month) + '-' + str(current_datetime.day)
+    from_date = datetime.strptime(input_date, '%Y-%m-%d').date()
+    from_date = datetime.combine(from_date, datetime.min.time())
+    to_date = datetime.combine(from_date, datetime.max.time())
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC TARGET DATA ACCESS START")
+    target_news_data = News.objects.filter(News_CreateDT__range=(from_date, to_date))
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+          + " >> WORD2VEC TARGET DATA ACCESS END : TOTAL " + str(len(target_news_data)))
+    normalized_text = []
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING START")
+    stack_count = 0
+    for target_news_element in target_news_data:
+        sent_text = sent_tokenize(target_news_element.News_contents)
+        normalized_text.append(str(sent_text))
+        stack_count += 1
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> STACKING COUNT : " + str(stack_count))
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC DATA STACKING END")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING START")
+    result = [word_tokenize(sentence) for sentence in normalized_text]
+    model = Word2Vec(sentences=result, window=5, min_count=30, workers=5, sg=0)
+    # model.save("/home/oshdb/ddhmodel")
+    # model.save("/Users/oseunghyeon/ddhmodel")
+    model.save("/home/ubuntu/ddhmodel")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING END")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB END")
+    return render(request, 'bs4test.html', {'testobject': 'success!'})
+
+
+def olddelete(request):
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE JOB START")
+    check_date = datetime.today() - timedelta(weeks=3)
+    input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA PERIOD LIMIT DATE : " + str(input_date))
+    try:
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - NEWS RAW DELETE START")
+        news_instance = News.objects.filter(News_CreateDT__lte=input_date)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - NEWS RAW DELETE TARGET : "
+              + str(len(news_instance)))
+        news_instance.delete()
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - NEW RAW DELETE END")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - ANALYSIS RAW DELETE START")
+        news_analysis_instance = News_Analysis_Raw.objects.filter(News_Analysis_CreateDT__lte=input_date)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - ANALYSIS RAW DELETE TARGET : "
+              + str(len(news_analysis_instance)))
+        news_analysis_instance.delete()
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE - ANALYSIS RAW DELETE END")
+    except Exception as e:
+        trace_back = traceback.format_exc()
+        message = str(e) + "\n" + str(trace_back)
+        print(message)
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE JOB END")
+    return render(request, 'bs4test.html', {'testobject': 'success!'})

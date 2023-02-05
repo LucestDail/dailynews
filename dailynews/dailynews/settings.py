@@ -154,5 +154,7 @@ CRONJOBS = [
     ('0 16 * * *', 'bs4news.cron.news_analysis_create_morphs', '>> analysis.log'),
     ('0 17 * * *', 'main.cron.dashboard_index', '>> main4cron.log'),
     ('0 18 * * *', 'bs4news.cron.news_analysis_create_news_dashboard_data', '>> dashboard.log'),
-    ('*/30 * * * *', 'bs4news.cron.news_crawl_bia_selenium_every_hour', '>> bs4crawl.log')
+    ('*/30 * * * *', 'bs4news.cron.news_crawl_bia_selenium_every_hour', '>> bs4crawl.log'),
+    ('*/30 * * * *', 'bs4news.cron.word2vec_modeling', '>> ddhmodeling.log'),
+    ('0 0 * * *', 'bs4news.cron.old_data_manage', '>> oldmanage.log')
 ]
