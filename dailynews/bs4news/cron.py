@@ -471,6 +471,7 @@ def word2vec_modeling():
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC MODELING END")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> WORD2VEC JOB END")
 
+
 def old_data_manage():
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE JOB START")
     check_date = datetime.today() - timedelta(weeks=3)
@@ -493,4 +494,140 @@ def old_data_manage():
         trace_back = traceback.format_exc()
         message = str(e) + "\n" + str(trace_back)
         print(message)
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE DELETE JOB START")
+    try:
+        es_protocol = "http"
+        es_host = "15.164.211.132"
+        es_port = "9200"
+        es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news"
+        res = requests.delete(es_url)
+        print(datetime.now().strftime(
+            "%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE(bs4news_news) DELETE REQUEST RESPONSE")
+        print(res.text)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE DELETE JOB 1 SUCCESS")
+        es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news_analysis_raw"
+        res = requests.delete(es_url)
+        print(datetime.now().strftime(
+            "%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE(bs4news_news_analysis_raw) DELETE REQUEST RESPONSE")
+        print(res.text)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE DELETE JOB 2 SUCCESS")
+    except Exception as e1:
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE DELETE JOB FAIL")
+        trace_back = traceback.format_exc()
+        message = str(e1) + "\n" + str(trace_back)
+        print(message)
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE DELETE JOB END")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE PUT JOB START")
+    try:
+        es_protocol = "http"
+        es_host = "15.164.211.132"
+        es_port = "9200"
+        es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news"
+        query_object = {
+            "settings": {
+                "number_of_shards": 1,
+                "number_of_replicas": 1
+            },
+            "mappings": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "News_from": {
+                        "type": "text"
+                    },
+                    "News_title": {
+                        "type": "text"
+                    },
+                    "News_company": {
+                        "type": "text"
+                    },
+                    "News_contents": {
+                        "type": "text"
+                    },
+                    "News_contents_raw": {
+                        "type": "text"
+                    },
+                    "News_CreateDT": {
+                        "type": "date"
+                    },
+                    "ETC1": {
+                        "type": "text"
+                    },
+                    "ETC2": {
+                        "type": "text"
+                    },
+                    "ETC3": {
+                        "type": "text"
+                    },
+                    "ETC4": {
+                        "type": "text"
+                    },
+                    "ETC5": {
+                        "type": "text"
+                    }
+                }
+            }
+        }
+        res = requests.put(es_url, json=query_object)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE(bs4news_news) PUT REQUEST RESPONSE")
+        print(res.text)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE PUT JOB 1 SUCCESS")
+        es_url = es_protocol + "://" + es_host + ":" + es_port + "/bs4news_news_analysis_raw"
+        query_object = {
+            "settings": {
+                "number_of_shards": 1,
+                "number_of_replicas": 1
+            },
+            "mappings": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "News_Analysis_from": {
+                        "type": "text"
+                    },
+                    "News_Analysis_Title": {
+                        "type": "text"
+                    },
+                    "News_Analysis_Company": {
+                        "type": "text"
+                    },
+                    "News_Morphs": {
+                        "type": "text"
+                    },
+                    "News_Analysis_CreateDT": {
+                        "type": "date"
+                    },
+                    "ETC1": {
+                        "type": "text"
+                    },
+                    "ETC2": {
+                        "type": "text"
+                    },
+                    "ETC3": {
+                        "type": "text"
+                    },
+                    "ETC4": {
+                        "type": "text"
+                    },
+                    "ETC5": {
+                        "type": "text"
+                    }
+                }
+            }
+        }
+        res = requests.put(es_url, json=query_object)
+        print(datetime.now().strftime(
+            "%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE(bs4news_news_analysis_raw) PUT REQUEST RESPONSE")
+        print(res.text)
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE PUT JOB 2 SUCCESS")
+    except Exception as e2:
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE PUT JOB FAIL")
+        trace_back = traceback.format_exc()
+        message = str(e2) + "\n" + str(trace_back)
+        print(message)
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE PUT JOB END")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE JOB END")
+
+
