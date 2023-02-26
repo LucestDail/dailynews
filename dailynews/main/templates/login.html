@@ -56,6 +56,11 @@
                                         </div>
                                         <input id="btnLogin" type="button" class="btn btn-primary btn-user btn-block" value="로그인">
                                         <script>
+                                            $(".form-control").on("keyup",function(key){
+                                                if(key.keyCode==13) {
+                                                    $('#btnLogin').click();
+                                                }
+                                            });
                                             $('#btnLogin').on('click', function(e) {
                                                 if($('#id').val() == "" ){
                                                     toastr.warning('아이디를 입력하세요');
