@@ -474,7 +474,7 @@ def word2vec_modeling():
 
 def old_data_manage():
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE JOB START")
-    check_date = datetime.today() - timedelta(weeks=3)
+    check_date = datetime.today() - timedelta(weeks=2)
     input_date = str(check_date.year) + '-' + str(check_date.month) + '-' + str(check_date.day)
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA PERIOD LIMIT DATE : " + str(input_date))
     try:

@@ -39,12 +39,12 @@ def get_all_company_code():
     return list(cursor.fetchall())
 
 
-def check_news(News_title, News_company):
+def check_news(news_link, news_company):
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> CHECK NEWS -> SELECT START")
     is_exist_news = False
     try:
-        statement = "SELECT * FROM bs4news_news WHERE News_title = %s AND News_company = %s"
-        data = (News_title, News_company)
+        statement = "SELECT * FROM bs4news_news WHERE ETC1 = %s AND News_company = %s"
+        data = (news_link, news_company)
         cursor.execute(statement, data)
         if len(cursor.fetchall()) > 0:
             is_exist_news = True
@@ -307,7 +307,10 @@ def elastic_template_manage():
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE PUT JOB END")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> ELASTIC TEMPLATE MANAGE JOB END")
 
-scrap()
+
+
+#scrap()
 #elastic_template_manage()
+check_news('https://n.news.naver.com/mnews/article/529/0000064478?rc=N&ntype=RANKING', '529')
 connection.commit()
 connection.close()
