@@ -980,4 +980,4 @@ def youtuberaw(request):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         sns_list = paginator.page(paginator.num_pages)
-    return render(request, 'youtubueraw.html', {'sns_list': sns_list})
+    return render(request, 'youtuberaw.html', {'sns_list': sns_list})
