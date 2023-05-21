@@ -5,6 +5,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from konlpy.tag import Okt
 from .models import *
+from .snsmodels import *
 from gensim.models import Word2Vec
 from nltk.tokenize import word_tokenize, sent_tokenize
 import time
@@ -641,3 +642,18 @@ def olddelete(request):
         print(message)
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + " >> OLD DATA MANAGE JOB END")
     return render(request, 'bs4test.html', {'testobject': 'success!'})
+
+
+def snsdata(request):
+    sns_data = Dcinside.objects.using('dailydata').all().order_by('-create_dt')
+    paginator = Paginator(sns_data, 10)
+    page = request.GET.get('page')
+    try:
+        sns_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        sns_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        sns_list = paginator.page(paginator.num_pages)
+    return render(request, 'bs4sns.html', {'sns_list': sns_list})

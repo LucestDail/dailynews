@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from bs4news.models import *
 from main.models import *
+from bs4news.snsmodels import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime, timedelta
 from konlpy.tag import Okt
@@ -923,3 +924,60 @@ def maindashboard(request):
                                           'news_data_analysis_count': news_data_analysis_count,
                                           'news_data_analysis_counter_list': news_data_analysis_counter_list
                                           })
+
+
+def twitterraw(request):
+    sns_data = Twitter.objects.using('dailydata').all().order_by('-create_dt')
+    paginator = Paginator(sns_data, 10)
+    page = request.GET.get('page')
+    try:
+        sns_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        sns_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        sns_list = paginator.page(paginator.num_pages)
+    return render(request, 'twitterraw.html', {'sns_list': sns_list})
+
+def instagramraw(request):
+    sns_data = Instagram.objects.using('dailydata').all().order_by('-create_dt')
+    paginator = Paginator(sns_data, 10)
+    page = request.GET.get('page')
+    try:
+        sns_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        sns_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        sns_list = paginator.page(paginator.num_pages)
+    return render(request, 'instagramraw.html', {'sns_list': sns_list})
+
+def dcinsideraw(request):
+    sns_data = Dcinside.objects.using('dailydata').all().order_by('-create_dt')
+    paginator = Paginator(sns_data, 10)
+    page = request.GET.get('page')
+    try:
+        sns_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        sns_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        sns_list = paginator.page(paginator.num_pages)
+    return render(request, 'dcinsideraw.html', {'sns_list': sns_list})
+
+def youtuberaw(request):
+    sns_data = Youtube.objects.using('dailydata').all().order_by('-create_dt')
+    paginator = Paginator(sns_data, 10)
+    page = request.GET.get('page')
+    try:
+        sns_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        sns_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        sns_list = paginator.page(paginator.num_pages)
+    return render(request, 'youtubueraw.html', {'sns_list': sns_list})

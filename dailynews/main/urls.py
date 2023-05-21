@@ -35,4 +35,8 @@ urlpatterns = [
     path('companywordcloud', views.companywordcloud, name='companywordcloud'),
     path('keywordtimedashboard', views.keywordtimedashboard, name='keywordtimedashboard'),
     path('maindashboard', views.maindashboard, name='maindashboard'),
+    path('twitterraw', views.twitterraw, name='twitterraw'),
+    path('instagramraw', views.instagramraw, name='instagramraw'),
+    path('dcinsideraw', views.dcinsideraw, name='dcinsideraw'),
+    path('youtuberaw', views.youtuberaw, name='youtuberaw'),
 ]
