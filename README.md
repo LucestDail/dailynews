@@ -1,6 +1,4 @@
-# Team Meta Storage
-
-<center><img src="http://ec2-52-79-114-110.ap-northeast-2.compute.amazonaws.com:8080/img/companyImage.png" width="300" height="300"></center>
+# Dailynews
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
