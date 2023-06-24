@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Daily Data Hub</title>
+    {% include 'header.html' %}
+    {% include 'topscript.html' %}
+</head>
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        {% include 'sidebar.html' %}
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                {% include 'topbar.html' %}
+                <!-- End of Topbar -->
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+<!--                        <h1 class="h3 mb-0 text-gray-800">데이터 정보 {% if request.GET.keyword %} [검색결과 = {{request.GET.keyword}}] {% endif %}</h1>-->
+                    </div>
+                    <div class="row">
+                        <div class="accordion" id="accordionExample" style="width: 100%;">
+                        {% for sns in sns_list %}
+                          <div class="card">
+                            <div class="card-header" id="heading{{sns.id}}">
+                              <h5 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{sns.id}}" aria-expanded="true" aria-controls="collapse{{sns.id}}">
+                                    {{sns.title}}[{{sns.url}}]
+                                </button>
+                              </h5>
+                            </div>
+                            <div id="collapse{{sns.id}}" class="collapse" aria-labelledby="heading{{sns.id}}" data-parent="#accordionExample">
+                              <div class="card-body">
+                                  <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary"> {{sns.title}} 상세 분석</h6>
+                                  </div>
+                                  <div class="card-body" style="max-height:140px; overflow: scroll;">
+                                  {% autoescape off %}
+                                  {{sns.content}}
+                                  {% endautoescape %}
+                                  <a href='{{sns.url}}'>원본 보기</a>
+                                  </div>
+                                  <div class="card shadow mb-4">
+                                        <!-- Card Header - Dropdown -->
+                                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h6 class="m-0 font-weight-bold text-primary"> {{sns.title}} 게시글 워드 클라우드</h6>
+                                        </div>
+                                        <!-- Card Body -->
+                                        <div class="card-body">
+                                            <div id="chartdiv{{sns.id}}" style="height: 22rem;"></div>
+                                            <script>
+                                                const hexValues{{sns.id}} = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "A", "B", "C", "D", "E", "F"];
+                                                var text{{sns.id}} = "{{sns.content | safe}}";
+                                                let hex1{{sns.id}} = "#";
+                                                let hex2{{sns.id}} = "#";
+                                                for (let i = 0; i < 6; i++) {
+                                                const index = Math.floor(Math.random() * hexValues{{sns.id}}.length);
+                                                hex1{{sns.id}} += hexValues{{sns.id}}[index];
+                                                hex2{{sns.id}} += hexValues{{sns.id}}[index];
+                                                }
+                                                am4core.useTheme(am4themes_animated);
+                                                var chart = am4core.create("chartdiv{{sns.id}}", am4plugins_wordCloud.WordCloud);
+                                                var series = chart.series.push(new am4plugins_wordCloud.WordCloudSeries());
+                                                series.text = text{{sns.id}}.replaceAll('삭제','');
+                                                series.maxCount = 50;
+                                                series.minWordLength = 2;
+                                                series.randomness = 0;
+                                                series.maxFontSize = am4core.percent(50);
+                                                series.heatRules.push({
+                                                "target": series.labels.template,
+                                                "property": "fill",
+                                                "min": am4core.color(hex1{{sns.id}}),
+                                                "max": am4core.color(hex2{{sns.id}}),
+                                                "dataField": "value"
+                                                });
+                                                series.events.on("arrangestarted", function(ev) {
+                                                ev.target.baseSprite.preloader.show(0);
+                                                });
+
+                                                series.events.on("arrangeprogress", function(ev) {
+                                                ev.target.baseSprite.preloader.progress = ev.progress;
+                                                });
+                                            </script>
+                                        </div>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row" style="width: 100%; justify-content: center;">
+<!--                        <div class="pagination" style="width: 100%; justify-content: center;">-->
+<!--                            <span class="step-links">-->
+<!--                                {% if page_current > 1 %}-->
+<!--                                    <a href="?page={{ page_previous }}{% if request.GET.keyword %}&keyword={{search_keyword}}{% endif %}">previous</a>-->
+<!--                                {% endif %}-->
+
+<!--                                <span class="current">-->
+<!--                                    Page {{ page_current }} of {{ page_total }}.-->
+<!--                                </span>-->
+
+<!--                                {% if page_next < page_total or page_next == page_total %}-->
+
+<!--                                    <a href="?page={{ page_next }}{% if request.GET.keyword %}&keyword={{search_keyword}}{% endif %}">next</a>-->
+<!--                                {% endif %}-->
+<!--                            </span>-->
+<!--                        </div>-->
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if sns_list.has_previous %}
+                                    <a href="?page={{ sns_list.previous_page_number }}">previous</a>
+                                {% endif %}
+
+                                <span class="current">
+                                    Page {{ sns_list.number }} of {{ sns_list.paginator.num_pages }}.
+                                </span>
+
+                                {% if sns_list.has_next %}
+                                    <a href="?page={{ sns_list.next_page_number }}">next</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                <!-- /.container-fluid -->
+            </div>
+                {% include 'footer.html' %}
+        </div>
+    </div>
+    {% include 'logout.html' %}
+    {% include 'script.html' %}
+</body>
+</html>

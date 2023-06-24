@@ -39,4 +39,8 @@ urlpatterns = [
     path('instagramraw', views.instagramraw, name='instagramraw'),
     path('dcinsideraw', views.dcinsideraw, name='dcinsideraw'),
     path('youtuberaw', views.youtuberaw, name='youtuberaw'),
+    path('twitterdashboard', views.twitterdashboard, name='instagramdashboard'),
+    path('instagramdashboard', views.instagramdashboard, name='instagramdashboard'),
+    path('dcinsidedashboard', views.dcinsidedashboard, name='dcinsidedashboard'),
+    path('youtubedashboard', views.youtubedashboard, name='youtubedashboard'),
 ]

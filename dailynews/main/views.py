@@ -14,6 +14,11 @@ import json
 import math
 from gensim.models import Word2Vec
 from nltk.tokenize import word_tokenize, sent_tokenize
+import warnings
+
+warnings.filterwarnings("ignore")
+# Create your views here.
+okt = Okt()
 
 
 def basicTemplates(request):
@@ -981,3 +986,73 @@ def youtuberaw(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         sns_list = paginator.page(paginator.num_pages)
     return render(request, 'youtuberaw.html', {'sns_list': sns_list})
+
+def dcinsidedashboard(request):
+    sns_data = Dcinside.objects.using('dailydata').all()
+    sns_data_map = {}
+    sns_data_morphs = {}
+    for sns_data_element in sns_data:
+        if sns_data_element._id in sns_data_map:
+            sns_data_map[sns_data_element._id] = sns_data_map[sns_data_element._id] + sns_data_element.content
+        else:
+            sns_data_map[sns_data_element._id] = sns_data_element.content
+    for key, value in sns_data_map.items():
+        target_news_morphs = okt.nouns(value)
+        target_news_morphs = [n for n in target_news_morphs if len(n) > 1]
+        sns_data_morphs[key] = target_news_morphs
+    sns_data_group = Dcinside.objects.using('dailydata').all().values('title', 'category', '_id', 'url').distinct()
+    sns_data_list = []
+    for sns_data_element in sns_data_group:
+        if sns_data_element['_id'] in sns_data_map:
+            sns_data_object = {}
+            sns_data_object['id'] = sns_data_element['_id']
+            sns_data_object['title'] = sns_data_element['title']
+            sns_data_object['category'] = sns_data_element['category']
+            sns_data_object['url'] = sns_data_element['url']
+            sns_data_object['content'] = sns_data_morphs[sns_data_element['_id']]
+            sns_data_list.append(sns_data_object)
+    return render(request, 'dcinsidedashboard.html', {'sns_list': sns_data_list})
+
+def instagramdashboard(request):
+    sns_data = Instagram.objects.using('dailydata').all().order_by('-create_dt')
+    paginator = Paginator(sns_data, 10)
+    page = request.GET.get('page')
+    try:
+        sns_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        sns_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        sns_list = paginator.page(paginator.num_pages)
+    return render(request, 'bs4sns.html', {'sns_list': sns_list})
+
+def twitterdashboard(request):
+    sns_data = Twitter.objects.using('dailydata').all().order_by('-create_dt')
+    paginator = Paginator(sns_data, 10)
+    page = request.GET.get('page')
+    try:
+        sns_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        sns_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        sns_list = paginator.page(paginator.num_pages)
+    return render(request, 'bs4sns.html', {'sns_list': sns_list})
+
+
+
+def youtubedashboard(request):
+    sns_data = Youtube.objects.using('dailydata').all().order_by('-create_dt')
+    paginator = Paginator(sns_data, 10)
+    page = request.GET.get('page')
+    try:
+        sns_list = paginator.get_page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        sns_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        sns_list = paginator.page(paginator.num_pages)
+    return render(request, 'bs4sns.html', {'sns_list': sns_list})
