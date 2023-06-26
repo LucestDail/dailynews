@@ -1,6 +1,8 @@
 {% load static %}
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
+                    <form action="{% url 'newsraw' %}" method="get" style="width:100%">
+                        <input type="text" class="form-control form-control-lg" id="keyword" name="keyword" aria-describedby="keywordHelp" placeholder="키워드 입력 후 엔터를 눌러주세요" {% if request.GET.keyword %} value = {{search_keyword}} {% endif %}>
+                    </form>
                     <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
@@ -21,20 +23,58 @@
                                 aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="profile">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
+                                    프로필 확인
+                                </a>
+                                <a class="dropdown-item" href="dcinsidedashboard">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) Dcinside 분석
+                                </a>
+                                <a class="dropdown-item" href="instagramdashboard">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) Instagram 분석
+                                </a>
+                                <!--
+                                <a class="dropdown-item" href="twitterdashboard">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) Twitter 분석
+                                </a>
+                                <a class="dropdown-item" href="youtubedashboard">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) Youtube 분석
+                                </a>
+                                -->
+                                <!-- <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) SNS 분석
                                 </a>
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    test1
+                                    (테스트) 커뮤니티 분석
                                 </a>
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    test2
+                                    (테스트) 웹사이트 분석
                                 </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 인물 분석
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 감정 분석
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 보고서 생성
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    (테스트) 업무 관리
+                                </a> -->
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
+                                    로그아웃
                                 </a>
                             </div>
                         </li>

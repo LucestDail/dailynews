@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Daily Nes</title>
+    <title>Daily Data Hub</title>
 
     <!-- Custom fonts for this template-->
     <link href="{% static 'fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -22,6 +22,8 @@
     <!-- Custom styles for this template-->
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> 
 </head>
 
 <body class="bg-gradient-primary backgroundTheme">
@@ -35,58 +37,58 @@
                     <div class="col-lg-12">
                         <div class="p-5">
                             <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+                                <h1 class="h4 text-gray-900 mb-4">계정 생성</h1>
                             </div>
                             <form class="user">
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         <input type="text" class="form-control form-control-user" id="registerId"
-                                            placeholder="ID">
+                                            placeholder="아이디 입력">
                                     </div>
                                     <div class="col-sm-6">
                                         <input type="text" class="form-control form-control-user" id="registerName"
-                                            placeholder="Name">
+                                            placeholder="이름 입력">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         <input type="password" class="form-control form-control-user"
-                                            id="registerPassword" placeholder="Password">
+                                            id="registerPassword" placeholder="비밀번호 입력">
                                     </div>
                                     <div class="col-sm-6">
                                         <input type="password" class="form-control form-control-user"
-                                            id="registerPasswordRepeat" placeholder="Repeat Password">
+                                            id="registerPasswordRepeat" placeholder="비밀번호 확인">
                                     </div>
                                 </div>
-                                <input id="btnRegisterAccount" type="button" class="btn btn-primary btn-user btn-block" value="Register Account">
+                                <input id="btnRegisterAccount" type="button" class="btn btn-primary btn-user btn-block" value="계정 생성하기">
                                         <script>
                                             $('#btnRegisterAccount').on('click', function(e) {
                                                 if($('#registerId').val() == "" ){
-                                                    alert('아이디를 입력하세요');
+                                                    toastr.error('아이디를 입력하세요');
                                                     $('#registerId').focus();
                                                     return;
                                                 }else if($('#registerId').val().length > 50 ){
-                                                    alert('아이디가 너무 깁니다.')
+                                                    toastr.error('아이디가 너무 깁니다.')
                                                     $('#registerId').focus();
                                                     return;
                                                 }else if($('#registerPassword').val() == "" ){
-                                                    alert('비밀번호를 입력하세요')
+                                                    toastr.error('비밀번호를 입력하세요')
                                                     $('#registerPassword').focus();
                                                     return;
                                                 }else if($('#registerPassword').val().length > 50 ){
-                                                    alert('비밀번호가 너무 깁니다.')
+                                                    toastr.error('비밀번호가 너무 깁니다.')
                                                     $('#registerPassword').focus();
                                                     return;
                                                 }else if($('#registerPassword').val() !== $('#registerPasswordRepeat').val() ){
-                                                    alert('비밀번호 재입력이 서로 다릅니다')
+                                                    toastr.error('비밀번호 재입력이 서로 다릅니다')
                                                     $('#registerPassword').focus();
                                                     return;
                                                 }else if($('#registerName').val() == "" ){
-                                                    alert('이름을 입력하세요')
+                                                    toastr.error('이름을 입력하세요')
                                                     $('#registerName').focus();
                                                     return;
                                                 }else if($('#registerName').val().length > 50 ){
-                                                    alert('이름이 너무 깁니다.')
+                                                    toastr.error('이름이 너무 깁니다.')
                                                     $('#registerName').focus();
                                                     return;
                                                 }else{
@@ -105,15 +107,17 @@
                                                     success : function(data){
                                                         console.log(data);
                                                         if(data === "TRUE"){
-                                                            alert("가입 성공!");
+                                                            toastr.success("가입 성공");
                                                             location.href="/";
                                                         }else{
-                                                            alert("가입 실패");
+                                                            // alert("가입 실패");
+                                                            toastr.error('중복된 아이디가 존재합니다');
                                                             // location.href="/";
                                                         }
                                                     },
                                                     error : function(error){
-                                                        alert("가입 오류");
+                                                        // alert("가입 오류");
+                                                        toastr.warning("가입 오류");
                                                         // location.href="/";
                                                         console.log(JSON.stringify(error));
                                                     }
@@ -124,10 +128,10 @@
                             </form>
                             <hr>
                             <div class="text-center">
-                                <a class="small" href="forgotPassword">Forgot Password?</a>
+                                <a class="small" href="forgotPassword">비밀번호 초기화</a>
                             </div>
                             <div class="text-center">
-                                <a class="small" href="/">Already have an account? Login!</a>
+                                <a class="small" href="/">로그인 이동</a>
                             </div>
                         </div>
                     </div>

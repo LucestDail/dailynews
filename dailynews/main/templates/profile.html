@@ -1,8 +1,13 @@
 {% load static %}
-<html>
-  {% include 'header.html' %}
-  {% include 'topscript.html' %}
-  {% include 'script.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Daily Data Hub</title>
+    {% include 'header.html' %}
+    {% include 'topscript.html' %}
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+</head>
 <body id="page-top">
 
     <!-- Page Wrapper -->
@@ -29,44 +34,75 @@
                             <div class="col-md-5 border-right">
                                 <div class="p-3 py-5">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h4 class="text-right">Profile Settings</h4>
+                                        <h4 class="text-right">프로필 확인</h4>
                                     </div>
                                     <div class="row mt-3">
-                                        <div class="col-md-12"><label class="labels">Name</label><input type="text" id="userName" class="form-control" placeholder="name" value="{{user_data.User_Name}}"></div>
-                                        <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" id="userMobileNumber" class="form-control" placeholder="phone number" value="{{user_data.User_MobileNumber}}"></div>
-                                        <div class="col-md-12"><label class="labels">Email ID</label><input type="text" id="userEmail" class="form-control" placeholder="email" value="{{user_data.User_Email}}"></div>
-                                        <div class="col-md-12"><label class="labels">Focus Word</label><input type="text" id="userFocusWord" class="form-control" placeholder="focus word" value="{{user_data.User_Focus_word}}"></div>
-                                        <div class="col-md-12"><label class="labels">Focus Company</label><input type="text" id="userFocusCompany" class="form-control" placeholder="focus company" value="{{user_data.User_Focus_Company}}"></div>
+                                        <div class="col-md-12"><label class="labels">이름</label><input type="text" id="userName" class="form-control" placeholder="이름 입력" value="{{user_data.User_Name}}"></div>
+                                        <div class="col-md-12"><label class="labels">휴대전화</label><input type="text" id="userMobileNumber" class="form-control" placeholder="휴대전화 입력" value="{{user_data.User_MobileNumber}}"></div>
+                                        <div class="col-md-12"><label class="labels">이메일</label><input type="text" id="userEmail" class="form-control" placeholder="이메일 입력" value="{{user_data.User_Email}}"></div>
+                                        <div class="col-md-12"><label class="labels">관심단어</label><input type="text" id="userFocusWord" class="form-control" placeholder="관심 키워드 입력" value="{{user_data.User_Focus_word}}"></div>
+                                        <div class="col-md-12">
+                                            <label class="labels">관심 뉴스(메인)</label>
+                                            <select class="form-control" aria-label="Default select example" id="userFocusCompany">
+                                                {% for company in company_data %}
+                                                {% if company.News_Company_Name == user_data.User_Focus_Company%}
+                                                <option selected value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% else %}
+                                                <option value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="labels">관심 뉴스(추가)</label>
+                                            <select class="form-control" aria-label="Default select example" id="userFocusCompany1">
+                                                {% for company in company_data %}
+                                                {% if company.News_Company_Name == user_data.User_Focus_Company_1%}
+                                                <option selected value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% else %}
+                                                <option value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="labels">관심 뉴스(추가)</label>
+                                            <select class="form-control" aria-label="Default select example" id="userFocusCompany2">
+                                                {% for company in company_data %}
+                                                {% if company.News_Company_Name == user_data.User_Focus_Company_2%}
+                                                <option selected value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% else %}
+                                                <option value="{{company.News_Company_Name}}">{{company.News_Company_Name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="mt-5 text-center"><button id="btnUpdate" class="btn btn-primary profile-button" type="button">Save Profile</button></div>
                                     <script>
                                         $('#btnUpdate').on('click', function(e) {
                                             if($('#userName').val() == "" ){
-                                                alert('이름을 입력하세요');
+                                                toastr.warning('이름을 입력하세요');
                                                 $('#userName').focus();
                                                 return;
                                             }else if($('#userName').val().length > 50 ){
-                                                alert('이름이 너무 깁니다.')
+                                                toastr.warning('이름이 너무 깁니다.')
                                                 $('#userName').focus();
                                                 return;
                                             }else if($('#userMobileNumber').val().length > 50 ){
-                                                alert('핸드폰 번호가 너무 깁니다.')
+                                                toastr.warning('핸드폰 번호가 너무 깁니다.')
                                                 $('#userMobileNumber').focus();
                                                 return;
                                             }else if($('#userEmail').val().length > 50 ){
-                                                alert('이메일이 너무 깁니다.')
+                                                toastr.warning('이메일이 너무 깁니다.')
                                                 $('#userEmail').focus();
                                                 return;
                                             }else if($('#userFocusWord').val().length > 50 ){
-                                                alert('관심 키워드 명이 너무 깁니다.')
+                                                toastr.warning('관심 키워드 명이 너무 깁니다.')
                                                 $('#userFocusWord').focus();
                                                 return;
-                                            }else if($('#userFocusCompany').val().length > 50 ){
-                                                alert('관심 뉴스회사 길이가 너무 깁니다.')
-                                                $('#userFocusCompany').focus();
-                                                return;
                                             }else if($('#currentPassword').val() !== $('#currentPasswordRepeat').val() ){
-                                                alert('비밀번호 재입력이 서로 다릅니다')
+                                                toastr.warning('비밀번호 재입력이 서로 다릅니다')
                                                 $('#registerPassword').focus();
                                                 return;
                                             }else{
@@ -75,7 +111,9 @@
                                                     userMobileNumber:$('#userMobileNumber').val(),
                                                     userEmail:$('#userEmail').val(),
                                                     userFocusWord:$('#userFocusWord').val(),
-                                                    userFocusCompany:$('#userFocusCompany').val(),
+                                                    userFocusCompany:$('#userFocusCompany option:selected').val(),
+                                                    userFocusCompany1:$('#userFocusCompany1 option:selected').val(),
+                                                    userFocusCompany2:$('#userFocusCompany2 option:selected').val(),
                                                     currentPassword:$('#currentPassword').val(),
                                             }
                                             $.ajax({
@@ -87,14 +125,14 @@
                                                 success : function(data){
                                                     console.log(data);
                                                     if(data === "FALSE"){
-                                                        alert("비밀번호를 확인하세요");
+                                                        toastr.error("비밀번호 확인 필요");
                                                     }else{
-                                                        alert("개인정보가 변경되었습니다.");
+                                                        toastr.success("개인정보 변경 완료");
                                                         location.reload();
                                                     }
                                                 },
                                                 error : function(error){
-                                                    alert("변경 오류");
+                                                    toastr.warning("개인정보 변경 오류");
                                                     console.log(JSON.stringify(error));
                                                 }
                                             })
@@ -105,11 +143,11 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="p-3 py-5">
-                                    <div class="d-flex justify-content-between align-items-center experience"><span>Security Check</span></div><br>
-                                    <div class="col-md-12"><label class="labels">Current Password</label><input type="text" id="currentPassword" class="form-control" placeholder="Current Password" value=""></div> <br>
-                                    <div class="col-md-12"><label class="labels">Current Password Repeat</label><input type="text" id="currentPasswordRepeat" class="form-control" placeholder="Current Password Repeat" value=""></div>
-                                    <div class="mt-5 text-center"><button id="btnDelete" data-toggle="modal" data-target="#changePasswordModal" class="btn btn-primary profile-button" type="button">Change Password</button></div>
-                                    <div class="mt-1 text-center"><button id="btnDelete" data-toggle="modal" data-target="#deleteModal" class="btn btn-Danger profile-button" type="button">Delete Profile</button></div>
+                                    <div class="d-flex justify-content-between align-items-center experience"><span>본인 확인</span></div><br>
+                                    <div class="col-md-12"><label class="labels">현재 비밀번호</label><input type="password" id="currentPassword" class="form-control" placeholder="현재 비밀번호 입력" value=""></div> <br>
+                                    <div class="col-md-12"><label class="labels">현재 비밀번호 확인</label><input type="password" id="currentPasswordRepeat" class="form-control" placeholder="현재 비밀번호 재입력" value=""></div>
+                                    <div class="mt-5 text-center"><button id="btnDelete" data-toggle="modal" data-target="#changePasswordModal" class="btn btn-primary profile-button" type="button">비밀번호 바꾸기</button></div>
+                                    <div class="mt-1 text-center"><button id="btnDelete" data-toggle="modal" data-target="#deleteModal" class="btn btn-Danger profile-button" type="button">계정 삭제하기</button></div>
                                 </div>
                             </div>
                         </div>
@@ -121,15 +159,15 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Want to Delete Profile?</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">계정 삭제 확인</h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
-                    <div class="modal-body">Select "Delete" below if you are "really" want to delete your profile.</div>
+                    <div class="modal-body">삭제하시겠습니까?</div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <button class="btn btn-Danger" type="button" id="btnConfirmDelete">Delete</button>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+                        <button class="btn btn-Danger" type="button" id="btnConfirmDelete">삭제</button>
                         <script>
                             $('#btnConfirmDelete').on('click', function(e) {
                              $.ajax({
@@ -138,11 +176,11 @@
                                  dataType: "text",
                                  contentType:'application/json; charset=utf-8',
                                  success : function(data){
-                                    alert("삭제 완료");
+                                    toastr.success("삭제 완료");
                                     location.href = '/';
                                  },
                                  error : function(error){
-                                    alert("삭제 오류");
+                                    toastr.error("삭제 오류");
                                     console.log(JSON.stringify(error));
                                  }
                              })
@@ -157,29 +195,32 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Want to Change Password?</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">비밀번호 변경</h5>
                             <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
                         </div>
-                        <div class="modal-body">Select "Change" below if you want to change your password.<br>
-                            <div class="col-md-12"><label class="labels">Current Password</label><input type="text" id="updateCurrentPassword" class="form-control" placeholder="Current Password" value=""></div> <br>
-                            <div class="col-md-12"><label class="labels">Current Password Repeat</label><input type="text" id="updateCurrentPasswordRepeat" class="form-control" placeholder="Current Password Repeat" value=""></div><br>
-                            <div class="col-md-12"><label class="labels">New Password</label><input type="text" id="updateNewPassword" class="form-control" placeholder="New Password" value=""></div>
-                        <div class="mt-1 text-center"><button id="btnDelete" data-toggle="modal" data-target="#deleteModal" class="btn btn-Danger profile-button" type="button">Delete Profile</button></div>
+                        <div class="modal-body">비밀번호를 변경하시겠습니까?<br>
+                            <div class="col-md-12"><label class="labels">현재 비밀번호</label><input type="text" id="updateCurrentPassword" class="form-control" placeholder="현재 비밀번호" value=""></div> <br>
+                            <div class="col-md-12"><label class="labels">현재 비밀번호 재입력</label><input type="text" id="updateCurrentPasswordRepeat" class="form-control" placeholder="현재 비밀번호 재입력" value=""></div><br>
+                            <div class="col-md-12"><label class="labels">신규 비밀번호</label><input type="text" id="updateNewPassword" class="form-control" placeholder="신규 비밀번호 입력" value=""></div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                            <button class="btn btn-Danger" type="button" id="btnConfirmPasswordChange">Change</button>
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+                            <button class="btn btn-Danger" type="button" id="btnConfirmPasswordChange">변경</button>
                             <script>
                                 $('#btnConfirmPasswordChange').on('click', function(e) {
                                     if($('#updateCurrentPassword').val() !== $('#updateCurrentPasswordRepeat').val()){
-                                        alert('비밀번호 재입력이 서로 다릅니다.')
+                                        toastr.warning('비밀번호 재입력이 서로 다릅니다.')
                                         $('#registerPassword').focus();
                                         return;
-                                    }else if($('#updateCurrentPassword').val().length > 50 ){
-                                        alert('비밀번호 변경 패스워드의 길이가 너무 깁니다.')
-                                        $('#registerPassword').focus();
+                                    }else if($('#updateNewPassword').val() == "" ){
+                                        toastr.warning('신규 패스워드를 입력하세요')
+                                        $('#updateNewPassword').focus();
+                                        return;
+                                    }else if($('#updateNewPassword').val().length > 50 ){
+                                        toastr.warning('신규 패스워드의 길이가 너무 깁니다.')
+                                        $('#updateNewPassword').focus();
                                         return;
                                     }else{
                                         var data={
@@ -195,14 +236,14 @@
                                             success : function(data){
                                                 console.log(data);
                                                 if(data === "FALSE"){
-                                                    alert("비밀번호를 확인하세요");
+                                                    toastr.warning("비밀번호를 확인하세요");
                                                 }else{
-                                                    alert("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
+                                                    toastr.success("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
                                                     location.href = "/";
                                                 }
                                             },
                                             error : function(error){
-                                                alert("변경 오류");
+                                                toastr.error("변경 오류");
                                                 console.log(JSON.stringify(error));
                                             }
                                         })
@@ -213,11 +254,10 @@
                     </div>
                 </div>
                 </div>
-            {% include 'logout.html' %}
             {% include 'footer.html' %}
         </div>
     </div>
-    
-
+    {% include 'logout.html' %}
+    {% include 'script.html' %}
 </body>
 </html>

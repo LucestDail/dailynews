@@ -14,9 +14,9 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index">
+                <a class="nav-link" href="maindashboard">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
+                    <span>종합 대시보드</span></a>
             </li>
 
             <!-- Divider -->
@@ -24,7 +24,7 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Interface
+                사이트 기능 관련
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
@@ -32,35 +32,64 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cog"></i>
-                    <span>Settings</span>
+                    <span>기능 설정</span>
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Focus Settings:</h6>
-                        <a class="collapse-item" href="#">Focus Word Settings</a>
-                        <a class="collapse-item" href="#">Focus News Settings</a>
-                        <a class="collapse-item" href="#">Request Focus Data</a>
+                        <h6 class="collapse-header">기능 관리:</h6>
+                        <a class="collapse-item" href="excludedkeyword">제외 키워드 열람</a>
+                        <a class="collapse-item" href="excludedkeywordadd">제외 키워드 등록</a>
                     </div>
                 </div>
             </li>
 
             <!-- Nav Item - Utilities Collapse Menu -->
+            <!--
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
                     <i class="fas fa-fw fa-wrench"></i>
-                    <span>Customization</span>
+                    <span>커스터마이징</span>
                 </a>
                 <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                     data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Data Settings:</h6>
-                        <a class="collapse-item" href="#">Custom Crawler</a>
-                        <a class="collapse-item" href="#">Custom Scrapper</a>
-                        <a class="collapse-item" href="#">Request Crawling</a>
-                        <a class="collapse-item" href="#">Request Scrapping</a>
+                        <h6 class="collapse-header">사용자 커스텀 관리:</h6>
+                        <a class="collapse-item" href="mycrawl">나의 크롤링 관리</a>
+                        <a class="collapse-item" href="myscrap">나의 스크래핑 관리</a>
+                        <a class="collapse-item" href="requestcrawl">크롤링 요청</a>
+                        <a class="collapse-item" href="requestscrap">스크래핑 요청</a>
+                        <a class="collapse-item" href="requestFocusData">종합 분석 요청</a>
                     </div>
                 </div>
+            </li>
+            -->
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                종합 대시보드
+            </div>
+
+            <!-- Nav Item - Charts -->
+            <!-- <li class="nav-item">
+                <a class="nav-link" href="keyworddashboard">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>키워드 대시보드</span></a>
+            </li> -->
+
+            <li class="nav-item">
+                <a class="nav-link" href="keywordtimedashboard">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>키워드 시계열 분석</span></a>
+            </li>
+
+            <!-- Nav Item - Tables -->
+            <li class="nav-item">
+                <a class="nav-link" href="newsdashboard">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>데이터 발생 현황</span></a>
             </li>
 
             <!-- Divider -->
@@ -68,40 +97,34 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Addons
+                기타 정보
             </div>
 
-            <!-- Nav Item - Pages Collapse Menu -->
+            <!-- POLICY MENU -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                     aria-expanded="true" aria-controls="collapsePages">
                     <i class="fas fa-fw fa-folder"></i>
-                    <span>Notice</span>
+                    <span>사이트 정보</span>
                 </a>
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Site Information</h6>
-                        <a class="collapse-item" href="#">QnA</a>
-                        <a class="collapse-item" href="#">Tech Support</a>
-                        <h6 class="collapse-header">Policy</h6>
-                        <a class="collapse-item" href="#">Data Policy</a>
-                        <a class="collapse-item" href="#">Notice</a>
+                        <!-- <h6 class="collapse-header">사이트 문의</h6>
+                        <a class="collapse-item" href="qna">질의응답</a>
+                        <a class="collapse-item" href="techsupport">기술지원</a> -->
+                        <h6 class="collapse-header">관리 정책</h6>
+                        <a class="collapse-item" href="datapolicy">데이터 정책</a>
+                        <a class="collapse-item" href="sitepolicy">운영관리 정책</a>
+                        <h6 class="collapse-header">데이터</h6>
+                        <a class="collapse-item" href="newsraw">원본 데이터 열람</a>
+                        <a class="collapse-item" href="analysisraw">분석 데이터 열람</a>
+                        <h6 class="collapse-header">테스트 데이터</h6>
+                        <a class="collapse-item" href="twitterraw">트위터 데이터 열람</a>
+                        <a class="collapse-item" href="instagramraw">인스타 데이터 열람</a>
+                        <a class="collapse-item" href="dcinsideraw">디씨 데이터 열람</a>
+                        <a class="collapse-item" href="youtuberaw">유튜브 데이터 열람</a>
                     </div>
                 </div>
-            </li>
-
-            <!-- Nav Item - Charts -->
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Word Dashboard</span></a>
-            </li>
-
-            <!-- Nav Item - Tables -->
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>News Dashboard</span></a>
             </li>
 
             <!-- Divider -->

@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Daily Data Hub</title>
+    {% include 'header.html' %}
+    {% include 'topscript.html' %}
+</head>
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        {% include 'sidebar.html' %}
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                {% include 'topbar.html' %}
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">키워드 대시보드</h1>
+                    </div>
+                    <!-- Content Row -->
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                        <!-- Area Chart -->
+                        <div class="col-xl-12 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="width:100%">
+                                    <h6 class="m-0 font-weight-bold text-primary">일단위 주요 키워드 순위 ( {{ focus_company_name }} )</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">키워드 순위 설정:</div>
+                                            <a class="dropdown-item" href="profile">관심 뉴스 변경</a>
+                                            <a class="dropdown-item" href="newsdashboard">관심 뉴스 대시보드</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="analysisraw">대상 데이터 확인</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="rank-area" style="height: 40rem;">
+                                        <div class="d-flex flex-row" id="rank-div" style="height: 100%">
+                                            {% for a, b in news_data_analysis_counter_list %}{% for date in news_data_analysis_date reversed %}
+                                            {% if forloop.counter == forloop.parentloop.counter %}
+                                            {% if forloop.first %}
+                                            {% else %}
+                                                <div class="col-xl-2 col-lg-5">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-center" colspan="2">{{date}}</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th class="text-center" scope="col">키워드</th>
+                                                                <th class="text-center" scope="col">비율</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {% for aa in a %}{% for bb in b %}
+                                                        {% if forloop.counter == forloop.parentloop.counter %}
+                                                            <tr>
+                                                            {% if aa == focus_word %}
+                                                                <td class="table-primary text-center">
+                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="table-primary text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
+                                                                </td>
+                                                            {% else%}
+                                                                <td class="text-center">
+                                                                    <a href="newsraw?keyword={{aa}}">{{aa}}</a>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <a href="analysisraw?keyword={{aa}}">{{bb}}</a>
+                                                                </td>
+                                                            {% endif %}
+                                                            </tr>
+                                                        {% endif %}
+                                                        {% endfor %} {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            {% endif %}
+                                            {% endif %}
+                                            {% endfor %}{% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- /.container-fluid -->
+            </div>
+                {% include 'footer.html' %}
+        </div>
+    </div>
+    {% include 'logout.html' %}
+    {% include 'script.html' %}
+</body>
+</html>

@@ -93,9 +93,21 @@ DATABASES = {
         'NAME': 'mytools',
         'USER': 'admin',
         'PASSWORD': 'admin1234',
-        'HOST': '192.168.11.21',
-        'PORT': '3306'
-    }
+        #'HOST': '192.168.11.21',
+        #'PORT': '3306'
+        'HOST': 'teametastorage.com',
+        'PORT': '8050'
+    },
+    "dailydata": {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'dailydata',
+        'USER': 'admin',
+        'PASSWORD': 'admin1234',
+        #'HOST': '192.168.11.21',
+        #'PORT': '3306'
+        'HOST': 'teametastorage.com',
+        'PORT': '8050'
+    },
 }
 
 
@@ -135,6 +147,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# STATIC_ROOT DIRECTORY CONFIG SETTING FOR PRODUCTION
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -144,9 +160,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CronTabs Job Field
 
 CRONJOBS = [
-
-    ('* * * * *', 'dailynews.cron.scrap_every_minute', '>> cron.log'),
-    ('* * * * *', 'bs4news.cron.scrap_every_minute', '>> bs4cron.log'),
-    ('* * * * *', 'bs4news.cron.news_analysis_create_morphs', '>> bs4cron.log'),
-    ('* * * * *', 'main.cron.scrap_every_minute', '>> main4cron.log'),
+    ('*/15 0-15,20-23 * * *', 'bs4news.cron.scrap', '>> bs4cron.log'),
+    ('0 16 * * *', 'bs4news.cron.news_analysis_create_morphs', '>> analysis.log'),
+    ('0 17 * * *', 'main.cron.dashboard_index', '>> main4cron.log'),
+    ('0 18 * * *', 'bs4news.cron.news_analysis_create_news_dashboard_data', '>> dashboard.log'),
+    ('*/30 * * * *', 'bs4news.cron.news_crawl_bia_selenium_every_hour', '>> bs4crawl.log'),
+    ('*/30 * * * *', 'bs4news.cron.word2vec_modeling', '>> ddhmodeling.log'),
+    ('0 0 * * *', 'bs4news.cron.old_data_manage', '>> oldmanage.log')
 ]

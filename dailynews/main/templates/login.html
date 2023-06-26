@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Daily News</title>
+    <title>Daily Data Hub</title>
 
     <!-- Custom fonts for this template-->
     <link href="{% static 'fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -30,6 +30,8 @@
           headers: { "X-CSRFToken": '{{csrf_token}}' }
         });
       </script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> 
 </head>
 <body class="bg-gradient-primary backgroundTheme">
     <div class="container">
@@ -43,24 +45,29 @@
                             <div class="col-lg-12">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Welcome To Daily News, Where Your Information Starts</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">당신의 정보가 시작하는 데일리 데이터 허브입니다.</h1>
                                     </div>
                                     <form class="user">
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" id="id" placeholder="ID">
+                                            <input type="text" class="form-control form-control-user" id="id" placeholder="아이디 입력">
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" class="form-control form-control-user" id="password" placeholder="Password">
+                                            <input type="password" class="form-control form-control-user" id="password" placeholder="패스워드 입력">
                                         </div>
-                                        <input id="btnLogin" type="button" class="btn btn-primary btn-user btn-block" value="Login">
+                                        <input id="btnLogin" type="button" class="btn btn-primary btn-user btn-block" value="로그인">
                                         <script>
+                                            $(".form-control").on("keyup",function(key){
+                                                if(key.keyCode==13) {
+                                                    $('#btnLogin').click();
+                                                }
+                                            });
                                             $('#btnLogin').on('click', function(e) {
                                                 if($('#id').val() == "" ){
-                                                    alert('아이디를 입력하세요');
+                                                    toastr.warning('아이디를 입력하세요');
                                                     $('#id').focus();
                                                     return;
                                                 }else if($('#password').val() == "" ){
-                                                    alert('비밀번호를 입력하세요')
+                                                    toastr.warning('비밀번호를 입력하세요')
                                                     $('#password').focus();
                                                     return;
                                                 }else{
@@ -77,15 +84,16 @@
                                                     success : function(data){
                                                         console.log(data);
                                                         if(data === "TRUE"){
-                                                            alert("로그인 성공!");
+                                                            console.log("로그인 성공");
+                                                            toastr.success('데일리 데이터 허브 관리자', '로그인 확인하였습니다.');
                                                             location.href="/index";
                                                         }else{
-                                                            alert("로그인 실패");
+                                                            toastr.error('데일리 데이터 허브 관리자', '로그인 실패하였습니다.');
                                                             // location.href="/";
                                                         }
                                                     },
                                                     error : function(error){
-                                                        alert("로그인 오류");
+                                                        toastr.warning('데일리 데이터 허브 관리자', '로그인 문제가 발생하였습니다.');
                                                         // location.href="/";
                                                         console.log(JSON.stringify(error));
                                                     }
@@ -96,10 +104,10 @@
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="forgotPassword">Forgot Password?</a>
+                                        <a class="small" href="forgotPassword">비밀번호 초기화</a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="register">Create an Account!</a>
+                                        <a class="small" href="register">계정 생성</a>
                                     </div>
                                 </div>
                             </div>

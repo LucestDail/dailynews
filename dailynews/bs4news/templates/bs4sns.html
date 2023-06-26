@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bs4news</title>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+<table class="table">
+    <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">author</th>
+          <th scope="col">title</th>
+          <th scope="col">createdt</th>
+        </tr>
+      </thead>
+    <tbody>
+    {% for sns in sns_list %}
+    <tr>
+        <th scope="row">{{sns.id}}</th>
+        <td>{{sns.author}}</td>
+        <td>{{sns.title}}</td>
+        <td>{{sns.create_dt}}</td>
+    </tr>
+    <tr>
+        <td colspan="4">{{sns.content}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if sns_list.has_previous %}
+            <a href="?page={{ sns_list.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ sns_list.number }} of {{ sns_list.paginator.num_pages }}.
+        </span>
+
+        {% if sns_list.has_next %}
+            <a href="?page={{ sns_list.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+</body>
+</html>
